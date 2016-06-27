@@ -1,0 +1,17 @@
+Package: optiSel
+Type: Package
+Title: Optimum Contribution Selection and Pedigree Analysis
+Version: 0.1
+Date: 2016-06-24
+Author: Robin Wellmann
+Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
+Depends: R (>= 3.2.4)
+Imports: GENLIB, Matrix, Rcsdp, alabama, cccp, kinship2, nadiv, nloptr,
+        pedigree, pspline, stringr, MASS, methods, stats
+Description: Computation of optimum contributions of selection candidates in animal breeding, genetic contributions, the native effective size, native genome equivalents, the diversity of native alleles, and pedigree completeness. Moreover, functions are provided for preparing and plotting pedigrees.
+License: GPL-2
+LazyLoad: yes
+NeedsCompilation: no
+Packaged: 2016-06-27 11:51:59 UTC; Robin
+Repository: CRAN
+Date/Publication: 2016-06-27 17:22:52
