@@ -1,55 +1,68 @@
 \name{completeness}
 \Rdversion{1.1}
 \alias{completeness}
-\title{Computes completeness of the pedigree}
+\title{Calculates Pedigree Completeness}
 
 \description{
-Computes completeness of the pedigree for the specified individuals.
+Calculates completeness of the pedigree for individuals and for groups of individuals in each ancestral generation.
 }
 \usage{
-completeness(Pedig, keep, genNo=-1, type="MEAN")}
+completeness(Pedig, keep=NULL, maxd=50, by="Indiv")}
 
 \arguments{
-\item{Pedig}{Data frame containing the pedigree where the first 3 columns correspond to: Individual ID,  Sire, and Dam. More columns can be passed in the \code{Pedig} argument including a column named \code{Sex}.}
-\item{keep}{Vector with IDs of individuals to be included. \code{"0"} will select all individuals without children.}
-\item{genNo}{Vector of generation numbers at which completeness should be calculated. Default is -1, which calculates completeness at each generation.}
-\item{type}{If \code{type="MEAN"} (default), mean completeness over all specified individuals is calculated. If \code{type="IND"}, completeness is calculated for each specified individual.}
+\item{Pedig}{Data frame containing the pedigree, where the first columns are \code{Indiv} (Individual ID),  \code{Sire}, and \code{Dam}. More columns can be passed in the \code{Pedig} argument, in particular a column for grouping with the name defined by argument \code{by}.}
+\item{keep}{Vector with IDs of the individuals for which the completeness will be calculated, or a logical vector indicating the individuals. By default, all individuals are used.}
+\item{maxd}{Number of generations for which completeness should be calculated.}
+\item{by}{Name of a column in data frame \code{Pedig}. The completeness will be computed separately for each group defined by the column.}
 }
 
 \details{
-The function computes the completeness of the pedigree for the specified individuals. This is a wrapper function for function \link[GENLIB]{gen.completeness} from package \link[GENLIB:GenlibR-package]{GENLIB} that allows computation of pedigree completeness with little R code.
+The function computes the completeness of the pedigree for the specified individuals and for groups of individuals. It is the proportion of known ancestors in each generation. Generation 0 corresponds to the individual itself, so the completeness is always 1 in generation 0.
 }
 
 \value{
-When type is \code{"MEAN"} a vector is returned with the completeness for each generation at which the completeness is calculated.
 
-When type is \code{"IND"}, a data frame is returned with one row for each individual included in vector \code{keep}. The first columns contain the pedigree completeness for each generation at which the completeness is calculated. The columns of data frame \code{Pedig} are appended thereafter.
+Data frame with the following columns
 
+\item{Indiv (or 'by')}{Level of the grouping factor,}
+\item{Generation}{Generation number,}
+\item{Completeness}{Completeness of the pedigree.}
 }
 
+\seealso{
+Another function for characterizing pedigree completeness is \code{\link{summary.Pedig}}.
+}
 
 \examples{
 
-#Computes the pedigree completeness of the parents of
-#Hinterwald cattle born in 2006 and 2007.
+#Computes the pedigree completeness of Hinterwald cattle 
+#born between 2006 and 2007 in each ancestral generation.
 
 data(PedigWithErrors)
 Pedig <- prePed(PedigWithErrors)
+compl <- completeness(Pedig, keep=Pedig$Born \%in\% (2006:2007), maxd=50, by="Indiv")
+head(compl)
 
-inCohort <- (Pedig$Born \%in\% (2006:2007)) & Pedig$Breed=="Hinterwaelder"
+#Summary statistics can be computed directly from the pedigree:
+Summary <- summary(Pedig, keep=Pedig$Born \%in\% (2006:2007))
+head(Summary)
 
-compl<-completeness(Pedig, keep=Pedig$Sire[inCohort], type="IND")
-compl[1:20,]
-matplot(t(compl[1:20,1:10]),type="l",xlab="Generation", ylab="Completeness")
- 
-compl.m<-completeness(Pedig, keep=Pedig$Sire[inCohort])
-compl.f<-completeness(Pedig, keep=Pedig$Dam[inCohort])
+hist(Summary$PCI,        xlim=c(0,1),  main="Pedigree Completeness")
+hist(Summary$Inbreeding, xlim=c(0,1),  main="Inbreeding")
+hist(Summary$equiGen,    xlim=c(0,20), main="Number of Equivalent Complete Generations")
+hist(Summary$fullGen,    xlim=c(0,20), main="Number of Fully Traced Generations")
+hist(Summary$maxGen,     xlim=c(0,20), main="Number of Maximum Generations Traced")
 
-plot(compl.m, type="b", ylim=c(0,100), ylab="completeness", xlab="Generation")
-lines(compl.f, col="red", type="b")
-legend(12,95,c("Males", "Females"), col=c("black","red"), lty=1, cex=0.8)
+compl <- completeness(Pedig, keep=Pedig$Born \%in\% (2006:2007), maxd=50, by="Sex")
+head(compl)
+
+\dontrun{
+library("ggplot2")
+ggplot(compl, aes(Generation, Completeness, col=Sex))+geom_line()
+}
 }
 
-\references{Cazes P, Cazes MH. (1996) Comment mesurer la profondeur genealogique d'une ascendance? Population (French Ed) 51:117-140.}
+\references{Cazes P, Cazes MH. (1996) Comment mesurer la profondeur genealogique d'une ascendance? Population (French Ed) 51:117-140.
+}
 
 \author{Robin Wellmann}

@@ -1,20 +1,31 @@
 
 
 "prePed" <- function(Pedig, keep=NULL, thisBreed=NA, lastNative=NA, addNum=FALSE, I=0){
-    if(!is.null(keep)){keep <- setdiff(keep, c(NA))}
+    PedigAsDataTable <- "data.table" %in% class(Pedig)
+    Pedig <- as.data.frame(Pedig)
+    if(PedigAsDataTable){setDF(Pedig)}
     colnames(Pedig)[1:3]<-c("Indiv", "Sire", "Dam")
+    Pedig[,"Indiv"] <- as.character(Pedig[,"Indiv"])
+    Pedig[,"Sire"]  <- as.character(Pedig[,"Sire"])
+    Pedig[,"Dam"]   <- as.character(Pedig[,"Dam"])
+    if(is.logical(keep)){keep<-Pedig$Indiv[keep]}
+    if(!is.null(keep)){keep<-as.character(keep)}
+    if(anyDuplicated(Pedig$Indiv)){
+      cat("These Duplicates of IDs were removed:\n")
+      print(Pedig[duplicated(Pedig$Indiv),])
+      Pedig <- Pedig[!duplicated(Pedig$Indiv),]
+    }
     rownames(Pedig)<-Pedig$Indiv
+    
+    if(!is.null(keep)){keep <- setdiff(keep, c(NA, ""," ", "0"))}
     if(!("Sex" %in% colnames(Pedig))){Pedig$Sex<-NA}
     if(!("Breed" %in% colnames(Pedig)) & !is.na(thisBreed)){Pedig$Breed<-thisBreed}
     withBreed <- ("Breed" %in% colnames(Pedig))
     withBorn  <- ("Born"  %in% colnames(Pedig))
-    Pedig[,"Indiv"] <- as.character(Pedig[,"Indiv"])
-    Pedig[,"Sire"]  <- as.character(Pedig[,"Sire"])
-    Pedig[,"Dam"]   <- as.character(Pedig[,"Dam"])
     if(withBreed){Pedig[,"Breed"] <- as.character(Pedig[,"Breed"])}
     
-    Pedig[Pedig[, "Sire"] %in% "0", "Sire"] <- NA
-    Pedig[Pedig[, "Dam"] %in% "0",   "Dam"] <- NA
+    Pedig[Pedig$Sire %in% c("","0"," "), "Sire"] <- NA
+    Pedig[Pedig$Dam  %in% c("","0"," "),  "Dam"] <- NA
     
     ######### Cut Pedigree loops #########
     suppressWarnings(ord<-pedigree::orderPed(Pedig[,1:3]))
@@ -38,8 +49,9 @@
       ID <-  Pedig[!is.na(Pedig[,"Sire"]) & is.na(Pedig[,"Dam"]), "Indiv"]
       Pedig[ID, "Dam"]<- paste("D", ID, sep="")
     }
-    
+
     #### Add lines for ancestors, sort pedigree ####
+    #return(Pedig)
     Pedig <- nadiv::prepPed(Pedig)  
     Pedig[,"Indiv"] <- as.character(Pedig[,"Indiv"])
     rownames(Pedig)<- Pedig[,"Indiv"]
@@ -80,7 +92,7 @@
     }
     Pedig[Pedig[,"Indiv"] %in% Pedig[, "Sire"],"Sex"] <- 1
     Pedig[Pedig[,"Indiv"] %in% Pedig[, "Dam"], "Sex"] <- 2
-
+    
     ####             Estimate missing breeds              ###
     ###    Animals with missing breeds are assumed to     ###
     ### be from the same breed as most of their offspring ###
@@ -109,7 +121,11 @@
     ######  prune Pedigree   #######
     if(!is.null(keep)){
       Pedig<-nadiv::prunePed(Pedig, phenotyped=keep)
-      }
+      Pedig$Indiv<-as.character(Pedig$Indiv)
+      Pedig$Sire<-as.character(Pedig$Sire)
+      Pedig$Dam<-as.character(Pedig$Dam)
+    }
+    
     ######    Add numeric IDs    #######
     if(addNum){
       nP<-nadiv::numPed(Pedig[,1:3])
@@ -126,5 +142,7 @@
     cols  <- c(cols, setdiff(colnames(Pedig),  cols))
     Pedig <- Pedig[, cols]
 
+    if(PedigAsDataTable){setDT(Pedig)}
+    class(Pedig)<-c("Pedig", class(Pedig))
     Pedig
 }

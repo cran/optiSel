@@ -1,6 +1,10 @@
 
 "subPed"<-function(Pedig, keep, prevGen=3, succGen=0){
+  PedigAsDataTable <- "data.table" %in% class(Pedig)
+  Pedig <- as.data.frame(Pedig)
+  if(PedigAsDataTable){setDF(Pedig)}
   colnames(Pedig)[1:3]<-c("Indiv", "Sire", "Dam")
+  if(is.logical(keep)){keep<-Pedig$Indiv[keep]}
   Pedig<-prePed(Pedig, lastNative=1234567)
   selected  <- Pedig$Indiv %in% keep
   inPrevGen <- selected
@@ -23,5 +27,6 @@
   Pedig[!(Pedig$Dam %in% Pedig$Indiv),   "Dam"] <- NA
   Pedig<-prePed(Pedig, lastNative=1234567)
   Pedig$keep<-Pedig$Indiv %in% keep
+  if(PedigAsDataTable){setDT(Pedig)}
   Pedig
 }

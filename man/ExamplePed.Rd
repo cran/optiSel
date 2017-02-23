@@ -1,7 +1,7 @@
 \name{ExamplePed}
 \docType{data}
 \alias{ExamplePed}
-\title{Pedigree of Hinterwald cattle}
+\title{Pedigree of Hinterwald Cattle}
 \description{
   This data set gives a small subset of the pedigree of Hinterwald cattle suitable for demonstration purposes.
 }

@@ -1,7 +1,7 @@
 \name{Phen}
 \docType{data}
 \alias{Phen}
-\title{Simulated phenotypes of Hinterwald cattle}
+\title{Simulated Phenotypes of Hinterwald Cattle}
 \description{
  A data frame with migrant contributions and simulated breeding values of some Hinterwald cattle
  with offspring born in 2006 or 2007.

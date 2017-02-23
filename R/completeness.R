@@ -1,20 +1,30 @@
 
-"completeness"<-function(Pedig, keep, genNo=-1, type="MEAN"){
-  keep <-  setdiff(keep, c(NA))
-  Pedig <- prePed(Pedig, keep=keep, addNum=TRUE)
-  Ped   <- Pedig[,!(colnames(Pedig)%in% c("numIndiv", "numSire", "numDam"))]
-  numKeep  <- Pedig[keep, "numIndiv"]
-  Pedig <- Pedig[,c("numIndiv", "numSire", "numDam", "Sex")]
-  colnames(Pedig)<-c("ind","father","mother","sex")
-  Pedig<-GENLIB::gen.genealogy(Pedig)
-  Res<-GENLIB::gen.completeness(Pedig, pro=numKeep, genNo=genNo, type=type)
-  if(type=="IND"){
-    names(keep)<-numKeep
-    Indiv<-keep[str_sub(colnames(Res),5,-1)]
-    Res <- t(Res)
-    colnames(Res)<-paste("Compl.",0:(ncol(Res)-1), sep="")
-    Res<-data.frame(Res, Ped[Indiv,])
-    rownames(Res)<-1:nrow(Res)
+"completeness"<-function(Pedig, keep=NULL, maxd=50, by="Indiv"){
+  PedigAsDataTable <- "data.table" %in% class(Pedig)
+  Pedig <- as.data.frame(Pedig)
+  if(PedigAsDataTable){setDF(Pedig)}
+  
+  if(is.logical(keep)){keep <- Pedig[keep,1]}
+  if(!is.null(keep)){
+    keep <- as.character(keep)
+    keep <- setdiff(keep, c(NA))
   }
-  Res
+  
+  Pedig <- prePed(Pedig, keep=keep, addNum=TRUE)
+  compl <- rcpp_completeness(as.character(Pedig$Indiv), as.integer(Pedig$numSire), as.integer(Pedig$numDam), as.integer(maxd))
+  if(!is.null(keep)){compl<-compl[compl$Indiv %in% keep,]}
+  
+  if(by=="Indiv"){
+    if(PedigAsDataTable){setDT(compl)}
+    return(compl)
+  }
+  
+  compl <- merge(compl, Pedig[, c("Indiv", "Sex")], by="Indiv")
+  Factors <- list(compl[[by]], compl$Generation)
+  names(Factors) <- c(by, "Generation")
+  x <- aggregate(compl[,"Completeness",drop=FALSE], Factors, sum)
+  x$Completeness <- x$Completeness/mapvalues(x$Sex, from=x[x$Generation==0, by], to=x[x$Generation==0, "Completeness"])
+  x[[by]]   <- as.character(x[[by]])
+  if(PedigAsDataTable){setDT(x)}
+  x
 }

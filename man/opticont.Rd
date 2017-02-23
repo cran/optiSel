@@ -1,77 +1,73 @@
 \name{opticont}
 \Rdversion{1.1}
 \alias{opticont}
-\title{Computation of optimum genetic contributions for the breeding animals
+\title{Calculates Optimum Contributions of Selection Candidates
 }
 \description{
-Computation of optimum genetic contributions for the breeding animals
+Calculates optimum genetic contributions of selection candidates to the next generation. 
 }
 \usage{
-opticont(method, K, phen, con=list(), solver="cccp", quiet=FALSE, make.definite, ...)}
+opticont(method, K, phen, con=list(), solver="cccp", quiet=FALSE, 
+    make.definite=solver=="csdp", ...)}
 
 \arguments{
-\item{method}{Possible values are \code{"min.VAR"}, and \code{"max.VAR"}, where \code{VAR} must be replaced by the name of a column in data frame \code{phen} or by the name of a kinship matrix contained in list \code{K} or by the name of a conditional kinship contained in the attribute \code{condProb} of list \code{K}.
-
-For example, if \code{"fA"} is in \code{names(K)} then method \code{"min.fA"} minimizes the mean kinship \code{fA} in the offspring.
-If \code{phen} has e.g. column \code{BV} with breeding values and column \code{MC} with migrant contributions then \code{"max.BV"} maximizes the mean breeding value of the offspring, and  \code{"min.MC"} minimizes the contribution of migrant breeds to the offspring. 
-If \code{"fD"} is in \code{names(attr(K,"condProb"))} then \code{"min.fD"} minimizes the conditional kinship \code{fD} in the offspring. Optimization is done under the side constraints given in parameter \code{con}. 
+\item{method}{Possible values are \code{"min.VAR"}, and \code{"max.VAR"}, where \code{VAR} is the name of a column in data frame \code{phen}, or \code{"min.KIN"}, where \code{KIN} is the name of a kinship as defined by function \link{kinlist}. Use \link{help.opticont} to see the available objective functions.
 }
-\item{K}{A named list containing one or more NxN Kinship matrices for the N breeding animals, e.g. the output of function \link{kin}. Row names and column names of the matrices are the animal IDs.}
-\item{phen}{Data frame with N rows and various columns, with animal IDs in column 1 and sex in column 2. The other columns may contain breeding values or migrant contributions. The sex is 1 for males and 2 for females.}
-\item{con}{List possibly containing the following components providing the constraints:
-\tabular{ll}{
-\code{ub.KIN} \tab Upper bound for the mean kinship  in the offspring, where \code{KIN} must be replaced by the name of a kinship matrix included in list \code{K} or by the name of a conditional kinship included in \code{names(attr(K,"condProb"))}. Upper bounds for an arbitrary number of different kinships may be provided. 
-
-For example, if \code{"fD"} is in \code{names(attr(K,"condProb"))}
-then \code{ub.fD=a} defines the upper bound for the conditional kinship \code{fD} in the offspring to be \code{a}.
-\cr
-\code{lb}  \tab Either a named vecor of the form \code{c(M=a, F=b)} containing lower bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the minimum permissible contribution of each breeding animal. The default is \code{c(M=0, F=0)}.\cr
-\code{ub}  \tab Either a named vecor of the form \code{c(M=a, F=b)} containing upper bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the maximum permissible contribution of each breeding animal. For \code{M=-1} (\code{F=-1}) it is assumed that all males (females) have equal contributions to the offspring.  If a number is \code{NA} then the number of offspring for that sex/individual is not bounded. The default is \code{c(M=NA, F=NA)}.
-\cr
-\code{lb.VAR}  \tab Lower bound for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring. For example \code{lb.BV=a} defines a lower bound for the mean breeding value in the offspring to be \code{a} if data frame \code{phen} has column \code{BV} with breeding values of the parents. Lower bounds for an arbitrary number of variables can be defined.
-\cr
-\code{ub.VAR}  \tab Upper bound for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring.
-For example \code{ub.MC=a} defines the upper bound for the genetic contributions from migrant breeds in the offspring to be \code{a} if data frame \code{phen} has column \code{MC} with migrant contributions for the parents. Upper bounds for an arbitrary number of variables can be defined.
-\cr
-\code{eq.VAR}  \tab Equality constraint for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring.
-For example \code{eq.MC=a} forces the genetic contribution from migrant breeds in the offspring to be \code{a} if data frame \code{phen} has column \code{MC} with migrant contributions for the parents. Equality constraints for an arbitrary number of variables can be defined.
-\cr
-}
-If a component is missing, then the respective constraint is not applied.
+\item{K}{List created by function \link{kinlist}, containing e.g. kinship matrices of the selection candidates.}
+\item{phen}{Data frame with IDs of selection candidates in column 1, and sex in column 2. The other columns may contain breeding values or migrant contributions. The sex is 1 for males and 2 for females.}
+\item{con}{List defining the constraints. The compomnents are described in the Details section. If a component is missing, then the respective constraint is not applied. Use \link{help.opticont} to see the available constraints. 
 }
 
-\item{solver}{The name of the algorithm chosen for optimization. 
-All solvers should provide almost the same results but sometimes one of them fails due to numerical problems, or provides an approximate solution because a non-definite matrix had to approximated by a positive definite matrix. Available solvers are 
-
-\tabular{ll}{
- \code{alabama} \tab The augmented lagrangian minimization algorithm \link[alabama]{auglag} from package \code{alabama} is used.
- That is, the method combines the objective function and a penalty for each constraint  into a single function. This modified objective function is then passed to another optimization algorithm with no constraints. If the constraints are violated by the solution of this sub-problem, then the size of the penalties is increased and the process is repeated. The default methods for the uncontrained optimization in the inner loop is the quasi-Newton method called \code{BFGS}.
- \cr
-\code{cccp, cccp2} \tab Function  \link[cccp]{cccp} from package \code{cccp} for solving cone constrained convex programs is used. For \code{cccp} quadratic constraints are defined as second order cone constraints, whereas for \code{cccp2}
-quadratic constraints are defined by functions.
-The implemented algorithms are partially ported from CVXOPT.\cr
- \code{csdp} \tab The problem is reformulated as a semidefinite programming problem and solved with the CSDP library.
- Non-definite matrices are approximated by positive definite matrices. This solver is not suitable when the objective is to minimize a conditional kinship.
- \cr
- \code{slsqp} \tab The sequential (least-squares) quadratic programming (SQP) algorithm \link[nloptr]{slsqp} for  gradient-based optimization from package \code{nloptr} is used. The algorithm optimizes successive second-order (quadratic/least-squares) approximations of the objective function, with first-order (affine) approximations of the constraints.\cr
-}
+\item{solver}{Name of the algorithm for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"},   and \code{"slsqp"}. The default is \code{"cccp"}. The solvers are described in the Details section.
 }
 
 \item{quiet}{If \code{quiet=FALSE} then detailed information is shown.}
 \item{make.definite}{If \code{make.definite=TRUE} then all non-definite matrices are approximated by positive definite matrices before optimization.
 This is the default setting for the solver \code{csdp}.
 }
-\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values:
-\tabular{ll}{
- \code{alabama} \tab The available parameters used for the outer loop are described in the details section of the help page of function \link[alabama]{auglag}. The available parameters used for the inner loop are described in the details section of the help page of function \link[stats]{optim}. \cr
-\code{cccp, cccp2} \tab The parameters are those from function \link[cccp]{ctrl}. They are among others the maximum count of iterations as an integer value (\code{maxiters}), the feasible level of convergence to be achieved (\code{feastol}) and whether the solver's progress during the iterations is shown (\code{trace}). If numerical problems are encountered increase the optimization parameter \code{feastol} or reduce parameter \code{stepadj}.\cr
- \code{csdp} \tab Available parameters are described in the CSDP User's Guide: \code{https://projects.coin-or.org/Csdp/export/49/trunk/doc/csdpuser.pdf} . \cr
- \code{slsqp} \tab Available parameters are described in \link[nloptr]{nl.opts}\cr
-}
+\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values. An overview is given in the Details section. 
 }
 }
 \details{
-Computation of optimum genetic contributions for the breeding animals. If the function does not provide a valid result due to numerical problems then try the following modifications:
+Computation of optimum genetic contributions of selection candidates. 
+
+\bold{Constraints}
+
+Constraints are defined in argument \code{con}, which is a list whose components may have the following names:
+
+\bold{ub.KIN}: Upper bound for the mean kinship  in the offspring, where \code{KIN} must be replaced by the name of a kinship as defined by function \link{kinlist}. Upper bounds for an arbitrary number of different kinships may be provided. 
+
+\bold{lb}: Either a named vecor of the form \code{c(M=a, F=b)} containing lower bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the minimum permissible contribution of each selection candidate. The default is \code{c(M=0, F=0)}.
+
+\bold{ub}: Either a named vecor of the form \code{c(M=a, F=b)} containing upper bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the maximum permissible contribution of each selection candidate. For \code{M=-1} (\code{F=-1}) it is assumed that all males (females) have equal contributions to the offspring.  If a number is \code{NA} then the number of offspring for that sex/individual is not bounded. The default is \code{c(M=NA, F=NA)}.
+
+\bold{lb.VAR}: Lower bound for the expected mean value of variable \code{VAR} from data frame \code{phen} in the offspring. For example \code{lb.BV=a} defines a lower bound for the mean breeding value in the offspring to be \code{a} if data frame \code{phen} has column \code{BV} with breeding values of the parents. Lower bounds for an arbitrary number of variables can be defined.
+
+\bold{ub.VAR}:   Upper bound for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring.
+For example \code{ub.MC=a} defines the upper bound for the genetic contributions from migrant breeds in the offspring to be \code{a} if data frame \code{phen} has column \code{MC} with migrant contributions for the parents. Upper bounds for an arbitrary number of variables can be defined.
+
+\bold{eq.VAR}: Equality constraint for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring. Equality constraints for an arbitrary number of variables can be defined.
+
+
+\bold{Solver}
+
+
+ \code{"alabama"}: The augmented lagrangian minimization algorithm \link[alabama]{auglag} from package \code{alabama}.
+ The method combines the objective function and a penalty for each constraint  into a single function. This modified objective function is then passed to another optimization algorithm with no constraints. If the constraints are violated by the solution of this sub-problem, then the size of the penalties is increased and the process is repeated. The default methods for the uncontrained optimization in the inner loop is the quasi-Newton method called \code{BFGS}.
+The available parameters used for the outer loop are described in the details section of the help page of function \link[alabama]{auglag}. The available parameters used for the inner loop are described in the details section of the help page of function \link[stats]{optim}.
+ 
+\code{"cccp", "cccp2"}: Function  \link[cccp]{cccp} from package \code{cccp} for solving cone constrained convex programs. For \code{cccp} quadratic constraints are defined as second order cone constraints, whereas for \code{cccp2} quadratic constraints are defined by functions. The implemented algorithms are partially ported from CVXOPT. The parameters are those from function \link[cccp]{ctrl}. They are among others the maximum count of iterations as an integer value (\code{maxiters}), the feasible level of convergence to be achieved (\code{feastol}) and whether the solver's progress during the iterations is shown (\code{trace}). If numerical problems are encountered increase the optimization parameter \code{feastol} or reduce parameter \code{stepadj}.
+
+ \code{"csdp"}: The problem is reformulated as a semidefinite programming problem and solved with the CSDP library.
+ Non-definite matrices are approximated by positive definite matrices. This solver is not suitable when the objective is to minimize kinship at native alleles.
+ Available parameters are described in the CSDP User's Guide: \code{https://projects.coin-or.org/Csdp/export/49/trunk/doc/csdpuser.pdf}.
+ 
+ \code{"slsqp"}: The sequential (least-squares) quadratic programming (SQP) algorithm \link[nloptr]{slsqp} for  gradient-based optimization from package \code{nloptr}. The algorithm optimizes successive second-order (quadratic/least-squares) approximations of the objective function, with first-order (affine) approximations of the constraints.  Available parameters are described in \link[nloptr]{nl.opts}
+
+
+\bold{Remark}
+
+If the function does not provide a valid result due to numerical problems then try the following modifications:
 
 \tabular{ll}{
 \code{*} \tab modify the optimization parameters,\cr
@@ -86,17 +82,30 @@ Validity of the result can be checked with function \link{summary.opticont}. Use
 
 \value{
 A list with class \code{"opticont"}
- which has component \code{parent}.  This is the data frame \code{phen} with the additional column \code{oc} containing the optimum genetic contribution of each breeding animal to the next generation, \code{lb} containing the lower bounds of the optimum contributions, and \code{ub} containing the upper bounds.
+ which has component \code{parent}.  This is the data frame \code{phen} with the additional column \code{oc} containing the optimum genetic contribution of each selection candidate to the next generation, \code{lb} containing the lower bounds, and \code{ub} containing the upper bounds.
 
 
-Note: In windows R3.2.4, if there are a lot / large objects in memory, eigen or chol, which are called from this function, may return NULL and subsequently no result is obtained. This is a bug in R.
+%Note: In windows R3.2.4, if there are a lot / large objects in memory, eigen or chol, which are called from this function, may return NULL and subsequently no result is obtained. This is a bug in R.
 }
 
 
 \examples{
-data(Kin)  #see ?kin for creating this object
+data(PedigWithErrors)
 data(Phen)
 Phen[1:5,]
+
+keep  <- Phen$Indiv
+Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
+
+data(Kin)
+\dontrun{
+fA    <- pedIBD(Pedig, keep.only=keep)
+fD    <- pedIBDatN(Pedig, thisBreed="Hinterwaelder",  keep.only=keep)
+Kin2  <- kinlist(fA=fA, fD=fD)
+identical(Kin, Kin2)
+#[1] TRUE
+}
+
 
 ########################################
 #  Check available objective functions #
@@ -117,7 +126,7 @@ points(Phen$MC[Phen$Sex==1], Phen$BV[Phen$Sex==1], col="red", pch=18)
 #          in the offspring without selection                   #
 #################################################################
 con     <- list(ub=c(M=-1, F=-1))
-noSel   <- opticont(K=Kin, phen=Phen, con=con)
+noSel   <- opticont(method="min.fA", K=Kin, phen=Phen, con=con)
 noSel.s <- summary(noSel)
 noSel.s$fA
 # 0.02284205
@@ -169,7 +178,7 @@ maxBV.MC.s$meanBV - noSel.s$meanBV
 # constraining fA and MC:                                        #
 ##################################################################
 con     <- list(ub.fA=0.03, ub.MC=0.55, ub=c(M=NA, F=-1))
-minfD   <- opticont("min.fD", K=Kin, phen=Phen, con=con, trace = FALSE)
+minfD   <- opticont("min.fD", K=Kin, phen=Phen, con=con, solver = "slsqp")
 minfD.s <- summary(minfD)
 c(minfD.s$fD, noSel.s$fD)
 #[1]  0.06660931 0.07698101

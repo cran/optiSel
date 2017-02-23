@@ -1,10 +1,10 @@
 \name{genecont}
 \Rdversion{1.1}
 \alias{genecont}
-\title{Calculation of genetic contributions. 
+\title{Calculates Genetic Contributions using Pedigrees. 
 }
 \description{
-Genetic contributions of all ancestors to each individual
+Calculates the genetic contributions each individual has from of all it's ancestors.
 }
 \usage{
 genecont(ID, Sire, Dam, NAncestors=NA)

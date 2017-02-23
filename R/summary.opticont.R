@@ -2,9 +2,13 @@
 "summary.opticont"<-function(object, ...){
   x <- object
   phen   <- x$parent
+  phenAsDataTable <- "data.table" %in% class(phen)
+  phen <- as.data.frame(phen)
+  if(phenAsDataTable){setDF(phen)}
+  
   oc  <- phen[,"oc"]
   con <- x$con
-  sex <- phen[,1]
+  sex <- phen[,"Sex"]
   obj.var <- substr(x$method,5,nchar(x$method))
   min.Kin <- (x$method %in% paste("min.",names(x$meanKin),sep=""))
 
@@ -15,11 +19,11 @@
   rownames(Res)<-Res$VarName
   Res$method= x$method
   
-  for(i in names(x$cKin)){
-    f1 <- x$cKin[[i]][1]
-    f2 <- x$cKin[[i]][2]
-    x$meanKin[i]<- 1-c((1-x$meanKin[f1])/(x$meanKin[f2]))
-    }
+#  for(i in names(x$cKin)){
+#    f1 <- x$cKin[[i]][1]
+#    f2 <- x$cKin[[i]][2]
+#    x$meanKin[i]<- 1-c((1-x$meanKin[f1])/(x$meanKin[f2]))
+#    }
   
   Res$obj.fun = NA
   if(obj.var %in% names(x$meanKin)){
@@ -35,9 +39,9 @@
     Res[, paste("ub.",i,sep="")]<-x$quadcon[i]
   }
 
-  for(i in names(x$meanKin)){
-    Res[, paste("Div.",i,sep="")]<-1-Res[,i]
-  }
+#  for(i in names(x$meanKin)){
+#    Res[, paste("Div.",i,sep="")]<-1-Res[,i]
+#  }
 
   if(length(con$ub==2)&!is.null(names(con$ub))){
     Res$ubM = con$ub[1]
@@ -65,8 +69,10 @@
   isOK  <- sum(oc[sex==2])>0.4999 & sum(oc[sex==2])<0.5001
   valid <- valid & isOK
   cat("  total female cont = 0.5: ", isOK, "\n", sep="")
-  equalMaleCont   <- (sum(is.na(con$ub[sex==1]))==0 & sum(con$ub[sex==1])<0.5)
-  equalFemaleCont <- (sum(is.na(con$ub[sex==2]))==0 & sum(con$ub[sex==2])<0.5)
+  equalFemaleCont <- "F" %in% names(con$ub) & (con$ub["F"] == -1)
+  equalMaleCont   <- "M" %in% names(con$ub) & (con$ub["M"] == -1)
+  equalFemaleCont <- equalFemaleCont | (sum(is.na(phen$ub[sex==2]))==0 & all(phen$lb[sex==2]==phen$ub[sex==2]) & sd(phen$ub[sex==2])==0)
+  equalMaleCont   <- equalMaleCont   | (sum(is.na(phen$ub[sex==1]))==0 & all(phen$lb[sex==1]==phen$ub[sex==1]) & sd(phen$ub[sex==1])==0)
   if(equalMaleCont){
     isOK <- sd(oc[sex==1])==0
     valid <- valid & isOK
@@ -93,9 +99,10 @@
     cat("  mean ",i," <= ub.",i,"       : ", isOK, "\n", sep="")    
   }
   
-  x2<-apply(phen[,-1],2,is.numeric)
-  Traits <- setdiff(names(x2)[x2], c("lb", "ub","oc"))
-  for(vari in Traits){
+  Traits  <- colnames(phen)[-(1:2)]
+  x2<-NULL;for(i in 3:ncol(phen)){x2<-c(x2,is.numeric(phen[,i]))}
+  Traits  <- setdiff(Traits[x2], c("lb", "ub", "oc", "Born", "Sex"))
+   for(vari in Traits){
     lb.var<- paste("lb.", vari, sep="")
     ub.var<- paste("ub.", vari, sep="")
     eq.var<- paste("eq.", vari, sep="")
@@ -117,6 +124,8 @@
   }
   cat(" \n")
   Res$valid <- valid
+  
+  if(phenAsDataTable){setDT(Res)}
   invisible(Res)
 }
 

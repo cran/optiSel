@@ -1,9 +1,9 @@
 \name{pedplot}
 \Rdversion{1.1}
 \alias{pedplot}
-\title{Plot a pedigree}
+\title{Plots a Pedigree}
 \description{
-Plot a pedigree
+Plots a pedigree
 }
 \usage{
 pedplot(Pedig, affected=NULL, status=NULL, label="Indiv", ...)}
@@ -30,8 +30,8 @@ An invisible list returned by the underlying function \link[kinship2]{plot.pedig
 \examples{
 data(PedigWithErrors)
 
-sPed  <- subPed(PedigWithErrors, keep="276000891974272", prevGen=3, succGen=2)
-pedplot(sPed, mar=c(2,4,2,4), label=c("Indiv", "Born", "Breed"), cex=0.7)
+sPed  <- subPed(PedigWithErrors, keep="276000810087543", prevGen=3, succGen=2)
+pedplot(sPed, mar=c(2,4,2,4), label=c("Indiv", "Born", "Breed"), cex=0.4)
 }
 
 

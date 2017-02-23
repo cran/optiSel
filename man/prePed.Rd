@@ -1,7 +1,7 @@
 \name{prePed}
 \Rdversion{1.1}
 \alias{prePed}
-\title{Prepares a pedigree
+\title{\bold{Pre}pares a \bold{Ped}igree 
 }
 \description{
 Prepares a pedigree by sorting and adding founders and pruning the pedigree.
@@ -11,7 +11,7 @@ prePed(Pedig, keep=NULL, thisBreed=NA, lastNative=NA, addNum=FALSE, I=0)}
 
 \arguments{
 \item{Pedig}{Data frame containing the pedigree where the first 3 columns correspond to: Individual ID,  Sire, and Dam. More columns can be passed in the \code{Pedig} argument including columns named \code{Sex}, \code{Breed} (with breed names), and \code{Born} (with years of birth). Missing parents are coded as NA, 0, or "0".}
-\item{keep}{A vector with IDs of individuals or \code{NULL}. If this parameter is not \code{NULL}, then only these individuals and their ancestors will be kept in the pedigree.}
+\item{keep}{Vector with IDs of individuals, or \code{NULL}, or a logical vector indicating the individuals to be kept. If this parameter is not \code{NULL}, then only these individuals and their ancestors will be kept in the pedigree.}
 \item{thisBreed}{Name of the breed.}
 \item{lastNative}{Last year of birth for which individuals with unknown pedigree are considered native.}
 \item{addNum}{If \code{TRUE}, then columns with IDs of individuals, sires, and dams in integer form will be added.

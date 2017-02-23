@@ -1,5 +1,8 @@
 
 "kinwac"<-function(K, Pedig, use=NULL){
+  PedigAsDataTable <- "data.table" %in% class(Pedig)
+  Pedig <- as.data.frame(Pedig)
+  if(PedigAsDataTable){setDF(Pedig)}
   rownames(Pedig) <- Pedig$Indiv
   cohort <- Pedig[rownames(K[[1]]),"Born"]
   if(is.null(use))use<-rep(TRUE,length(cohort))
@@ -26,17 +29,22 @@
   }
   A<-sparseMatrix(i=i[i!=j],j=j[i!=j],dims=c(length(cohort),length(cohort)))
   A <- as(A, "dgCMatrix")
+  cohort[cohort==-123456789]<- NA
+  
   kinWithPop <- matrix(NA, nrow=nrow(K[[1]]), ncol=length(K)+3)
   colnames(kinWithPop)<-c("cohort", "used", "I", names(K))
   rownames(kinWithPop)<-rownames(K[[1]])
   N<-apply(A,2,sum)
-  cohort[cohort==-123456789]<- NA
+  
   kinWithPop[,1]<-cohort
   kinWithPop[,2]<-1*use
   kinWithPop[,3]<-Pedig[rownames(K[[1]]),"I"]
   for(k in 1:length(K)){
     kinWithPop[,k+3]<-apply(K[[k]]*A,2,sum)/N
   }
-  class(kinWithPop)<-"kinwac"
+  kinWithPop <- data.frame(Indiv=rownames(K[[1]]), kinWithPop)
+  if(PedigAsDataTable){setDT(kinWithPop)}
+  class(kinWithPop)<-c("kinwac", class(kinWithPop))
+  attributes(kinWithPop)$condProb <- attributes(K)$condProb 
   kinWithPop
 }
