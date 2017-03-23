@@ -71,12 +71,13 @@ plot(Freq, ID=1, hap=2, refBreed="Holstein", Chr=1)
 ## Creating output files with allele frequencies and allele origins:
 \dontrun{
 rdir  <- system.file("extdata", package = "optiSel")
-wdir  <- file.path(getwd(), "HaplotypeEval")
+wdir  <- file.path(tempdir(), "HaplotypeEval")
 chr   <- unique(map$Chr)
 files <- file.path(rdir, paste("Chr", chr, ".phased", sep=""))
 wfile <- haplofreq(files, Cattle, map, thisBreed="Angler", minL=2000, w.dir=wdir)
 
 View(read.table(wfile$match[1],skip=1))
+#unlink(wdir, recursive = TRUE)
 }
 
 }

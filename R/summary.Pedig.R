@@ -1,11 +1,18 @@
 
-"summary.Pedig"<-function(object, keep=NULL, maxd=50, d=4, ...){
-  if(is.logical(keep)){keep <- object[keep,1]}
-  if(!is.null(keep)){
-    keep <- as.character(keep)
-    keep <- setdiff(keep, c(NA))
+"summary.Pedig"<-function(object, keep.only=NULL, maxd=50, d=4, ...){
+  PedigAsDataTable <- "data.table" %in% class(object)
+  object <- as.data.frame(object)
+  
+  if(is.logical(keep.only)){keep.only <- object[keep.only,1]}
+  ids <- as.character(object[[1]])
+  
+  if(!is.null(keep.only)){
+    keep.only <- as.character(keep.only)
+    keep.only <- setdiff(keep.only, c(NA))
   }
-  Pedig <- prePed(object, keep=keep, addNum=TRUE)
+  Pedig <- prePed(object, keep=keep.only, addNum=TRUE)
+  ids   <- ids[ids %in% Pedig$Indiv]
+
   Pedig$Inbreeding <- pedInbreeding(Pedig)$Inbr
   compl <- completeness(Pedig, maxd=maxd, by="Indiv")
   setDT(compl)
@@ -34,8 +41,11 @@
   Pedig$PCI <- 2*Pedig$matIndex*Pedig$patIndex/(Pedig$matIndex+Pedig$patIndex)
   Pedig[is.na(Pedig$PCI),"PCI"]<-0
   Pedig <- Pedig[,c("Indiv","equiGen", "fullGen", "maxGen", "PCI","Inbreeding")]
-  if(!is.null(keep)){
-    Pedig<-Pedig[Pedig$Indiv %in% keep,]
+  if(!is.null(keep.only)){
+    ids<-ids[ids %in% keep.only]
   }
+  rownames(Pedig)<-Pedig$Indiv
+  Pedig <- Pedig[ids,]
+  if(PedigAsDataTable){setDT(Pedig)}
   Pedig
 }

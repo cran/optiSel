@@ -5,28 +5,26 @@
   PedigAsDataTable <- "data.table" %in% class(Pedig)
   Pedig <- as.data.frame(Pedig)
   if(PedigAsDataTable){setDF(Pedig)}
-  Indiv<-1; Sire<-2; Dam<-3; Sex<-4; Breed<-5
-  for(i in c(Indiv, Sire, Dam, Breed)){Pedig[,i]<-as.character(Pedig[,i])}
+  ids <- Pedig$Indiv
+  Pedig$Breed <- as.character(Pedig$Breed)
 
-  Rassen<-setdiff(names(table(Pedig[,Breed])),c(thisBreed))
-  if("unknown"%in% Rassen){Rassen<-c(setdiff(Rassen, c("unknown")),"unknown")}
+  Breeds <- setdiff(names(table(Pedig$Breed)), c(thisBreed))
+  if("unknown"%in% Breeds){Breeds<-c(setdiff(Breeds, c("unknown")),"unknown")}
+  SBreeds <- paste0("S.", Breeds)
+  DBreeds <- paste0("D.", Breeds)
   
-  Pedig[Pedig[,Breed] %in% Rassen, Sire]<- Pedig[Pedig[,Breed] %in% Rassen, Breed]
-  Pedig[Pedig[,Breed] %in% Rassen, Dam] <- Pedig[Pedig[,Breed] %in% Rassen, Breed]
+  Pedig[Pedig$Breed %in% Breeds & (is.na(Pedig[,2])|is.na(Pedig[,3])), 2] <- paste0("S.", Pedig$Breed[Pedig$Breed %in% Breeds  & (is.na(Pedig[,2])|is.na(Pedig[,3]))])
+  Pedig[Pedig$Breed %in% Breeds & (is.na(Pedig[,2])|is.na(Pedig[,3])), 3] <- paste0("D.", Pedig$Breed[Pedig$Breed %in% Breeds  & (is.na(Pedig[,2])|is.na(Pedig[,3]))])
 
-  Breeds <- data.frame(Rassen,"Migrant","Migrant",0,"Dummy",stringsAsFactors=FALSE)
-  Origin <- data.frame(c("Migrant","0"),"?","?", 0, "Dummy",stringsAsFactors=FALSE)
-  colnames(Breeds)<-colnames(Pedig)[1:5]
-  colnames(Origin)<-colnames(Pedig)[1:5]
-  Groups<-rbind.data.frame(Origin, Breeds)
-  Pedig <-rbind.data.frame(Groups, Pedig[,1:5])
-  Pedig[is.na(Pedig[,Sire]),Sire]<-"0"
-  Pedig[is.na(Pedig[,Dam]),  Dam]<-"0"
-  n <- nrow(Groups)
-  Cont <- genecont(Pedig[,Indiv], Pedig[,Sire], Pedig[,Dam], NAncestors=n)[- (1:n),3:n]
-  Cont <- Cont[,rev(order(colMeans(Cont)))]
+  Cont <- as.data.frame(genecont(Pedig[,1:3], from=c(SBreeds, DBreeds)))
+
+  for(cName in setdiff(c(SBreeds, DBreeds), colnames(Cont))){
+   Cont[,cName]<-0
+  }
+  Cont <- Cont[, SBreeds]+Cont[, DBreeds]
+  colnames(Cont) <- Breeds
+  Cont <- Cont[ids, rev(order(colMeans(Cont)))]
   Cont <- data.frame(Indiv=rownames(Cont), native=1-rowSums(Cont), Cont, stringsAsFactors = FALSE)
-  rownames(Cont)<-Cont$Indiv
   if(PedigAsDataTable){
     setDT(Cont)
     }

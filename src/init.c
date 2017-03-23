@@ -2,6 +2,7 @@
 #include <Rinternals.h>
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
+#define ARMA_64BIT_WORD 1
 
 /* FIXME: 
    Check these declarations against the C/Fortran source code.

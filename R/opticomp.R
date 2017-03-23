@@ -13,13 +13,13 @@
   names(u)<-colnames(f)
   if(!is.null(lb)){l[names(lb)]<-lb}
   if(!is.null(ub)){u[names(ub)]<-ub}
-  H=matrix(c(f),ncol=ncol(f),nrow=nrow(f))
+  H <- matrix(c(f),ncol=ncol(f),nrow=nrow(f))
   gc()
   # maximize neutral gene diversity
   if(obj.fun=="NGD"){
     Res   <- solve.QP(Dmat=2*H,dvec=rep(0,nrow(H)),Amat=cbind(diag(nrow(H)),-diag(nrow(H)),1),bvec=c(l,-u,1), ...)
     bc    <- setNames(Res$solution, colnames(f))
-    value <- (1-Res$value)/2
+    value <- (1-Res$value)
   }
   #maximize neutral trait diversity
   if(obj.fun=="NTD"){

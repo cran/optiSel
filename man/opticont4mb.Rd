@@ -120,10 +120,6 @@ apply(Comp[,-1],2,mean)
 #    native          F          H          R 
 #0.54345962 0.01109934 0.19122468 0.25421635
 
-### Simulate breeding values and sexes of selection candidates
-set.seed(1)
-Cattle$BV  <- rnorm(nrow(Cattle), 0, 1)
-Cattle$Sex <- 1+rbinom(nrow(Cattle), 1, 0.5)
 
 ########################################
 #  Find optimum breed contributions    #
@@ -178,7 +174,7 @@ con     <- list(ub.G=0.05, ub=c(M=NA, F=-1))
 maxBV   <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
 maxBV.s <- summary(maxBV)
 maxBV.s$meanBV - noSel.s$meanBV
-# [1]  0.9269954
+# [1]  0.9113505
 
 ##################################################################
 # Compute the genetic progress achievable while constraining     #
@@ -189,7 +185,7 @@ con       <- list(ub.G=0.05, ub.MC=0.32,  ub=c(M=NA, F=-1))
 maxBV.MC <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
 maxBV.MC.s <- summary(maxBV.MC)
 maxBV.MC.s$meanBV - noSel.s$meanBV
-#0.5819022
+#0.1661787
 
 #Alternatively, function opticont() could have been used,
 #because across breed diversity was not managed in this example:
@@ -197,7 +193,7 @@ maxBV.MC.s$meanBV - noSel.s$meanBV
 maxBV.MC2 <- opticont("max.BV", Kin, Cattle[Cattle$Breed=="Angler",], con=con, trace = FALSE)
 maxBV.MC2.s <- summary(maxBV.MC2)
 maxBV.MC2.s$meanBV - noSel.s$meanBV
-#[1] 0.5819001
+#[1] 0.1661782
 
 cor(maxBV.MC$parent$oc,maxBV.MC2$parent$oc)
 #[1] 1
@@ -212,7 +208,7 @@ con          <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.MC=0.32,  ub=c(M=NA,
 maxBV.G.MC   <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, trace=FALSE)
 maxBV.G.MC.s <- summary(maxBV.G.MC)
 maxBV.G.MC.s$meanBV - noSel.s$meanBV
-# [1] 0.5819217
+# [1] 0.1661851
 
 ##################################################################
 #    Compute the minimum achievable kinship at native alleles    #
@@ -235,8 +231,8 @@ minGN.s$GN
 con           <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.GN=0.05, ub.MC=0.32, ub=c(M=NA, F=-1))
 maxBV.G.MC.GN <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, solver="slsqp")
 maxBV.G.MC.GN.s <- summary(maxBV.G.MC.GN)
-maxBV.G.MC.GN.s$meanBV
-#[1]  0.2727618
+maxBV.G.MC.GN.s$meanBV - noSel.s$meanBV
+#[1] -0.1816013
 }
 ##################################################################
 # Summary statistics from different optimizations                #
@@ -246,16 +242,18 @@ maxBV.G.MC.GN.s$meanBV
 \dontrun{
 Res<-rbind(noSel.s, maxBV.s, maxBV.G.MC.s,maxBV.G.MC.GN.s)
 format(Res[,c("valid","meanBV", "meanMC", "G.acrossBreeds", "G", "GN")],digits=4)
-#              valid  meanBV meanMC G.acrossBreeds       G      GN
-#noSel          TRUE 0.03766 0.4573        0.02710 0.04734 0.04478
-#maxBV          TRUE 0.96465 0.4296        0.02677 0.05000 0.05905
-#maxBV.G.MC     TRUE 0.61958 0.3200        0.02546 0.05000 0.06879
-#maxBV.G.MC.GN  TRUE 0.27276 0.3200        0.02435 0.04078 0.05000
+#              valid   meanBV meanMC G.acrossBreeds       G      GN
+#noSel          TRUE  0.03935 0.4573        0.02710 0.04734 0.04478
+#maxBV          TRUE  0.95070 0.4723        0.02743 0.05000 0.05283
+#maxBV.G.MC     TRUE  0.20554 0.3200        0.02547 0.05000 0.06861
+#maxBV.G.MC.GN  TRUE -0.14225 0.3200        0.02436 0.04082 0.05000
 }
 #================================================================#
 # => Genetic progress could be reduced considerably when migrant #
 #    contributions and diversity across breeds are taken into    #
 #    account in optimum contribution selection.                  #
+# => Genetic progress could even become negative if migrant      #
+#    contributions and breeding values are correlated.           #
 # ** Note that column G.acrossBreeds refers to a multi-breed     #
 #    population to which the population of interest has a        #
 #    contribution of only 0.378 and only male contributions were #
@@ -270,10 +268,10 @@ format(Res[,c("valid","meanBV", "meanMC", "G.acrossBreeds", "G", "GN")],digits=4
 ##################################################################
 \dontrun{
 cor(cbind(maxBV.G.MC.GN$parent$oc, maxBV.G.MC$parent$oc, maxBV$parent$oc))
-#          [,1]      [,2]      [,3]
-#[1,] 1.0000000 0.8486423 0.3228035
-#[2,] 0.8486423 1.0000000 0.5078325
-#[3,] 0.3228035 0.5078325 1.0000000
+#           [,1]      [,2]       [,3]
+#[1,] 1.00000000 0.8500451 0.06390155
+#[2,] 0.85004510 1.0000000 0.17709707
+#[3,] 0.06390155 0.1770971 1.00000000
 }
 }
 

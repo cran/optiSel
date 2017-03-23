@@ -8,24 +8,47 @@
     Pedig[,"Indiv"] <- as.character(Pedig[,"Indiv"])
     Pedig[,"Sire"]  <- as.character(Pedig[,"Sire"])
     Pedig[,"Dam"]   <- as.character(Pedig[,"Dam"])
-    if(is.logical(keep)){keep<-Pedig$Indiv[keep]}
-    if(!is.null(keep)){keep<-as.character(keep)}
+    Pedig[Pedig$Sire %in% c("","0"," "), "Sire"] <- NA
+    Pedig[Pedig$Dam  %in% c("","0"," "),  "Dam"] <- NA
+    
+    if(is.logical(keep)){
+      keep<-Pedig$Indiv[keep]
+      }
+    if(!is.null(keep)){
+      keep <- as.character(keep)
+      keep <- setdiff(keep, c(NA, ""," ", "0"))
+      }
     if(anyDuplicated(Pedig$Indiv)){
-      cat("These Duplicates of IDs were removed:\n")
-      print(Pedig[duplicated(Pedig$Indiv),])
+      cat("Duplicated IDs were removed.\n")
+      ord   <- order(is.na(Pedig$Sire)+is.na(Pedig$Dam))
+      Pedig <- Pedig[ord,]
+      cat("This includes e.g.\n")
+      print(head(Pedig[duplicated(Pedig$Indiv),]))      
       Pedig <- Pedig[!duplicated(Pedig$Indiv),]
     }
     rownames(Pedig)<-Pedig$Indiv
     
-    if(!is.null(keep)){keep <- setdiff(keep, c(NA, ""," ", "0"))}
-    if(!("Sex" %in% colnames(Pedig))){Pedig$Sex<-NA}
-    if(!("Breed" %in% colnames(Pedig)) & !is.na(thisBreed)){Pedig$Breed<-thisBreed}
+    if("Sex" %in% colnames(Pedig)){
+      Pedig[Pedig$Sex %in% c(""," "), "Sex"] <- NA
+    }else{
+      Pedig$Sex<-NA
+    }
+    
+    if("Breed" %in% colnames(Pedig)){
+      if(!is.character(Pedig$Breed)){
+        Pedig$Breed <- as.character(Pedig$Breed)
+      }
+      Pedig[Pedig$Breed %in% c(""," "), "Breed"] <- NA
+    }else{
+      if(!is.na(thisBreed)){Pedig$Breed<-thisBreed}
+    }
+    if("Born" %in% colnames(Pedig) & !is.numeric(Pedig$Born)){
+      Pedig$Born <- as.character(Pedig$Born)
+      Pedig[Pedig$Born %in% c(""," "), "Born"] <- NA
+      Pedig$Born <- as.numeric(Pedig$Born)
+    }
     withBreed <- ("Breed" %in% colnames(Pedig))
     withBorn  <- ("Born"  %in% colnames(Pedig))
-    if(withBreed){Pedig[,"Breed"] <- as.character(Pedig[,"Breed"])}
-    
-    Pedig[Pedig$Sire %in% c("","0"," "), "Sire"] <- NA
-    Pedig[Pedig$Dam  %in% c("","0"," "),  "Dam"] <- NA
     
     ######### Cut Pedigree loops #########
     suppressWarnings(ord<-pedigree::orderPed(Pedig[,1:3]))
@@ -51,7 +74,6 @@
     }
 
     #### Add lines for ancestors, sort pedigree ####
-    #return(Pedig)
     Pedig <- nadiv::prepPed(Pedig)  
     Pedig[,"Indiv"] <- as.character(Pedig[,"Indiv"])
     rownames(Pedig)<- Pedig[,"Indiv"]
@@ -93,6 +115,27 @@
     Pedig[Pedig[,"Indiv"] %in% Pedig[, "Sire"],"Sex"] <- 1
     Pedig[Pedig[,"Indiv"] %in% Pedig[, "Dam"], "Sex"] <- 2
     
+    ######  prune Pedigree   #######
+    if(!is.null(keep)){
+      Pedig<-nadiv::prunePed(Pedig, phenotyped=keep)
+      Pedig$Indiv<-as.character(Pedig$Indiv)
+      Pedig$Sire<-as.character(Pedig$Sire)
+      Pedig$Dam<-as.character(Pedig$Dam)
+    }
+    
+    ####           Correct wrong breed names              ###
+    if(withBreed & !is.na(thisBreed)){
+      hasWrongBreed <- (!is.na(Pedig$Sire) & !is.na(Pedig$Dam) & !(Pedig$Breed %in% c(thisBreed, "Pedigree Error")) & (Pedig[Pedig$Sire, "Breed"] %in% thisBreed) & (Pedig[Pedig$Dam, "Breed"] %in% thisBreed)) 
+      while(any(hasWrongBreed)){
+        cat(paste0("The breed name of the ",sum(hasWrongBreed)," individuals is changed to ",thisBreed))
+        cat(paste0(" because both parents are ", thisBreed,". This includes\n"))
+        print(head(Pedig[hasWrongBreed,]))
+        Pedig[hasWrongBreed, "Breed"] <- thisBreed
+        hasWrongBreed <- (!is.na(Pedig$Sire) & !is.na(Pedig$Dam) & !(Pedig$Breed %in% c(thisBreed, "Pedigree Error")) & (Pedig[Pedig$Sire, "Breed"] %in% thisBreed) & (Pedig[Pedig$Dam, "Breed"] %in% thisBreed)) 
+      }
+      }
+    
+    
     ####             Estimate missing breeds              ###
     ###    Animals with missing breeds are assumed to     ###
     ### be from the same breed as most of their offspring ###
@@ -118,14 +161,7 @@
     }
     
     
-    ######  prune Pedigree   #######
-    if(!is.null(keep)){
-      Pedig<-nadiv::prunePed(Pedig, phenotyped=keep)
-      Pedig$Indiv<-as.character(Pedig$Indiv)
-      Pedig$Sire<-as.character(Pedig$Sire)
-      Pedig$Dam<-as.character(Pedig$Dam)
-    }
-    
+
     ######    Add numeric IDs    #######
     if(addNum){
       nP<-nadiv::numPed(Pedig[,1:3])

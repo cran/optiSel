@@ -4,24 +4,23 @@
 \title{Calculates Genetic Contributions using Pedigrees. 
 }
 \description{
-Calculates the genetic contributions each individual has from of all it's ancestors.
+Calculates the genetic contributions each individual has from specified ancestors.
 }
 \usage{
-genecont(ID, Sire, Dam, NAncestors=NA)
+genecont(Pedig, from=NULL, to=NULL)
 }
 
 
 \arguments{
-\item{ID}{Vector with the IDs of the individuals, ordered by date of birth.}
-\item{Sire}{Vector with the IDs of the sires.}
-\item{Dam}{Vector with the IDs of the dams.}
-\item{NAncestors}{If this parameter is not \code{NA} then only the genetic contributions of the first \code{NAncestors} individuals in the pedigree to all other individuals are computed.}
+\item{Pedig}{Data frame containing the pedigree, where the first columns are \code{Indiv} (Individual ID),  \code{Sire}, and \code{Dam}.}
+\item{from}{Vector with ancestors whose contributions to the individuals should be calculated. By default, the contributions from all individuals will be calculated.}
+\item{to}{Vector with individuals for which the contributions from ancestors should be calculated. By default, the contributions are calculated for all individuals.}
 }
 
 
 
 \details{
-This function calculates genetic contributions of all ancestors to each individual.
+This function calculates genetic contributions of specified ancestors to each individual.
 }
 
 \value{
@@ -33,11 +32,15 @@ Lower triangular matrix with genetic contributions for each pair of individuals.
 
 data(ExamplePed)
 Pedig <- prePed(ExamplePed)
-cont  <- genecont(ID=Pedig$Indiv, Sire=Pedig$Sire, Dam=Pedig$Dam)
+cont  <- genecont(Pedig)
 
 plot(Pedig$Born, cont[,"276000803611144"], pch=18, ylim=c(0,1))
 Pedig["276000803611144",]
 
+#faster:
+cont  <- genecont(Pedig, from="276000803611144")
+head(cont)
+plot(Pedig$Born, cont[,"276000803611144"], pch=18, ylim=c(0,1))
 }
 
 

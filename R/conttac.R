@@ -20,7 +20,7 @@
     ContByYear<-melt(ContByYear)
     colnames(ContByYear)<-c("Breed","Year","Contribution")
   }
-  if(contAsDataTable){setDT(ContByYear)}
+  if(contAsDataTable & long){setDT(ContByYear)}
   ContByYear
 }
 

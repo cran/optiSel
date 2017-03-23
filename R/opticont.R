@@ -35,8 +35,15 @@
   if(!("ub" %in% names(con))){con$ub<-c(M=NA, F=NA)}
   if(!("lb" %in% names(con))){con$lb<-c(M=0,  F=0)}
   cKin  <- attr(K,"condProb")
-  phen2 <- phen
+  
   rownames(phen)<-phen[,1]
+  for(i in 1:length(K)){
+    if(!all(rownames(phen) %in% rownames(K[[i]]))){
+       cat("Indivdiuals without kinship information are disregarded as selection candidates.\n")
+       phen <- phen[rownames(phen) %in% rownames(K[[i]]), ]
+    }
+  }
+  phen2 <- phen
   phen  <- phen[,-1]
   for(i in 1:length(K)){K[[i]]<-K[[i]][rownames(phen), rownames(phen)]}
   Traits  <- colnames(phen)[-1]

@@ -7,11 +7,11 @@
 Calculates summary statistics for pedigrees.
 }
 \usage{
-\method{summary}{Pedig}(object, keep=NULL, maxd=50, d=4, ...)}
+\method{summary}{Pedig}(object, keep.only=NULL, maxd=50, d=4, ...)}
 
 \arguments{
 \item{object}{An object from class \code{Pedig}, which is usually created with function \link{prePed}.}
-\item{keep}{The individuals to be included in the summary.}
+\item{keep.only}{The individuals to be included in the summary.}
 \item{maxd}{Maximum pedigree depth.}
 \item{d}{Number of generations taken into account for computing the PCI.}
 \item{...}{further arguments passed to or from other methods}
@@ -37,7 +37,7 @@ A data frame with the following columns:
 \examples{
 data(PedigWithErrors)
 Pedig <- prePed(PedigWithErrors)
-Summary <- summary(Pedig, keep=Pedig$Born \%in\% (2006:2007))
+Summary <- summary(Pedig, keep.only=Pedig$Born \%in\% (2006:2007))
 head(Summary)
 
 hist(Summary$PCI,        xlim=c(0,1),  main="Pedigree Completeness")

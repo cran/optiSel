@@ -20,6 +20,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_genecont
+Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& numDam, const arma::ivec& numAnc, const Rcpp::CharacterVector rNames, const Rcpp::CharacterVector cNames);
+RcppExport SEXP optiSel_rcpp_genecont(SEXP numSireSEXP, SEXP numDamSEXP, SEXP numAncSEXP, SEXP rNamesSEXP, SEXP cNamesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numSire(numSireSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numDam(numDamSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numAnc(numAncSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type rNames(rNamesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type cNames(cNamesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_genecont(numSire, numDam, numAnc, rNames, cNames));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_haplofreq
 Rcpp::List rcpp_haplofreq(std::string pathThisBreed, std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string ArmaBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC, int NFileR, int NC, const arma::ivec& ArmaNR, int M, int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, char symB, int skip, int cskip, int getFreq, int getOrig);
 RcppExport SEXP optiSel_rcpp_haplofreq(SEXP pathThisBreedSEXP, SEXP pathRefBreedsSEXP, SEXP pathFreqSEXP, SEXP pathOrigSEXP, SEXP MarkerNameSEXP, SEXP ArmaBreedSymbolSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaIndexRSEXP, SEXP NFileCSEXP, SEXP NFileRSEXP, SEXP NCSEXP, SEXP ArmaNRSEXP, SEXP MSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ubFreqSEXP, SEXP ArmaPosSEXP, SEXP symBSEXP, SEXP skipSEXP, SEXP cskipSEXP, SEXP getFreqSEXP, SEXP getOrigSEXP) {
@@ -49,6 +64,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type getFreq(getFreqSEXP);
     Rcpp::traits::input_parameter< int >::type getOrig(getOrigSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_haplofreq(pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, ArmaBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, M, minSNP, minL, ubFreq, ArmaPos, symB, skip, cskip, getFreq, getOrig));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcpp_makeA
+Rcpp::NumericMatrix rcpp_makeA(const arma::ivec& numSire, const arma::ivec& numDam, const arma::mat& AFounder, const arma::ivec& numFounder, const Rcpp::CharacterVector IndivName);
+RcppExport SEXP optiSel_rcpp_makeA(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numSire(numSireSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numDam(numDamSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type AFounder(AFounderSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numFounder(numFounderSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type IndivName(IndivNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_makeA(numSire, numDam, AFounder, numFounder, IndivName));
     return rcpp_result_gen;
 END_RCPP
 }

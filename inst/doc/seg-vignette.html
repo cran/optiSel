@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Robin Wellmann" />
+
+<meta name="date" content="2017-03-23" />
+
+<title></title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore"><ol start="2" style="list-style-type: decimal">
+<li>Marker-based Evaluations</li>
+</ol></h1>
+<h4 class="author"><em>Robin Wellmann</em></h4>
+<h4 class="date"><em>2017-03-23</em></h4>
+
+
+
+<p>Marker-based evaluations are an alternative or addition to pedigree based methods. Pedigree based methods enable to estimate the expectations of population specific and individual specific parameters. The realized values, however, deviate from these expectations due to mendelian segregation. In an increasing number of breeds pedigree based methods are being replaced or combined with marker based methods to overcome this limitation. In any case, the goal is to select animals for breeding in a way that accelerates genetic gain, restricts the rate of inbreeeding, and maintains genetic originality of the breed.</p>
+<p>All genomic evaluations included in this package are based on haplotype segments. Every individual has two haplotypes: a paternal and a maternal one. A haplotype segment is usually present in many individuals because the individuals have a common ancestor from which the segment originates. It is, however, also possible that two segments are identical by chance. Of course, the likelihood for being identical by chance is the smaller the more markers are included in the segments. Therefor, a part of a chromosome is considered a segment only if it contains at least <code>minSNP&gt;=15</code> consecutive markers.</p>
+<p>If a segment is in a region with low recombination rate or high marker density, however, then two segments could be identical even though they originate from an ancestor who lived long time before breed separation. Therefor, segments must have a minimum length which may be measured in centiMorgan (<code>unitL=&quot;cM&quot;</code>) or kilo base pairs (<code>unitL=&quot;kb&quot;</code>). The minimum length of a segment is often defined as <code>minL=2000</code> kb.</p>
+<p>The proportion of the genome captured by a segment is usually obtained from it’s length in kilo base pairs (<code>unitP=&quot;kb&quot;</code>) as the length of the segment divided by the length of the genome.</p>
+<p>This section covers the following evaluations based on marker data:</p>
+<ul>
+<li><a href="#data-preparation">Data Preparation</a>
+<ul>
+<li><a href="#genotype-file-format">Genotype File Format</a></li>
+<li><a href="#marker-map-format">Marker Map Format</a></li>
+</ul></li>
+<li><a href="#example-data-set">Example Data Set</a></li>
+<li><a href="#individual-specific-parameters">Individual Specific Parameters</a>
+<ul>
+<li><a href="#inbreeding-coefficients">Inbreeding Coefficients</a></li>
+<li><a href="#kinship">Kinship</a></li>
+<li><a href="#genetic-distances">Genetic Distances</a></li>
+<li><a href="#haplotype-frequencies">Haplotype Frequencies</a></li>
+<li><a href="#breed-composition">Breed Composition</a></li>
+<li><a href="#kinship-at-native-segments">Kinship at Native Segments</a></li>
+</ul></li>
+<li><a href="#population-specific-parameters">Population Specific Parameters</a>
+<ul>
+<li><a href="#genetic-diversity">Genetic Diversity</a></li>
+<li><a href="#kinship-and-diversity-at-native-segments">Kinship and Diversity at Native Segments</a></li>
+</ul></li>
+<li><a href="#multi-breed-specific-parameters">Multi-Breed Specific Parameters</a>
+<ul>
+<li><a href="#kinships-within-and-between-breeds">Kinships Within and Between Breeds</a></li>
+<li><a href="#genetic-distances-between-breeds">Genetic Distances Between Breeds</a></li>
+<li><a href="#prioritizing-breeds-for-conservation">Prioritizing Breeds for Conservation</a></li>
+</ul></li>
+</ul>
+<p>Note that the calculation of breeding values is not included as there already exist R packages for this purpose.</p>
+<div id="data-preparation" class="section level3">
+<h3>Data Preparation</h3>
+<div id="genotype-file-format" class="section level4">
+<h4>Genotype File Format</h4>
+<p>In all genotype files, markers must be in rows and individuals in columns. This enables to process one marker at a time without the need to have the whole file in memory. For all functions included in this package</p>
+<ul>
+<li>there is one file for each chromosome,</li>
+<li>genotypes must be phased,</li>
+<li>each file has a header and no row names,</li>
+<li>cells are separated by blank spaces,</li>
+<li>the number of rows is equal to the number of markers from the respective chromosome,</li>
+<li>the markers are in the same order as in the map,</li>
+<li>there can be some extra columns on the left hand side containing no genotype data,</li>
+<li>the text within columns must have no white spaces,</li>
+<li>the first rows may contain some comments,</li>
+<li>the alleles of an individual are separated by a character, e.g. A/B, 0/1, A|B, A B, or 0 1,</li>
+<li>the same two symbols must be used for all markers,</li>
+<li>the IDs of the individuals are used as column names and must have no white spaces,</li>
+<li>if the blank space is used as separator (i.e. A B, or 0 1), then the ID of each individual must be repeated in the header, so that the number of column names is equal to the number of columns.</li>
+</ul>
+<p>Example 1:</p>
+<pre><code>Note that the marker names are ignored when the file is processed.
+I id 6415 6415 2636 2636
+M ARS-BFGL-NGS-16466 0 0 1 0 
+M ARS-BFGL-NGS-98142 0 1 0 1
+M ARS-BFGL-NGS-114208 0 0 1 0</code></pre>
+<p>Example 2:</p>
+<pre><code>There can be some comments in the first lines
+and some extra columns on the left hand side.
+Column1 Column2 Column3 6415 2636
+M NA dfdf 0/0 1/0
+X NA sdfg 0/1 0/1
+N NA fgjh 0/0 1/0</code></pre>
+</div>
+<div id="marker-map-format" class="section level4">
+<h4>Marker Map Format</h4>
+<p>For all functions reading from genotype files, a marker map must be provided in argument <code>map</code>. This is a data frame or data table with columns including</p>
+<p><code>Name</code>: marker name</p>
+<p><code>Chr</code>: chromosome number, and possibly</p>
+<p><code>kb</code>: position on the chromosome in kilo base pairs, and</p>
+<p><code>cM</code>: position in centiMorgan.</p>
+<p>The order of the markers must be the same as in the genotype files.</p>
+</div>
+</div>
+<div id="example-data-set" class="section level3">
+<h3>Example Data Set</h3>
+<p>All evaluations are demonstrated at the example of cattle data contained in the package. Breed names, years of birth, simulated breeding values, and simulated sexes are provided in data frame <code>Cattle</code>. Sexes are recoded as 1 for males and 2 for females.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;optiSel&quot;</span>)
+<span class="kw">data</span>(Cattle)
+phen &lt;-<span class="st"> </span>Cattle
+<span class="kw">head</span>(phen)</code></pre></div>
+<pre><code>##                           Indiv Born  Breed         BV Sex
+## 276000101676415 276000101676415 1991 Angler -1.0706066   1
+## 276000108612636 276000108612636 1994 Angler -0.3362574   2
+## 276000102372349 276000102372349 1986 Angler -2.0735649   2
+## 276000102379430 276000102379430 1987 Angler  1.5968307   1
+## 276000108826036 276000108826036 1994 Angler  1.0023969   1
+## 276000111902076 276000111902076 1998 Angler -0.2426676   1</code></pre>
+<p>The data frame contains information on 4 breeds:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(phen$Breed)</code></pre></div>
+<pre><code>## 
+##    Angler Fleckvieh  Holstein   Rotbunt 
+##       268       100       100       100</code></pre>
+<p>The “Angler” is an endangered German cattle breed, which had been upgraded with Red Holstein (also called “Rotbunt”). The Rotbunt cattle are a subpopulation of the “Holstein” breed. The “Fleckvieh” or Simmental breed is unrelated to the Angler.</p>
+<p>The marker map is:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(map)
+<span class="kw">head</span>(map)</code></pre></div>
+<pre><code>##                                    Name Chr Position      kb cM
+## ARS-BFGL-NGS-16466   ARS-BFGL-NGS-16466   1   267940 267.940  0
+## ARS-BFGL-NGS-98142   ARS-BFGL-NGS-98142   1   471078 471.078  0
+## ARS-BFGL-NGS-114208 ARS-BFGL-NGS-114208   1   533815 533.815  0
+## ARS-BFGL-NGS-65067   ARS-BFGL-NGS-65067   1   883895 883.895  0
+## ARS-BFGL-BAC-32722   ARS-BFGL-BAC-32722   1   929617 929.617  0
+## ARS-BFGL-BAC-34682   ARS-BFGL-BAC-34682   1   950841 950.841  0</code></pre>
+<p>This small example data set contains only genotypes from the first parts of the first two chromosomes:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tapply</span>(map$kb, map$Chr, max)</code></pre></div>
+<pre><code>##        1        2 
+## 40427.45 33798.76</code></pre>
+<p>Consequently the results obtained for specific individuals will be rather inaccurate. The genotypes are included in the following files:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dir     &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package=</span><span class="st">&quot;optiSel&quot;</span>)
+GTfiles &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir, <span class="kw">paste</span>(<span class="st">&quot;Chr&quot;</span>, <span class="kw">unique</span>(map$Chr), <span class="st">&quot;.phased&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>))</code></pre></div>
+</div>
+<div id="individual-specific-parameters" class="section level3">
+<h3>Individual Specific Parameters</h3>
+<div id="inbreeding-coefficients" class="section level4">
+<h4>Inbreeding Coefficients</h4>
+<p>The inbreeding coefficient of an individual is the probability that two alleles chosen at random from the maternal and paternal haplotypes belong to identical segments. This parameter estimates the extent to which the individual may suffer from inbreeding depression and predicts the homogeneity of its offspring. It can be calculated with</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Animal &lt;-<span class="st"> </span><span class="kw">segInbreeding</span>(GTfiles, map, <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Animal)</code></pre></div>
+<pre><code>##                           Indiv       Inbr
+## 276000101676415 276000101676415 0.04986142
+## 276000108612636 276000108612636 0.00000000
+## 276000102372349 276000102372349 0.00000000
+## 276000102379430 276000102379430 0.02484842
+## 276000108826036 276000108826036 0.00000000
+## 276000111902076 276000111902076 0.00000000</code></pre>
+</div>
+<div id="kinship" class="section level4">
+<h4>Kinship</h4>
+<p>The segment based kinship between two individuals is the probability that two alleles randomly chosen from both individuals belong to segments which are identical in both individuals. A matrix containing the kinship between all pairs of individuals can be computed with function <a href="https://rdrr.io/cran/optiSel/man/segIBD.html">segIBD</a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">segKIN &lt;-<span class="st"> </span><span class="kw">segIBD</span>(GTfiles, map, <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">segKIN[<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">1</span>:<span class="dv">3</span>]</code></pre></div>
+<pre><code>##                 276000101676415 276000108612636 276000102372349
+## 276000101676415     0.524930710     0.004341751     0.000000000
+## 276000108612636     0.004341751     0.500000000     0.003575048
+## 276000102372349     0.000000000     0.003575048     0.500000000</code></pre>
+<p>The R code below displays the kinship between the female with ID <code>276000102372349</code> and all genotyped Angler males that have a breeding value larger than 2.0.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Males  &lt;-<span class="st"> </span>phen$Indiv[phen$Sex==<span class="dv">1</span> &amp;<span class="st"> </span>phen$Breed==<span class="st">&quot;Angler&quot;</span> &amp;<span class="st"> </span>phen$BV&gt;<span class="fl">2.0</span>]
+segKIN[<span class="kw">rownames</span>(segKIN) %in%<span class="st"> </span>Males, <span class="st">&quot;276000102372349&quot;</span>, drop=<span class="ot">FALSE</span>]</code></pre></div>
+<pre><code>##                 276000102372349
+## 276000120061822     0.004997202
+## 276000120949468     0.008381874
+## 276000121243787     0.000000000
+## 276000121507437     0.004041023
+## 276000121590755     0.000000000</code></pre>
+<p>In general, the males that have lowest kinship with the female should be favoured for mating. In this case, however, all kinships are low, so this criterion can be neglected.</p>
+</div>
+<div id="genetic-distances" class="section level4">
+<h4>Genetic Distances</h4>
+<p>There are several possibilities to compute a dissimilarity matrix from a similarity matrix. One possibility which seems especially suitable for multidimensional scaling is to define the dissimilarity of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> as <span class="math display">\[D_{ij}=(-log(b + (1-b)f_{ij}))^a,\]</span> whereby the term <span class="math inline">\(b + (1-b)f_{ij}\)</span> adjusts the kinship between individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> for non-detectable ancestral inbreeding, the function <span class="math inline">\(g(x)=(-log(x))^a\)</span> maps the adjusted kinships from the interval [0,1] to positive real numbers, and parameter <span class="math inline">\(a\)</span> may be chosen such that the stress value is minmized. This can be done with function <a href="https://rdrr.io/cran/optiSel/man/sim2dis.html">sim2dis</a>, whereby <code>b=baseF</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">D     &lt;-<span class="st"> </span><span class="kw">sim2dis</span>(segKIN, <span class="dt">a=</span><span class="fl">6.0</span>, <span class="dt">baseF=</span><span class="fl">0.03</span>, <span class="dt">method=</span><span class="dv">1</span>)
+color &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">Angler=</span><span class="st">&quot;red&quot;</span>, <span class="dt">Rotbunt=</span><span class="st">&quot;green&quot;</span>, <span class="dt">Fleckvieh=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">Holstein=</span><span class="st">&quot;black&quot;</span>)
+col   &lt;-<span class="st"> </span>color[phen[<span class="kw">rownames</span>(D), <span class="st">&quot;Breed&quot;</span>]]
+Res   &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(D)
+<span class="kw">plot</span>(Res, <span class="dt">pch=</span><span class="dv">18</span>, <span class="dt">col=</span>col, <span class="dt">main=</span><span class="st">&quot;Multidimensional Scaling&quot;</span>, <span class="dt">cex=</span><span class="fl">0.5</span>, <span class="dt">xlab=</span><span class="st">&quot;&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;&quot;</span>, <span class="dt">asp=</span><span class="dv">1</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="haplotype-frequencies" class="section level4">
+<h4>Haplotype Frequencies</h4>
+<p>Artificial selection and the substantial genetic drift in populations with small effective sizes have increased the frequencies of various haplotype segments in commercial breeds. Although these segments may contribute to the economic value of a breed, their presences in an endangered breed decreases the conservation value of the breed because they are so common in the species that their conservation does not need to be subsidized.</p>
+<p>For individuals with genetic contributions from several breeds, each marker belongs to a haplotype segment that originates from a specific breed. Gene flow is usually from commercial breeds to the endangered breeds but not vice-versa. Thus, if a sufficiently long segment from an endangered breed can also be found in a commercial breed, then it can be concluded that the segment is not native in the endangered breed. Instead, the segment is assigned to the breed in which it has maximum frequency. This can be done with function <a href="https://rdrr.io/cran/optiSel/man/haplofreq.html">haplofreq</a>.</p>
+<p>Below, the frequency of each segment from haplotype 2 of Angler 276000101676415 in Rotbunt cattle is plotted with function <a href="https://rdrr.io/cran/optiSel/man/plot.HaploFreq.html">plot</a> (red area). The grey area is the maximum frequency a segment from an Angler has in Rotbunt cattle.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Haplo &lt;-<span class="st"> </span><span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">refBreeds=</span><span class="st">&quot;Rotbunt&quot;</span>,   <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>)
+<span class="kw">plot</span>(Haplo, <span class="dt">ID=</span><span class="st">&quot;276000101676415&quot;</span>, <span class="dt">hap=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAEgCAMAAABb4lATAAAAw1BMVEUAAAAAADoAAGYAOjoAOpAAZmYAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZmY6ZrY6kJA6kLY6kNtmAABmADpmAGZmOgBmOpBmZgBmZmZmkJBmkNtmtrZmtv+QOgCQOjqQOmaQZgCQkDqQkGaQtpCQ29uQ2/+pqam2ZgC2Zjq2Zma2kDq2tma225C2/7a2/9u2//++vr7bkDrbkGbbtrbb25Db/7bb/9vb////AAD/tmb/trb/25D//7b//9v////t8MlfAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAV2UlEQVR4nO2dDXvjuHWFzziTSuNs003k2aTZRp7t7tRW0u6szSbplJXM//+rSnyRAAlQAETwUvZ9nxmbEoGLQxziQxRIo2FeNaAWwJQF1AKYsoBaAFMWUAtgygJqAUxZQC2AKQuoBTBlAbUApiygFsCUBdQCmLKAWgBTFlALYMoCagFMWUAtgCkLqAUwZQG1AKYsoBbAlAXUApiygFoAUxZQC2DKAmoBTFlALYApC6gFMGUBtQCmLKAWwJQF1AKYsoBaAFMWUAtgygJqAUxZQC2AKQuoBTBlAbUApiyYI0gFzc3THOEiObQFbmwF77/OEvevvoOwC0vn5V6Ja38Hg5g0Z6WkgYsjNEQG16LAndxs60axvzzs6c53EFZhOeQZ7JeSCC6O0BAZXOHdQ4HyD94gVmE55Bnsl5IILo7QuIffbn/eytdWryY291KvEn26U82hSyIitC90mFq1RlMdtdU0j1vdlERWk/4gN0Q73jtR5aYIfPPUlripZdTKyjYu/aDPE7fP14X1x9bJ8MXtdHavBwb3O1tpX+7UiWnSDI7wN1YdWKmb2FEDZ1NE4BqsqqY9ctOmuh50YLCVxLRBfdRQPWKljsU6k3W6tiZcg2WCtmrcqKrgto6kwRZag6d0bXDl9gidwbrwXsY4bqP9sPQNDLZ2HvqSdZrBEd78aNWBldqWv4TBmr3clsciFSkja3mmHUYGW0kq02xU8p14++apdWyvGokuqH1DVe9u1EV3L/wFi/rYNV1bC5du3t5oIaYEEd8cmyVjHLfpjFQnnH5t2Dg7VaXU+u02qH2EUopdB1ZqW/7iBot+Uhdd9aa2B+AabCdRudqDMdKbqv3RnfCmhz5Yp3Pl9ICmeE/B8lxpf6j2pirxTOntpts0OoP3AxmjuG6tbFyB/Tt650FFFJGUwfYRyh92HVipbfmTIN3OMa7Bst7lSKK6E9M/DcdgK4nOJc9Te7KhbTKvza6qz6Kpuy4yULBqAuqnNCJQelergp11hMpgWaQtYxS3U2rb6Rps7dR+Vkatc4T6TO/rwEpty58ElxjrHr6zXaMTYLpYy2BZFVaSgcHd1EH0T1Y3ZCLVqkN0j61WdRYoeGREoPT+DOz6hP6odJG2DL/B0sJ9P7Y4Y7C9U1smIsk0zhF2dWXqwEpty58ESU4G8Bishg7n6IYGW0lCLVhUiNsV+1pwV7GHbtweFexrwb7S+xmdM49ObMHddM9nsL0zogVbdeC24LgP/YhKdQaPwdbMyB4K9W4zj9q4ueyDrmWYSsyB+4+H/jFYNDc9/BonRwWPjJgu/eWTVaHNwODBGOwxuDaDet+ie4PtnefHYLsO3DE47sIaolKdwWOwEqMmH/YsWs4PRSe1c5LYVWzmlLoa7KFwYhZtDWu+gsdGBEqX26ocqy9xDXZn0f4WLFtjqAV3Oydn0fZ0xlw2sGbRnfxJcKG3jqn2th7F3lkfbJ050M5JYlexSb5RNeLME6t+l2cWbQ+fYqf7OXhgRKD0GtbnYOsUsg22ZEyMwe4kazAG92ejEe5+DhYZ626HrgMrtVO/UyDTUwefweo49PnVXVBS5+P7f6hJQ5/EMdi+8lsPrtbIE2Q/LFRPmXa+gm+eAl1poHR1SUuW059aA4N7GROzaHFhREdwL3RYO1tpv9wrFc6VrH1fbVYdWKndw5wA5xLMR9alVfsyZX7BM33PND9RdVL3hqfXIJI1ZZMjT10dyS9RNCl1AWOdxNRJXwevzmA5zuR/Sdd91j07UJFxvk7sOniVBl/gr5mJrLaDjjXY1MHKDWYoALUApiygFsCUBdQCmLKAWgBTFlALYMoCagFMWUAtgCkLqAUwZQG1AKYsoBbAlAXUApiygFoAUxZQC2DKggXK6FdUHG99t2Z6vq71JnR2WSnaTbXUy3ytJl7tu2U8eomf/t7c/aXjjF51C6e77G7BcuGRWZC3c9WePj7Ybxy3O98BOUnktv+Y1bEcvw1VxzmQmzGe9oDFL6Hfdwwv938aL7iYMHgcShh8K9ehKYdPd3tz1tRi3dP7r8cPD81hI/4Nful7cAevVAY3e/u2PAdUkrqXfPruaWSwI3Yrl6INDsi593fCYHMsh9yFS8jMl4B15vuO4Xj78/jdLIOlH+KXXPKqlsTtTX2LX20q91dT4V/an+NXCit7G/VXt/JGEpGkOVh3teyaaYNvf9yNDkiHcY7W373pY6lzVy0gL1scx62+i0bdH9du3/6XedHfEbqR1dXWg1lB9U/3e3GwKtHxn/+gutS2n9qKA/377Rc7VGMZbFWt8KaNLVYa9+eX7jz7X83fvpqTxX2lpfXZm5cf5Hmokqh18er9Tw9KwI/m1shfi/AisTrJjre//KCCHrfd4iEVpqunzuBarph9+fSTvZjUOc9SQV62KGT3cvNk1fBxuxHviCOv9CkplNdyxfdO7BJ5KgiDdSLhqqA9D+pvdmrAs0LpyKoMVaMquVqJuhdt4D/lKOY1uO8N+lc6g5u9H2lV4t8Yr3R+W744+34RJ+Rvv6oEbYcueg1VHVqgO0zr5c66Q365F5s7+1isQ0sDedmisCpTvxKDmbbDnJK1vPtyb3bpl30iPRqK2vrL529f7s0unV5HHhpc3XSdXi0mTO8eEgxWGdzspz9+HRxHO/ZK/TfKYEu+DN+ekJWZm7WtfHDUE5OsNok8jmrjHMshc3Ea8rJFocePwRhs5ryqBehl/huzq+ry6ESmIk4f/+OHL999kTMaK5SOPOiiKxVc1pGlIrYF6wZjZz/sh9N3XVitunFLvgp//O3/fOonl99q8/tT0G+wOOh3D7rr+GofyxoN9rRgbbAzQRI/PzzoXW4LbqyKOHzftuGfNlZtjgw2HWBl1hGbDyhtjfknWZ1Iu5LN8Gll/7O6UWTfjAy2Dslpwc1fPsseWqU/fB/VgmXP4LZg51gyQF62KAZjsO5T9fCq3z3omzJ2epc7BtsngxyBv9lZ/eHQYDNsmV5dN5fDTn3c8X5M0vXvvlIZ3OzOpwHZL/f+9QZ3Y7Dq6buQ4rPSxBhsDJY6RQsWdwrvPceSDvKyxaGmjfpQ2s543/WHd+YWNTMS3/xsWuVWTUNNoq4i5BxavWGHaqwLHboODrq16eD6RkU9c3d/6cp1X5kMTnb3QkeF/rajvWWwkP87LV+N0TpbdePMovtTqU+iDgy/v9+/3P/JXLUZHEs6yMtWlOyDIaG6YGn+8d+8b3ua6zo/B2cguqTausizfkxLzeG//Weyx+A1X8lKo1rzrUReLmnCfsYG6wE/A1yohVk5oBbAlAXUApiygFoAUxbME6XD+yYzC3nWzGBvINzMoZcC1AJCYMFcUeFmDr0UoBYQAgvmigo3c+ilALWAEFgwV1S4mUMvBagFhMCCuaLCzRx6KUAtIAQWzBUVbubQSwFqASGwYK6ocAmh7S9HzRIl9xuH7O9Dk8FC5SSDBXNFhcsOrew+dF+QdUss/AlnBvOHnAcsmCsqXHZoZw1awwZrsGCuqHAJoY/9wuJmsAZNPlRdrGKRixy6BTIicbcuZFYSZC8LFsh1ADbqTw5EhEsIfewWFutXjVwnZS3q0suUjMEqMbfgmXNV8pnzm35522S4hNDWQrrGTLJ2zrJMtcxxYwzu11fPToLsZUHxXC/3u+5vKQSWCCGwfQZr1VpjOue9s6RZryR11zCywfPmkis5VTcaWjaFwPYZxgabBZRuC96xwSVzLdmC5cckMwZ/eJBjcNuq5brjmyerp56dBNnLgvK5ujFYWn0unNmO+HrTZ/DpbqNXEotl0GapcAX87juTWOxI0R8FzqYgAgvkKjWLXhOgFhACC+aKCjdz6KUAtYAQWDBXVLiZQy8FqAWEwIK5unvepsJlhqYG1AJCYMFcoyi+mdM8oRcH1AJCYMFcUeFmDr0UoBYQAgvmigo3c+ilALWAEFggl/m7isHb/xDYviJALSAEyueq+r+PO++XDWsC1AJCoHgu6/rVzJcq1wSoBYRA8Vz6sRGCmb9sWBOgFhACxXNxCyYF5XNV5ho0j8EEYIFc+u+Kh/+eJwLbVwSoBYTAgrmiws0ceilALSAEFswVFW7m0EsBagEhsGCuqHAzh14KUAsIgQVzRYWbOfRSgFpACCyYKyrczKGXAtQCQmDBXFHhZg69FKAWEAIL5ooKN3PopQC1gBBYMFdUuJlDLwWoBYTAgrmiws0ceilALSAELstlLlJNft2bJCJPEDmgFhACF+aq5YXm6rKl5AhsXxGgFhACl+Uyd1iHvieajsKL7sqDy3L1D9e/5IYuBLavCFALCIHLcpkWfMh9dvxIBAJpVg6oBYTAhbn0bYOXPRQBge0rAtQCQuDSXHIefVH7ZYMDPD4+Xh4EC+aKCjdz6KVAgZhs8IpAgZjrMLjtot9/zf0Lah4RCKRZOSgQcxUGt5OsSjw14SKHEdi+IlAg5hoMFmtixUWO0I2h6SLyBJGDAjHXYLB8vElrcMSFDvM3m8+IyBNEDgrEXIPBpgVPXOiI+D4Cge0rAgVirsFgPQZPftmg17tzC07kcRUGqwY6fSHrdCfaNxucyEoMjuIgHkDHBqexCoODzzYbUGF3lQY/t0QlxPxlr8Jg697QaY7bX7HBaazC4PgvgqceIIjANj1v3uDuM9ArvdDx5g1O4+oehPZMaPAjvcHtAGyW7ORFWf2aLHKDLzcZF+Q63e0uMtgrAoE0JDxHO4zZy3YNzrYZl+Sq5lgU3azX4GfD+aSYvfBHx2Eag/tVlZNc8iC02C6yBM+UBj/aNPkdNcrnuuhBaG/Q4EcvudHyhKXkuuQxSvGTnBIsb7D08doMvuRBaG/QYL+9+Q7nCUvJdZ0t+LkhMDho7qoNvuRBaGzwNRh8wYPQ4j+HpjEdUpSo/rPB84DANhvMBueRavDzuSxLGZzgs86SJywvV1Q4sy0rtJDBZ0K2u58HrMTglIZ8DQaryp25sObs1ZMrMzhg+uoNlt4Ov2uag7O9wjoNDg7F9sXqRydYvrC8XFHhYFcu/rcF8X10TId+bt70PKvBSZOjXIPFu5bBZrhmg/37vQafiwzvu8aSkTF+t2IMHlt89QYnOBxpMGCSDfv/obGDZhx3CJL+snIzMjjkFRt8hrM26ESdwW18YTHsnbMZ3BvS/XR3ZBo8zOg32CQbCYsiL1dUOJ/BscV1PthmWJnNzFwY/CyXDKnwMO5N+js02Hl/JHFocOfLwKhHT44og52AZqx/bB6v0OBBE54YPm032n9yCg43pworm7COLuKnGWzOojiDB4YGGmOKvV6D9Y41GRxYdOc32KreYMA+n0I1TzlpUrub2Qwevg/HrSapu03zVpfTlzcItiKDveH8BjvVG4wzzOfmVieSNticAI7B0/7GGLw0omj3jbdosODZ7jBMWOcUOM+4HEsphb2P4xUgr8Dg8Gx2lG/g8ui9RIOfxwWRGzykUR73PXieVXm5osL5DHYcfnYctl9MGWzZ6dkVafAEazHYJduqvFxR4eYw2OvlWzS4Jc+qvFxR4dIMNgnt7TIGn0nDBseGCxvc01/SGL0VNniCCIPBBl8AnG2fwWmdaCmD9RycDb4knNfgxFEy3+CQgfLSSHdpnA12Sbw3yetU2GF4yDUY46K6iF1cNnhA6r1JaQanmhk2uDdQt2L5y/ORmg12SL6zIc7g3NbqNVhYCeuVvvylt0epfT0HtZEhUqzyO3KO5HuTpg02s50ZfB3YlpJ2dGa9YYNnbsFztdqZecMGJ9+bNGnwCr2VvGWDU+9N8hs845BbgjdtcFK4gMFrhw2ODccGz0ueVXm5Ih+E9koNnunjVGqAPKvyco2ieNdkMfOSZ80M9jIrBtQCmLIgKfXZLxuYtYGUxOe/bGDWBhLSRlyqZNYGEtJGfNnArA0kpOUWfIUgJfH5LxuYtYGk1Ge/bGDWBqgFMGUBtQCmLKAWwJQF1AKYsoBaAFMWUAtgygJqAUxZQC2AKQuoBTBlAbUApiygFsCUBdQCmLKAWgBTFlALYMoCagFMWUAtgCkLqAUwZQG1AKYsoBYQh1xxLxYKWSs7e463K1njOSFT7iJYyYbli8xALfI7vHvwGny6W8ki3gmZL/ftuxU2i2vC4iVmcNzK6nq5f//VY3C9lltppmSqfaG7bguCpQvMwazC/r+ntml8vwX2zenjT9rWttmsZBn+pExJ3TbjhcHSBWbwct/3bKc70dW9ezjdWUt312HwWZlt780t2Mfpbudut/2d/d5KDD4rk+R+ASxeYjpuze3lD2eQW6PBPpkEc6yrMNjt+1Zr8DmZNPf7gKDMZMzspcZ+xQafkVnR3M8FikJTGX7+WKnBkzK7G/cWBiSlpiJ7N3mtYM0GT8k8bonuxwRNsanI2xq7a4BrNXhCZqVuy+TPwczMgFoAUxZQC2DKAmoBTFlALYApC6gFMGUBtQCmLKAWwJQF1AKYsoBaAFMWUAtgygJqAUxZQC2AKQuoBTBlAbUApiygFsCUBdQCmLKAWgBTFlALYMoCagFMWUAtgCkLqAUwZQG1AKYsoBbAlAXUApiygFoAUxZQC2DKAmoB2bzc6/sx69EfYnPvq3c4qHuEfHdiy/uI6r3/SU1dAgt9N+G6AbWAbFqDlbGHJINl2sGjM+ycCZ6xwUV5uf/1R3Gv3um7f002OPi4GzZ4Pbzcbw7Cx/r9vwvTRN8rbtkUzy36IgyWd9RX6vFy/dOMtMHSm1o/e+64lXlbc8XW+39Ik/XO092f76Dv3Rbu26+PW/GsJPG0lQ+ftySPsYsA1AKyaQ2upbM7YdqhHVUreed1+0K0YHlHvXhH3Hrdd8lWC66lqRtj9l75p8dgs9M8D0lkUjv718etDt+eF3uZY4WAWkA2rcHiGZWnjw+taSfRWwunZO/c/pDVrbrq+uap77PNGLzRf+66ddrcPm4b3O00z0PqE/Sv1V371c2T3ljlH90FtYBsWoNf7tuG8/6raZW6nxVOfANtUKMfV2Val55Fdy7Jncph22Br574bmbvmrV+rRG0h3cbCVRADqAVkI55aVG3aHlq2ynawvfl52xnw7vOHBzWOCmyDu2amXFHN1YzBA4PNMxhCBn94UD/VBhs8L8Lg4+0vnx6EadKQY2+wcr2r8rDBZiZ8EL1xdgtmgwsgDH65/74dhlvT5DhawzK4c1vgM7gbZk2KwBg8ZbAeetXGgcfgWZEPljuIa1K6BZ/usOsNlg/+lNNd3TgVlgtmoiw9rk0L3g1n0VMG67l4t7FCQC0gG2mwrFU9Br97OHQtbqdmyvJz8M2TtwX3n4Nr9Xwjmegw+hw8ZbB6ZnC/sUJALeA1sOZLWqAW8Bpgg185bDBDBqgFMGUBtQCmLKAWwJQF1AKYsoBaAFMWUAtgygJqAUxZQC2AKQuoBTBlAbUApiygFsCUBdQCmLKAWgBTFlALYMoCagFMWUAtgCkLqAUwZQG1AKYsoBbAlAXUApiy/D+hk5P8SHPmYAAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>It can be concluded that the first chromosome originates from Rotbunt cattle or from a closely related breed. In contrast, the second chromosome does not originate from Rotbunt cattle.</p>
+<p>This evaluation can be done simulateneously for several reference breeds. Below, the frequencies of each Angler haplotype segment within Rotbunt, Holstein, and Fleckvieh are computed, the results are combined into the single R object <code>Haplo</code> with function <a href="https://rdrr.io/cran/optiSel/man/freqlist.html">freqlist</a>, and plotted with function <a href="https://rdrr.io/cran/optiSel/man/plot.HaploFreq.html">plot</a>. The red area shows the frequency of each haplotype segment in Rotbunt cattle, whereas the black line shows the <em>maximum</em> frequency the segment has in one of the evaluated reference breeds.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Haplo &lt;-<span class="st"> </span><span class="kw">freqlist</span>(
+  <span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">refBreeds=</span><span class="st">&quot;Rotbunt&quot;</span>,   <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>),
+  <span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">refBreeds=</span><span class="st">&quot;Holstein&quot;</span>,  <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>),
+  <span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">refBreeds=</span><span class="st">&quot;Fleckvieh&quot;</span>, <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>)
+  )
+
+<span class="kw">plot</span>(Haplo, <span class="dt">ID=</span><span class="dv">1</span>, <span class="dt">hap=</span><span class="dv">2</span>, <span class="dt">refBreed=</span><span class="st">&quot;Rotbunt&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Hence, most segments from Chromosome 2 have very low frequency in other breeds, so they can be classified to be native for Angler.</p>
+<p>The classification of haplotype segments can be done with a single call to function <a href="https://rdrr.io/cran/optiSel/man/haplofreq.html">haplofreq</a>. In this case, argument <code>refBreeds</code> is either the vector with breeds to be used as reference breeds, or the default <code>refBreeds=&quot;others&quot;</code> is used, in which case all breeds with genotypes are used as reference breeds, except <code>thisBreed</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Haplo &lt;-<span class="st"> </span><span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">refBreeds=</span><span class="st">&quot;others&quot;</span>, <span class="dt">ubFreq=</span><span class="fl">0.01</span>, <span class="dt">minL=</span><span class="dv">2500</span>)</code></pre></div>
+<p>The result is a list. Component <code>freq</code> is a matrix containing the maximum frequency each haplotype segment has in one of the reference breeds.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Haplo$freq[<span class="dv">1</span>:<span class="dv">10</span>,<span class="dv">1</span>:<span class="dv">3</span>]</code></pre></div>
+<pre><code>##                     276000101676415 276000101676415 276000108612636
+## ARS-BFGL-NGS-16466             0.25               0               0
+## ARS-BFGL-NGS-98142             0.25               0               0
+## ARS-BFGL-NGS-114208            0.25               0               0
+## ARS-BFGL-NGS-65067             0.25               0               0
+## ARS-BFGL-BAC-32722             0.25               0               0
+## ARS-BFGL-BAC-34682             0.25               0               0
+## ARS-BFGL-NGS-3964              0.25               0               0
+## ARS-BFGL-NGS-98203             0.25               0               0
+## ARS-BFGL-BAC-2376              0.25               0               0
+## ARS-BFGL-BAC-31722             0.25               0               0</code></pre>
+<p>Component <code>match</code> is a matrix containing for each segment the first letter of the name of the breed in which the segment has maximum frequency. If the frequency of the segment is smaller than <code>ubFreq=0.01</code> in all reference breeds, then the segment is classified to be native and coded as <code>1</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Haplo$match[<span class="dv">1</span>:<span class="dv">10</span>,<span class="dv">1</span>:<span class="dv">3</span>]</code></pre></div>
+<pre><code>##                     276000101676415 276000101676415 276000108612636
+## ARS-BFGL-NGS-16466  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-NGS-98142  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-NGS-114208 &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-NGS-65067  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-BAC-32722  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-BAC-34682  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-NGS-3964   &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-NGS-98203  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-BAC-2376   &quot;R&quot;             &quot;1&quot;             &quot;1&quot;            
+## ARS-BFGL-BAC-31722  &quot;R&quot;             &quot;1&quot;             &quot;1&quot;</code></pre>
+<p>If individuals are genotyped for many markers, then the working memory could become a limitation. This can be avoided by writing the results to files. Results will be written to files if argument <code>w.dir</code> is defined as the name of a directory. In this case function <a href="https://rdrr.io/cran/optiSel/man/haplofreq.html">haplofreq</a> returns a data frame with file names:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wdir  &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;HaplotypeEval&quot;</span>)
+wfile &lt;-<span class="st"> </span><span class="kw">haplofreq</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>, <span class="dt">w.dir=</span>wdir)</code></pre></div>
+</div>
+<div id="breed-composition" class="section level4">
+<h4>Breed Composition</h4>
+<p>Mating decisions should not only depend on the breeding value of the male and the kinship between male and female, but also on the genetic contribution of the male from foreign breeds. Many endangered breeds have been graded up with commercial high-yielding breeds. These increasing migrant contributions displace the original genetic background of the endangered breed, decrease the genetic contribution from native ancestors, and reduce the conservation value of the breed. The breed composition of individuals can be estimated with function <a href="https://rdrr.io/cran/optiSel/man/segBreedComp.html">segBreedComp</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Comp  &lt;-<span class="st"> </span><span class="kw">segBreedComp</span>(Haplo$match, map)
+<span class="kw">head</span>(Comp[,-<span class="dv">1</span>])</code></pre></div>
+<pre><code>##                    native            F          H          R
+## 276000101676415 0.6820668 0.0000000000 0.06420559 0.25372765
+## 276000108612636 0.5952110 0.0392385937 0.23581096 0.12973943
+## 276000102372349 0.8953642 0.0647239060 0.02188978 0.01802207
+## 276000102379430 0.5127613 0.0004341256 0.18018789 0.30661670
+## 276000108826036 0.3338797 0.0031128187 0.23518540 0.42782203
+## 276000111902076 0.3158735 0.0000000000 0.24816876 0.43595772</code></pre>
+<p>The average breed composition of Angler cattle is</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Average &lt;-<span class="st"> </span><span class="kw">apply</span>(Comp[,-<span class="dv">1</span>],<span class="dv">2</span>,mean)
+<span class="kw">round</span>(Average, <span class="dv">3</span>)</code></pre></div>
+<pre><code>## native      F      H      R 
+##  0.477  0.020  0.237  0.266</code></pre>
+<p>Since Red Holstein is a subpopulation of Holstein cattle, their contributions should be added. Thus, the average contribution of Angler cattle from Holstein is 0.503, the contribution from Fleckvieh is only 0.02, and the native contribution is 0.477. This is in good accordance with pedigree-based results</p>
+</div>
+<div id="kinship-at-native-segments" class="section level4">
+<h4>Kinship at Native Segments</h4>
+<p>Since animals with low migrant contributions tend to be related, the inbreeding level could increase considerably when introgressed genetic material is removed from the population. This could be avoided by restricting the increase in kinship at native haplotype segments in the population. Matrix <code>segKINatN</code> containing the kinship of individuals at native haplotype segments can be calculated from the results of function <a href="https://rdrr.io/cran/optiSel/man/segIBDatN.html">segIBDatN</a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fD &lt;-<span class="st"> </span><span class="kw">segIBDatN</span>(GTfiles, phen, map, <span class="dt">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="dt">ubFreq=</span><span class="fl">0.01</span>, <span class="dt">minL=</span><span class="dv">1000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">segKINatN &lt;-<span class="st"> </span>fD$segIBDandN/fD$segN
+segKINatN[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">5</span>)]</code></pre></div>
+<pre><code>##                 276000108612636 276000102379430 276000108826036
+## 276000108612636      0.65929193      0.09438978        0.000000
+## 276000102379430      0.09438978      0.88219967        0.000000
+## 276000108826036      0.00000000      0.00000000        0.758341</code></pre>
+</div>
+</div>
+<div id="population-specific-parameters" class="section level3">
+<h3>Population Specific Parameters</h3>
+<div id="genetic-diversity" class="section level4">
+<h4>Genetic Diversity</h4>
+<p>The genetic diversity of a population is the probability that two alleles chosen at random from the population belong to identical segments. It is one minus the average segment based kinship of the individuals. Thus, it can be computed as</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">keep &lt;-<span class="st"> </span>phen$Indiv[phen$Breed==<span class="st">&quot;Angler&quot;</span>]
+<span class="dv">1</span> -<span class="st"> </span><span class="kw">mean</span>(segKIN[keep, keep])</code></pre></div>
+<pre><code>## [1] 0.9431438</code></pre>
+<p>The diversity of this population is high due to historic introgression with other breeds.</p>
+</div>
+<div id="kinship-and-diversity-at-native-segments" class="section level4">
+<h4>Kinship and Diversity at Native Segments</h4>
+<p>The kinship at native segments in the population is the probability that two alleles chosen at random from the population belong to identical segments, given that the segments originate from native founders. Since it is defined as a conditional probability, it can be computed as the ratio of two means. The kinship at native segments is</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(fD$segIBDandN)/<span class="kw">mean</span>(fD$segN)</code></pre></div>
+<pre><code>## [1] 0.06695171</code></pre>
+<p>The genetic diversity at native segments is one minus the kinship at native segments. Thus, it can be calculated as</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> -<span class="st"> </span><span class="kw">mean</span>(fD$segIBDandN)/<span class="kw">mean</span>(fD$segN)</code></pre></div>
+<pre><code>## [1] 0.9330483</code></pre>
+<p>The diversity at native segments is high. This could have several reasons:</p>
+<ul>
+<li><p>breeds that have been used for introgression are missing in the data set, so contributions from these breeds were wrongly classified as native and contribute to the diversity at native segments,</p></li>
+<li><p>the minimum lentgh of haplotype segments is too high or the marker density is too low, so that short introgressed segments cannot be classified to be non-native.</p></li>
+<li><p>the diversity at native segments is indeed high.</p></li>
+</ul>
+<p>In this case, an introgressed breed, the Norwegian Red, is missing in the data set. A high diversity at native segments is important if a goal of the breeding program is to remove introgressed genetic material from the population. Without maintenance of a high diversity at native segments, inbreeding coefficients will soon rise to an unreasonable level.</p>
+</div>
+</div>
+<div id="multi-breed-specific-parameters" class="section level3">
+<h3>Multi-Breed Specific Parameters</h3>
+<p>Most evaluations for multiple breeds with segment based methods require high density marker genotypes that enable the detection of short haplotype segments that originate from common ancestors who lived before breed separation. Hence, the examples shown below are only illustrative.</p>
+<div id="kinships-within-and-between-breeds" class="section level4">
+<h4>Kinships Within and Between Breeds</h4>
+<p>Average segment based kinships between and within breeds can be computed with function <a href="https://rdrr.io/cran/optiSel/man/opticomp.html">opticomp</a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">segKIN  &lt;-<span class="st"> </span><span class="kw">segIBD</span>(GTfiles, map, <span class="dt">minSNP=</span><span class="dv">20</span>, <span class="dt">minL=</span><span class="dv">1000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Breed   &lt;-<span class="st"> </span>phen[<span class="kw">rownames</span>(segKIN),<span class="st">&quot;Breed&quot;</span>]
+CoreSet &lt;-<span class="st"> </span><span class="kw">opticomp</span>(segKIN, Breed)
+<span class="kw">round</span>(CoreSet$f, <span class="dv">3</span>)</code></pre></div>
+<pre><code>##           Angler Fleckvieh Holstein Rotbunt
+## Angler     0.057     0.006    0.046   0.046
+## Fleckvieh  0.006     0.073    0.005   0.005
+## Holstein   0.046     0.005    0.112   0.094
+## Rotbunt    0.046     0.005    0.094   0.111</code></pre>
+<p>It can be seen that inbreeding is lowest in Angler cattle and highest in Rotbunt cattle. The kinship between Holstein and Rotbunt is almost as high as the kinships within the breeds, so both breeds are closely related. In contrast, Fleckvieh is only distantly related to all other breeds included in the data set.</p>
+</div>
+<div id="genetic-distances-between-breeds" class="section level4">
+<h4>Genetic Distances Between Breeds</h4>
+<p>Genetic distances between breeds can be computed from the kinships between breeds. There are various possibilities to define genetic distances and the method of choice depends on the intended use. The distance between two breed <span class="math inline">\(i\)</span>, <span class="math inline">\(j\)</span>, defined as <span class="math display">\[\Delta_{bl} = \sqrt{\frac{f_{bb}+f_{ll}}{2}-f_{bl}}\]</span> can be considered an estimate of the expected differences in population means for a neutral polygenic trait <span class="citation">(Wellmann, Bennewitz, and Meuwissen 2014)</span>. It can be obtained as</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(CoreSet$Dist, <span class="dv">3</span>)</code></pre></div>
+<pre><code>##           Angler Fleckvieh Holstein Rotbunt
+## Angler     0.000     0.242    0.196   0.193
+## Fleckvieh  0.242     0.000    0.295   0.295
+## Holstein   0.196     0.295    0.000   0.130
+## Rotbunt    0.193     0.295    0.130   0.000</code></pre>
+</div>
+<div id="prioritizing-breeds-for-conservation" class="section level4">
+<h4>Prioritizing Breeds for Conservation</h4>
+<p>Since resources available for conservation are limited, prioritizing breeds for conservation is of high importance to halt the erosion of genetic diversity observed in livestock species. This requires to estimate conservation values of breeds.</p>
+<p>In the core set approach, a hypothetical subdivided population is considered, consisting of individuals from various breeds. This population is called the core set. The contributions of each breed to the core set are determined such that the diversity of the core set is maximized. The conservation value of a particular breed measures how much the diversity decreases if the breed is removed from the core set.</p>
+<p>Function <a href="https://rdrr.io/cran/optiSel/man/opticomp.html">opticomp</a> can be used to compute the contributions of the breeds to a core set with maximum diversity.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CoreSet &lt;-<span class="st"> </span><span class="kw">opticomp</span>(segKIN, Breed)
+CoreSet$bc</code></pre></div>
+<pre><code>##     Angler  Fleckvieh   Holstein    Rotbunt 
+## 0.47908531 0.42425265 0.04434691 0.05231513</code></pre>
+<p>The Rotbunt cattle are not part of the core set, as their genes are already present in Angler and Holstein cattle. For this core set the diversity is</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CoreSet$value</code></pre></div>
+<pre><code>## [1] 0.9656585</code></pre>
+<p>Removing the Angler cattle from the core set</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CoreSet &lt;-<span class="st"> </span><span class="kw">opticomp</span>(segKIN, Breed, <span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">Angler=</span><span class="dv">0</span>))
+CoreSet$bc</code></pre></div>
+<pre><code>##    Angler Fleckvieh  Holstein   Rotbunt 
+## 0.0000000 0.5910616 0.1876452 0.2212932</code></pre>
+<p>increases the Rotbunt and Holstein contributions, and decreases the diversity of the core set:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CoreSet$value</code></pre></div>
+<pre><code>## [1] 0.9548693</code></pre>
+</div>
+</div>
+<div id="references" class="section level3 unnumbered">
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Wellmann2014">
+<p>Wellmann, R., J. Bennewitz, and T. H. Meuwissen. 2014. “A Unified Approach to Characterize and Conserve Adaptive and Neutral Genetic Diversity in Subdivided Populations.” <em>Genetical Research (Camb)</em> 96.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,26 +1,37 @@
 
 
-"genecont" <- function(ID, Sire, Dam, NAncestors=NA) {
-	ID    <- as.character(ID)
-	Sire  <- as.character(Sire)
-	Dam   <- as.character(Dam)
-	Sire[is.na(Sire)] <- "0"
-	Dam[is.na(Dam)]   <- "0"
-  N     <- length(ID)
-  if(is.na(NAncestors))NAncestors<-N
-  
-  Anteil<-matrix(0, nrow=N,ncol=NAncestors)
-  colnames(Anteil)<-ID[1:NAncestors]
-  rownames(Anteil)<-ID
-  for(i in 1:N) {
-    VaterAnt <-rep(0,NAncestors)
-    MutterAnt<-rep(0,NAncestors)  
-    if(sum(ID==Sire[i])>0)VaterAnt<-Anteil[Sire[i],]
-    if(sum(ID==Dam[i])>0) MutterAnt<-Anteil[Dam[i],]
-    Anteil[i,]<-(VaterAnt+MutterAnt)/2
-    if(i<=NAncestors)Anteil[i,ID[i]]<-1
+"genecont" <- function(Pedig, from=NULL, to=NULL){
+  PedigAsDataTable <- "data.table" %in% class(Pedig)
+ 
+  if(PedigAsDataTable){
+    Pedig <- as.data.frame(Pedig)
+    setDF(Pedig)
     }
-  Anteil
+
+  colnames(Pedig)[1:3] <- c("Indiv", "Sire", "Dam")
+  if(is.null(from)){
+    hasOffspring <- (Pedig$Indiv %in% Pedig$Sire)|(Pedig$Indiv %in% Pedig$Dam)
+    from <- Pedig$Indiv[hasOffspring]
+  }else{
+    from <- setdiff(as.character(from), c(NA, "", " ", "0"))
+  }
+  
+  if(is.null(to)){
+    to <- Pedig$Indiv
+  }else{
+    to <- setdiff(as.character(to), c(NA, "", " ", "0"))
+  }  
+  
+  Pedig <- prePed(Pedig, addNum=TRUE, keep=c(from, to))
+  from  <- Pedig$Indiv[Pedig$Indiv %in% from] 
+  to    <- Pedig$Indiv[Pedig$Indiv %in% to]
+  numAnc   <- match(from, Pedig$Indiv)
+  rNames   <- as.character(Pedig$Indiv)
+  cNames   <- from
+  
+  GeneCont <- rcpp_genecont(as.integer(Pedig$numSire), as.integer(Pedig$numDam), as.integer(numAnc-1), rNames, cNames)
+  if(identical(rNames, to)){return(GeneCont)}
+  GeneCont[to, from, drop=FALSE]
 }
 
 

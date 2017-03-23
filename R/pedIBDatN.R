@@ -7,67 +7,97 @@
 # --  fD  1-P(X_N != Y_N | X_N %in% F AND Y_N %in% F)      --
 # ----------------------------------------------------------- 
 
-"pedIBDatN"<-function(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=6){
-  PedigAsDataTable <- "data.table" %in% class(Pedig)
-  Pedig <- as.data.frame(Pedig)
-  if(PedigAsDataTable){setDF(Pedig)}
+"pedIBDatN"<-function(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=NA){
+  getNe <- !is.na(nGen)
+  if("data.table" %in% class(Pedig)){
+    Pedig <- as.data.frame(Pedig)
+    setDF(Pedig)
+    }
+  ids <- as.character(Pedig[[1]])
   
-  if(is.logical(keep)){keep<-Pedig[keep,1]}
-  if(!is.null(keep)){ keep<-as.character(keep); keep <- setdiff(keep, c(NA, "", " ", "0"))}
-  if(!is.null(keep.only)){keep.only<-as.character(keep.only); keep.only <- setdiff(keep.only, c(NA, "", " ", "0"))}
-  if(!is.null(keep)){Pedig <- nadiv::prunePed(prePed(Pedig), phenotyped=keep)}
-  condProb <- list()
-  condProb$pedIBDofN <- c(f1="pedZ",f2="pedN")
-  
-  Indiv<-1; Sire<-2; Dam<-3; Sex<-4; Breed<-5;
+  if(is.logical(keep)){keep <- as.character(Pedig[keep,1])}
+  if(!is.null(keep)){keep <- as.character(keep)}
   if(is.na(thisBreed)){stop("The name of this breed is not specified.\n")}
-  if(length(colnames(Pedig))==4){stop("Column breed is missing.\n")}
+  if(!("Breed" %in% colnames(Pedig))){stop("Column breed is missing.\n")}
   
-  for(i in c(Indiv, Sire, Dam, Breed)){Pedig[,i]<-as.character(Pedig[,i])}
-
-  Pedig2  <- Pedig
-  Rassen  <- setdiff(names(table(Pedig[,Breed])),c(thisBreed))
-  Selfing <- data.frame(
-    paste(rep(c('Founder','Migrant'),20), rep(20:1,each=2),sep=''),
-    c(NA, NA, paste(rep(c('Founder','Migrant'),19),rep(20:2,each=2),sep='')),
-    c(NA, NA, paste(rep(c('Founder','Migrant'),19),rep(20:2,each=2),sep='')),
-    0, "Dummy", stringsAsFactors=FALSE)
-  colnames(Selfing)<-colnames(Pedig)[1:5]
-  
-  Pedig <- rbind.data.frame(Selfing, Pedig[,1:5])
-  Pedig[Pedig[,Breed] %in% Rassen, Sire] <- 'Migrant1'
-  Pedig[Pedig[,Breed] %in% Rassen,  Dam] <- 'Migrant1'
-  suppressWarnings(fOI <- 0.5*nadiv::makeA(Pedig[,c(Indiv,Sire,Dam)])[- (1:40),- (1:40)])
-  dimnames(fOI)<-list(Pedig[- (1:40),Indiv], Pedig[- (1:40),Indiv])
-  Pedig[is.na(Pedig[,Sire])| Pedig[,Sire]=="0",Sire] <- 'Founder1'
-  Pedig[is.na(Pedig[,Dam]) | Pedig[,Dam]=="0",  Dam] <- 'Founder1'
-  Pedig[1:2, c(Sire, Dam)] <- NA
-  suppressWarnings(fII <- 0.5*nadiv::makeA(Pedig[,c(Indiv,Sire,Dam)])[- (1:40),- (1:40)])
-  dimnames(fII)<-list(Pedig[- (1:40),Indiv], Pedig[- (1:40),Indiv])
-  
-  Res<-list()
-
-  Res$pedZ <- as(fOI + matrix(1,nrow=nrow(fII),ncol=ncol(fII)) - fII, "matrix")
-
-  Pedig[is.na(Pedig[,2]),2]<-"0"
-  Pedig[is.na(Pedig[,3]),3]<-"0"
-  Cont   <- genecont(Pedig[,1], Pedig[,2], Pedig[,3], NAncestors=40)[- (1:40),"Migrant1"]
-  Res$pedN <- as(1 - 0.5*(matrix(Cont, nrow=nrow(fII),ncol=ncol(fII),byrow=TRUE) +  matrix(Cont,nrow=nrow(fII),ncol=ncol(fII),byrow=FALSE)) - 0.5*(1-fII),"matrix")
-  dimnames(Res$pedN)<-list(Pedig[- (1:40),Indiv], Pedig[- (1:40),Indiv])
+  Pedig <- prePed(Pedig, keep=keep, lastNative=1234567, thisBreed=thisBreed)
+  hasWrongBreed <- (!is.na(Pedig$Sire) & !is.na(Pedig$Dam) & !(Pedig$Breed %in% thisBreed) & ((Pedig[Pedig$Sire, "Breed"] %in% thisBreed) | (Pedig[Pedig$Dam, "Breed"] %in% thisBreed)) )
+  Pedig[hasWrongBreed, "Breed"] <- thisBreed
+  Pedig[Pedig$Breed != thisBreed, "Sire"]<-NA
+  Pedig[Pedig$Breed != thisBreed, "Dam"]<-NA
+  Pedig <- prePed(Pedig, keep=keep)
   
   if(!is.null(keep)){
-    nativeNe <- round(nativeNe(Pedig=Pedig2, Kin=Res, keep=keep, thisBreed=thisBreed, nGen=nGen),1)
-    cat("Native Ne = ", nativeNe," (estimated from ",nGen," previous generations)\n", sep="")
+    keep <- Pedig$Indiv[Pedig$Indiv %in% keep]
+    }
+  
+  if(is.null(keep.only)){
+    keep.only <- ids
+  }else{
+    keep.only <- as.character(keep.only)
+    keep.only <- ids[ids %in% keep.only]
+  }
+  if(getNe){
+    Selection <- Pedig$Indiv
+  }else{
+    Selection <- keep.only
+  }
+  condProb <- list()
+  condProb$pedIBDatN <- c(f1="pedZ",f2="pedN")
+  
+  Rassen     <- setdiff(names(table(Pedig$Breed)), c(thisBreed))
+  MigFounder <- Pedig$Indiv[(is.na(Pedig$Sire)|is.na(Pedig$Dam)) &   Pedig$Breed %in% Rassen]
+  NatFounder <- Pedig$Indiv[(is.na(Pedig$Sire)|is.na(Pedig$Dam)) & !(Pedig$Breed %in% Rassen)]
+  nMig <- length(MigFounder)
+  nNat <- length(NatFounder)
+  AMig <- matrix(2, nMig, nMig, dimnames=list(MigFounder, MigFounder))
+  ANat <- matrix(2, nNat, nNat, dimnames=list(NatFounder, NatFounder))
+  cat(paste0("Number of Migrant Founders: ", nrow(AMig), "\n"))
+  cat(paste0("Number of Native  Founders: ", nrow(ANat), "\n"))
+  cat(paste0("Individuals in Pedigree   : ", nrow(Pedig), "\n"))
+  GB <- ((nrow(AMig)+nrow(ANat))^2 + length(Selection)^2 + nrow(Pedig)^2)*(7.45058066987776e-09)*1.1
+  if(GB>1){cat(paste0("Ensure that you have more than ", round(GB, 1), " GB memory available.\n"))}
+  if(GB>1){cat("Computing fOI ...")}
+  fOI  <- 0.5*makeA(Pedig[,1:3], AFounder=AMig)[Selection, Selection]
+  gc()
+  if(GB>1){cat("finished\nComputing fII ...")}
+  fII  <- 0.5*makeA(Pedig[,1:3], AFounder=adiag(AMig, ANat))[Selection, Selection]
+  if(GB>1){cat("finished\nCombining results ...")}
+  rm(AMig)
+  rm(ANat)
+  gc()
+  
+  Res<-list()
+  Res$pedZ <- fOI + 1 - fII
+  rm(fOI)
+  
+  Cont <- pedBreedComp(Pedig, thisBreed=thisBreed)
+  Cont <- 1 - Cont[Selection, "native"]
+  Res$pedN <- 1 - 0.5*(matrix(Cont, nrow=nrow(fII), ncol=ncol(fII), byrow=TRUE) +  matrix(Cont, nrow=nrow(fII), ncol=ncol(fII), byrow=FALSE)) - 0.5*(1-fII)
+  dimnames(Res$pedN) <- list(Selection, Selection)
+  rm(fII)
+  
+  Res$pedIBDandN <- Res$pedZ + Res$pedN - 1
+  dimnames(Res$pedIBDandN) <- dimnames(Res$pedN)
+  if(GB>1){cat("finished\n")}
+  if(!is.null(keep) & getNe){
+    nativeNe <- round(nativeNe(Pedig=Pedig, Kin=Res, keep=keep, thisBreed=thisBreed, nGen=nGen),1)
+    cat("Native Ne = ", nativeNe, " (estimated from ", nGen, " previous generations)\n", sep="")
     attr(Res,"nativeNe") <- nativeNe
   }
-  if(!is.null(keep.only)){for(i in names(Res))Res[[i]]<-Res[[i]][keep.only, keep.only]}
+  if(getNe){
+    for(i in names(Res)){
+      Res[[i]]<-Res[[i]][keep.only, keep.only]
+    }
+  }
   
   attr(Res,"meanpedIBDatN") <- 1-(1-mean(Res$pedZ))/mean(Res$pedN)
   if(!is.null(keep)){
-  cat("Mean kinship at native alleles: ", round(attr(Res,"meanpedIBDatN"), 4), "\n")
+    cat("Mean kinship at native alleles: ", round(attr(Res,"meanpedIBDatN"), 4), "\n")
   }
-  class(Res)<-"kinMatrices"
-  attr(Res,"condProb")<- condProb
+  class(Res) <- "kinMatrices"
+  attr(Res,"condProb") <- condProb
+  
   Res
 }
 

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Robin Wellmann" />
+
+<meta name="date" content="2017-03-23" />
+
+<title></title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore"><ol style="list-style-type: decimal">
+<li>Pedigree-based Evaluations</li>
+</ol></h1>
+<h4 class="author"><em>Robin Wellmann</em></h4>
+<h4 class="date"><em>2017-03-23</em></h4>
+
+
+
+<p>Animal breeding relies on the prediction of breeding values of selection candidates and subsequent selection of animals for breeding in a way that restricts the rate of inbreeeding and maintains genetic originality of the breed. The methods of choice are the utilization of pedigree data, of genetic marker data, or a combination of both. This section covers the following evaluations based on pedigree data:</p>
+<ul>
+<li><a href="#data-preparation">Data Preparation</a>
+<ul>
+<li>Pedigrees (includes plotting)</li>
+</ul></li>
+<li><a href="#quality-control">Quality Control</a>
+<ul>
+<li>Pedigree Completeness</li>
+<li>Number of Equivalent Complete Generations</li>
+<li>Number of Fully Traced Generations</li>
+<li>Number of Maximum Generations Traced</li>
+<li>Index of Pedigree Completeness</li>
+</ul></li>
+<li><a href="#individual-specific-parameters">Individual Specific Parameters</a>
+<ul>
+<li><a href="#inbreeding-coefficients">Inbreeding Coefficients</a></li>
+<li><a href="#breed-composition">Breed Composition</a></li>
+<li><a href="#kinship">Kinship</a></li>
+<li><a href="#kinship-at-native-alleles">Kinship at Native Alleles</a></li>
+</ul></li>
+<li><a href="#population-specific-parameters">Population Specific Parameters</a>
+<ul>
+<li><a href="#genetic-diversity">Genetic Diversity</a></li>
+<li><a href="#kinship-and-diversity-at-native-alleles">Kinship and Diversity at Native Alleles</a></li>
+<li><a href="#native-effective-size">Native Effective Size</a></li>
+<li><a href="#effective-size">Effective Size</a></li>
+<li><a href="#native-genome-equivalent">Native Genome Equivalent</a></li>
+</ul></li>
+</ul>
+<p>Note that the calculation of breeding values is not included as there already exist a couple of R packages for this purpose. Recommended are the free package <a href="https://www.jstatsoft.org/article/view/v033i02/v33i02.pdf">MCMCglmm</a> for small and medium sized data sets, and package <a href="https://www.vsni.co.uk/downloads/asreml/release2/doc/asreml-R.pdf">asreml</a> for large data sets.</p>
+<div id="data-preparation" class="section level2">
+<h2>Data Preparation</h2>
+<p>A pedigree is a data frame or data table with the first three columns being the individual ID, the sire ID, and the dam ID. Depending on the intended evaluation, the pedigree may also provide the names of the breeds (column <code>Breed</code>), the years of birth (column <code>Born</code> ), and the sexes (column <code>Sex</code>). A toy example of a pedigree may look like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedigree &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">ID   =</span> <span class="kw">c</span>(<span class="st">&quot;Iffes&quot;</span>,     <span class="st">&quot;Peter&quot;</span>,    <span class="st">&quot;Anna-Lena&quot;</span>, <span class="st">&quot;Kevin&quot;</span>,    <span class="st">&quot;Horst&quot;</span>),
+  <span class="dt">dad  =</span> <span class="kw">c</span>(<span class="st">&quot;Kevin&quot;</span>,     <span class="st">&quot;Kevin&quot;</span>,     <span class="ot">NA</span>,          <span class="dv">0</span>,         <span class="st">&quot;Horst&quot;</span>),
+  <span class="dt">mom  =</span> <span class="kw">c</span>(<span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;Angelika&quot;</span>, <span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;&quot;</span>,           <span class="ot">NA</span>),
+  <span class="dt">Breed=</span> <span class="kw">c</span>(<span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Angler&quot;</span>,   <span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Holstein&quot;</span>, <span class="st">&quot;Angler&quot;</span>),
+  <span class="dt">Born =</span> <span class="kw">c</span>(<span class="dv">2015</span>,        <span class="dv">2016</span>,       <span class="dv">2011</span>,       <span class="dv">2010</span>,        <span class="dv">2015</span>)
+  )
+Pedigree</code></pre></div>
+<pre><code>##          ID   dad       mom    Breed Born
+## 1     Iffes Kevin Chantalle   Angler 2015
+## 2     Peter Kevin  Angelika   Angler 2016
+## 3 Anna-Lena  &lt;NA&gt; Chantalle   Angler 2011
+## 4     Kevin     0           Holstein 2010
+## 5     Horst Horst      &lt;NA&gt;   Angler 2015</code></pre>
+<p>Individual IDs must be unique and should not contain blank spaces. The above pedigree contains a loop, so it is not a valid pedigree (Horst is an ancestor of himself). Function <a href="https://rdrr.io/cran/optiSel/man/prePed.html">prePed</a> will prepare the pedigree and turn it into a valid one. The function</p>
+<ul>
+<li>renames the first three columns as <code>Indiv</code>, <code>Sire</code>, <code>Dam</code>,</li>
+<li>replaces 0, “”, and &quot; &quot; in columns <code>Sire</code> and <code>Dam</code> by <code>NA</code>,</li>
+<li>breaks loops and reports which animal was included in a loop,</li>
+<li>adds or updates column <code>Sex</code>. Sexes will be recoded as 1 for males and 2 for females.</li>
+<li>adds one row for each founder if the row is not already included,</li>
+<li>sorts the pedigree such that individuals appear in the pedigree before they appear as parent,</li>
+<li>guesses the breed name of animals with missing breeds (including added founders),</li>
+<li>adds columns <code>numIndiv</code>, <code>numSire</code>, and <code>numDam</code> with numeric IDs of the individuals (if <code>addNum=TRUE</code> is specified),</li>
+<li>sets the breed name of founders from <code>thisBreed</code> that are born after <code>lastNative</code> to unknown (if these parameters are specified).</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;optiSel&quot;</span>)
+Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(Pedigree)</code></pre></div>
+<pre><code>## Pedigree loops were detected. We recommend to correct them manually before
+## using prePed(). The parents of the following individuals are set to unknown
+## to remove the loops.
+##        Sire  Dam
+## Horst Horst &lt;NA&gt;</code></pre>
+<p>The result is:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedig</code></pre></div>
+<pre><code>##               Indiv  Sire       Dam Sex          Breed Born
+## Chantalle Chantalle  &lt;NA&gt;      &lt;NA&gt;   2         Angler   NA
+## Angelika   Angelika  &lt;NA&gt;      &lt;NA&gt;   2         Angler   NA
+## Kevin         Kevin  &lt;NA&gt;      &lt;NA&gt;   1       Holstein 2010
+## Horst         Horst  &lt;NA&gt;      &lt;NA&gt;  NA Pedigree Error 2015
+## Anna-Lena Anna-Lena  &lt;NA&gt; Chantalle  NA         Angler 2011
+## Iffes         Iffes Kevin Chantalle  NA         Angler 2015
+## Peter         Peter Kevin  Angelika  NA         Angler 2016</code></pre>
+<p>Plots can be created to show specified individuals and their relatives. In the first step, function <a href="https://rdrr.io/cran/optiSel/man/subPed.html">subPed</a> is used below to create a small pedigree that includes only the individuals to be plotted, which are <code>&quot;Chantalle&quot;</code>, up to <code>prevGen</code> previous (ancestral) generations, and up to <code>succGen</code> succeeding (descendant) generations. The pedigree was plotted with function <a href="https://rdrr.io/cran/optiSel/man/pedplot.html">pedplot</a>. It is basically a wrapper function for function <code>plot.pedigree</code> from package <code>kinship2</code>, but has additional arguments. Parameter <code>label</code> contains the columns of the pedigree to be used for labeling. By default, symbols of individuals included in vector <code>keep</code> are plotted in black and for individuals from other breeds the symbol is crossed out.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sPed &lt;-<span class="st"> </span><span class="kw">subPed</span>(Pedig, <span class="dt">keep =</span> <span class="kw">c</span>(<span class="st">&quot;Chantalle&quot;</span>,<span class="st">&quot;Angelika&quot;</span>), <span class="dt">prevGen =</span> <span class="dv">2</span>, <span class="dt">succGen =</span> <span class="dv">1</span>)
+<span class="kw">pedplot</span>(sPed, <span class="dt">label =</span> <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;Breed&quot;</span>), <span class="dt">cex =</span> <span class="fl">0.55</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Hereby, <code>SAnna-Lena</code> denotes the unknown sire of <code>Anna-Lena</code>.</p>
+</div>
+<div id="quality-control" class="section level2">
+<h2>Quality Control</h2>
+<p>The next step is to find out if the completeness of the pedigree is sufficient for the intended evaluation, and to identify individuals with insufficient pedigree information. This will be demonstrated at the example of a pedigree of Hinterwald cattle.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(PedigWithErrors)
+Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors)</code></pre></div>
+<p>Function <a href="https://rdrr.io/cran/optiSel/man/completeness.html">completeness</a> can be used to determine the proportion of known ancestors of each individual of the actual breeding population in each ancestral generation:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">compl &lt;-<span class="st"> </span><span class="kw">completeness</span>(Pedig, <span class="dt">keep=</span>Pedig$Born %in%<span class="st"> </span>(<span class="dv">2006</span>:<span class="dv">2007</span>), <span class="dt">by=</span><span class="st">&quot;Indiv&quot;</span>)
+<span class="kw">head</span>(compl)</code></pre></div>
+<pre><code>##               Indiv Generation Completeness
+## 652 276000891875979          0          1.0
+## 653 276000891875979          1          0.5
+## 676 276000891967895          0          1.0
+## 677 276000891967895          1          0.5
+## 694 276000891955445          0          1.0
+## 695 276000891955445          1          0.5</code></pre>
+<p>or the mean completeness of the pedigree within groups of individuals:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">compl &lt;-<span class="st"> </span><span class="kw">completeness</span>(Pedig, <span class="dt">keep=</span>Pedig$Born %in%<span class="st"> </span>(<span class="dv">2006</span>:<span class="dv">2007</span>), <span class="dt">by=</span><span class="st">&quot;Sex&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">ggplot</span>(compl, <span class="kw">aes</span>(<span class="dt">x=</span>Generation, <span class="dt">y=</span>Completeness, <span class="dt">col=</span>Sex)) +<span class="st"> </span><span class="kw">geom_line</span>()</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The completeness of the pedigree of each individual can be summarized with function <a href="https://rdrr.io/cran/optiSel/man/summary.Pedig.html">summary</a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">keep &lt;-<span class="st"> </span>Pedig$Indiv[Pedig$Born %in%<span class="st"> </span>(<span class="dv">2006</span>:<span class="dv">2007</span>)]
+Summary &lt;-<span class="st"> </span><span class="kw">summary</span>(Pedig, <span class="dt">keep.only=</span>keep)
+<span class="kw">head</span>(Summary[Summary$equiGen&gt;<span class="fl">3.0</span>, -<span class="dv">1</span>])</code></pre></div>
+<pre><code>##                  equiGen fullGen maxGen       PCI Inbreeding
+## 276000813616211 5.012451       3     12 0.9333333 0.01215744
+## 276000892216446 3.092529       0     12 0.0000000 0.00000000
+## 276000812666304 4.228271       1     12 0.6086957 0.00000000
+## 276000813838681 3.380615       0     12 0.0000000 0.00000000
+## 276000813256272 4.103271       1     12 0.5454545 0.00000000
+## 276000891984360 3.641174       0     14 0.0000000 0.00000000</code></pre>
+<p>The following parameters were computed for each individual:</p>
+<dl>
+<dt><code>equiGen</code></dt>
+<dd>Number of equivalent complete generations, defined as the sum of the proportion of known ancestors over all generations traced,
+</dd>
+<dt><code>fullGen</code></dt>
+<dd>Number of fully traced generations,
+</dd>
+<dt><code>maxGen</code></dt>
+<dd>Number of maximum generations traced,
+</dd>
+<dt><code>PCI</code></dt>
+<dd>Index of pedigree completeness, which is the harmonic mean of the pedigree completenesses of the parents (MacCluer et al, 1983),
+</dd>
+<dt><code>Inbreeding</code></dt>
+<dd>Inbreeding coefficient.
+</dd>
+</dl>
+<p>The best possibility to characterize completeness of pedigree information by a single value is the <em>number of equivalent complete generations</em>, averaged over all individuals of the actual breeding population which were included in the evaluations.</p>
+<p>The relevant parameter to identify individuals with insufficient pedigree information to estimate inbreeding, however, is the <code>PCI</code>. This is because inbreeding can be detected only if both maternal and paternal ancestries are known. The harmonic mean ensures that the less complete paternal pedigree is weighted more heavily, so the <code>PCI</code> equals zero when either parent is unkown. Inbreeding coefficients can be valid despite small <code>PCI</code>s if the most recent founders were indeed unrelated, e.g. because they were from other breeds.</p>
+<p>Note that inbreeding coefficients can be computed faster with function <a href="https://rdrr.io/cran/optiSel/man/pedInbreeding.html">pedInbreeding</a>.</p>
+<div id="individual-specific-parameters" class="section level3">
+<h3>Individual Specific Parameters</h3>
+<div id="inbreeding-coefficients" class="section level4">
+<h4>Inbreeding Coefficients</h4>
+<p>The inbreeding coefficient of an individual is the probability that two alleles chosen at random from the maternal and paternal haplotypes are identically by descent (IBD). This parameter estimates the extent to which the individual may suffer from inbreeding depression and predicts the homogeneity of its offspring. It can be calculated with</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Animal &lt;-<span class="st"> </span><span class="kw">pedInbreeding</span>(Pedig)
+<span class="kw">mean</span>(Animal$Inbr[Animal$Indiv %in%<span class="st"> </span>keep])</code></pre></div>
+<pre><code>## [1] 0.01508286</code></pre>
+<p>Wheter mating to a sound inbred individual should be favored or avoided depends on whether the breeder wishes offsprig with uniform or heterogeneous breeding values. More important than the inbreeding coefficient of an animal itself, however, is the expected inbreeding coefficient of the offspring, which should be low. The expected inbreeding coefficient of the offspring is the equal to the kinship of the parents.</p>
+</div>
+<div id="kinship" class="section level4">
+<h4>Kinship</h4>
+<p>The kinship between two individuals is the probability that two alleles randomly chosen from both individuals are IBD. A sparse matrix containing the kinship between all pairs of individuals can be computed with function <a href="https://rdrr.io/cran/optiSel/man/pedIBD.html">pedIBD</a>. It is half the numerator relationship matrix. The R code below computes the kinship between the female with ID <code>276000813677683</code> and all males from the actual breeding population that have a breeding value larger than 1.7 and a pedigree with at least 5 equivalent complete generations.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pedKIN &lt;-<span class="st"> </span><span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>keep)
+use    &lt;-<span class="st"> </span>Pedig$Sex==<span class="dv">1</span> &amp;<span class="st"> </span>Pedig$Indiv %in%<span class="st"> </span>keep &amp;<span class="st"> </span><span class="kw">summary</span>(Pedig)$equiGen&gt;<span class="dv">5</span> &amp;<span class="st"> </span>Pedig$BV&gt;<span class="fl">1.7</span>
+Males  &lt;-<span class="st"> </span>Pedig$Indiv[use]
+pedKIN[<span class="kw">rownames</span>(pedKIN) %in%<span class="st"> </span>Males, <span class="st">&quot;276000813677683&quot;</span>, drop=<span class="ot">FALSE</span>]</code></pre></div>
+<pre><code>##                 276000813677683
+## 276000813677750      0.04311906
+## 276000813369189      0.04001850
+## 276000813533612      0.06720594
+## 276000892245938      0.05447717
+## 276000813369195      0.03760904
+## 276000813609326      0.06279169</code></pre>
+<p>The males with lowest kinship should be favoured for mating.</p>
+</div>
+<div id="breed-composition" class="section level4">
+<h4>Breed Composition</h4>
+<p>Mating decisions should not only depend on the breeding value of the male and the kinship between male and female, but also on the genetic contribution of the male from foreign breeds. Many endangered breeds have been graded up with commercial high-yielding breeds. These increasing migrant contributions displace the original genetic background of the endangered breed, decrease the genetic contribution from native ancestors, and reduce the conservation value of the breed.</p>
+<p>For computing the breed composition of individuals it should be taken into account that the breed name of founders born recently is in fact unkown even if they have been classified as purebred. Hence, for these individuals, the breed name should be changed to <code>&quot;unknown&quot;</code>. Below, the breed name of founders born after 1970 is changed to <code>&quot;unknown&quot;</code> if they had been classified as Hinterwald cattle. Thereafter, function <a href="https://rdrr.io/cran/optiSel/man/pedBreedComp.html">pedBreedComp</a> was used to estimate the contribution of each individual from each foreign breed and from native founders. Finally, a column containing the migrant contribution of each individual (defined as one minus the native contribution) was added to the pedigree.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cont  &lt;-<span class="st"> </span><span class="kw">pedBreedComp</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)
+Pedig$MC &lt;-<span class="st"> </span><span class="dv">1</span>-cont$native
+<span class="kw">head</span>(cont[<span class="kw">rev</span>(keep), <span class="dv">2</span>:<span class="dv">6</span>])</code></pre></div>
+<pre><code>##                    native   unknown     unbek0  Fleckvieh Vorderwaelder
+## 276000813752879 0.5893784 0.1464844 0.03519821 0.10577011    0.12316895
+## 276000813517568 0.5059280 0.1152344 0.03279877 0.08444214    0.26159668
+## 276000892197676 0.3743515 0.4394531 0.02383041 0.06507492    0.06604004
+## 276000812771580 0.3142929 0.5390625 0.02090073 0.06287766    0.04724121
+## 276000813677673 0.4845428 0.2441406 0.02951050 0.09605408    0.14575195
+## 276000892322187 0.4570541 0.3144531 0.03202438 0.08697128    0.10949707</code></pre>
+<p>The columns are ordered so that the most influential foreign breeds come first. It can be seen that the contribution from native founders varies considerably between individuals. Individuals with high genetic contribution from native founders should be favored for mating provided that the kinship between male and female is sufficiently low.</p>
+</div>
+<div id="kinship-at-native-alleles" class="section level4">
+<h4>Kinship at Native Alleles</h4>
+<p>Since animals with low migrant contributions tend to be related, the inbreeding level could increase considerably when introgressed genetic material is removed from the population. This could be avoided by restricting the incease in kinship at native haplotype segments in the population. For pairs of individuals the kinship at native haplotype segments can be estimated as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fD  &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>keep)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pedKINatN &lt;-<span class="st"> </span>fD$pedIBDandN/fD$pedN
+use &lt;-<span class="st"> </span><span class="kw">rownames</span>(fD$pedN)[<span class="kw">diag</span>(fD$pedN)&gt;<span class="fl">0.2</span>]
+<span class="kw">mean</span>(pedKINatN[use,use])</code></pre></div>
+<pre><code>## [1] 0.07639926</code></pre>
+<p>The correlation between the kinship and the kinship at native segments is high for individuals with low migrant contributions (as expected):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sK    &lt;-<span class="st"> </span>pedKIN[use, use]
+sKatN &lt;-<span class="st"> </span>pedKINatN[use, use]
+<span class="kw">cor</span>(sK[<span class="kw">upper.tri</span>(sK)], sKatN[<span class="kw">upper.tri</span>(sKatN)], <span class="dt">use=</span><span class="st">&quot;complete.obs&quot;</span>)</code></pre></div>
+<pre><code>## [1] 0.9401269</code></pre>
+<p>But the correlation is much smaller if all individuals are considered, which may lead to different selection decisions:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">use   &lt;-<span class="st"> </span><span class="kw">rownames</span>(fD$pedN)[<span class="kw">diag</span>(fD$pedN)&gt;<span class="fl">0.01</span>]
+sK    &lt;-<span class="st"> </span>pedKIN[use, use]
+sKatN &lt;-<span class="st"> </span>pedKINatN[use, use]
+<span class="kw">cor</span>(sK[<span class="kw">upper.tri</span>(sK)], sKatN[<span class="kw">upper.tri</span>(sKatN)], <span class="dt">use=</span><span class="st">&quot;complete.obs&quot;</span>)</code></pre></div>
+<pre><code>## [1] 0.7626254</code></pre>
+</div>
+</div>
+<div id="population-specific-parameters" class="section level3">
+<h3>Population Specific Parameters</h3>
+<div id="genetic-diversity" class="section level4">
+<h4>Genetic Diversity</h4>
+<p>The genetic diversity of a population is the probability that two alleles chosen at random from the population are not IBD. It is one minus the average kinship of the individuals. Thus, it can be computed as</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>-<span class="kw">mean</span>(pedKIN[keep, keep])</code></pre></div>
+<pre><code>## [1] 0.9894596</code></pre>
+<p>The diversity of this population is high. A high genetic diversity enables to avoid inbreeding and ensures that polygenic traits have a high additive variance, which is required to achieve genetic gain. However, the diversity of this population seems to be extremely high. This could have two reasons:</p>
+<ul>
+<li><p>The diversity is indeed very high because the individuals are in fact crossbred individuals with genetic contributions from many breeds, or</p></li>
+<li><p>The completeness of the pedigrees is insufficient for such an evaluation.</p></li>
+</ul>
+<p>For this data set both is true: The average number of equivalent complete generations is only 4.15, and it is unclear whether this number is low because pedigrees of indivduals from other breeds were cut, or because previously unregistered animals have been registered. Hence, pedigrees of introduced individuals from other breeds should not be cut to reduce this uncertainty.</p>
+<p>A parameter which depends not so much on the completeness of the pedigrees is the diversity at native alleles.</p>
+</div>
+<div id="kinship-and-diversity-at-native-alleles" class="section level4">
+<h4>Kinship and Diversity at Native Alleles</h4>
+<p>The kinship at native alleles in the population is the probability that two alleles chosen at random from the population are not IBD, given that both alleles originate from native founders. Since it is defined as a conditional probability, it can be computed as the ratio of two means. The kinship at native alleles is</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(fD$pedIBDandN)/<span class="kw">mean</span>(fD$pedN)</code></pre></div>
+<pre><code>## [1] 0.07564228</code></pre>
+<p>The genetic diversity at native alleles is one minus the kinship at native alleles <span class="citation">(named <em>conditional gene diversity</em> in Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus, it can be calculated as</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>-<span class="st"> </span><span class="kw">mean</span>(fD$pedIBDandN)/<span class="kw">mean</span>(fD$pedN)</code></pre></div>
+<pre><code>## [1] 0.9243577</code></pre>
+<p>Note that incomplete pedigrees result in an overestimation of the genetic diversity. This is not the case for the genetic diversity at native alleles because alleles originating from founders born after 1970 were classified to be non-native. Hence, the diversity at alleles originating from these individuals does not affect the estimate.</p>
+<p>A high diversity at native alleles is important if a goal of the breeding program is to remove introgressed genetic material from the population. Without maintenance of a high diversity at native alleles, inbreeding coefficients will soon rise to an unreasonable level.</p>
+</div>
+<div id="native-effective-size" class="section level4">
+<h4>Native Effective Size</h4>
+<p>The <em>native effective size</em> of a population is defined as the size of an idealized random mating population for which the <em>genetic diversity</em> decreases as fast as the <em>diversity at native alleles</em> decreases in the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus, the native effective size quantifies how fast the diversity at native alleles decreases. In contrast, the effective size quantifies how fast the genetic diversity decreases.</p>
+<p>In a population without historic introgression the native effective size (native Ne) is equal to the effective size (Ne) as estimated by <span class="citation">Wellmann and Bennewitz (2011)</span>. But in a population with historic introgression it can be argued that the effective size is not useful to describe the history of a population because even a small amount of introgression with unrelated individuals prevents a drop of genetic diversity, so the effecive size would be infinite.</p>
+<p>For estimating the native effective size, the diversity at native alleles needs to be estimated at various times, and then the native effective size is estimated from the slope of a regression function.</p>
+<p>An estimate of the native effective size is automatically provided when the kinship at native alleles is computed:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fD  &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>keep, <span class="dt">nGen=</span><span class="dv">6</span>)</code></pre></div>
+<pre><code>## Number of Migrant Founders: 1263
+## Number of Native  Founders: 169
+## Individuals in Pedigree   : 4676
+## Native Ne = 48.7 (estimated from 6 previous generations)
+## Mean kinship at native alleles:  0.0756</code></pre>
+<p>The native Ne is stored as an attribute of the result:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">attributes</span>(fD)$nativeNe</code></pre></div>
+<pre><code>## [1] 48.7</code></pre>
+<p>Thus, the diversity at native alleles decreases as fast as in an idealized population consisting of 48.7 individuals.</p>
+</div>
+<div id="effective-size" class="section level4">
+<h4>Effective Size</h4>
+<p>The effective size Ne of a population is the size of an idealized random mating population for which the <em>genetic diversity</em> decreases as fast as in the population under study. It is commonly estimated from the mean rate of increase in coancestry <span class="citation">(Cervantes et al. 2011)</span>, whereby the increase in coancestry between any pair of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is computed as <span class="math inline">\(\Delta c_{ij}=1-\sqrt[\frac{g_i+g_j}{2}]{1-c_{ij}}\)</span>, where <span class="math inline">\(c_{ij}\)</span> is the kinship between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, and <span class="math inline">\(g_i,g_j\)</span> are the numbers of equivalent complete generations of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. The effective size is then estimated as <span class="math inline">\(N_e=\frac{1}{2\overline{\Delta c}}\)</span>. Thus, the effective size can be estimated as:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">id     &lt;-<span class="st"> </span>Summary$Indiv[Summary$equiGen&gt;=<span class="dv">4</span> &amp;<span class="st"> </span>Summary$Indiv %in%<span class="st"> </span>keep]
+g      &lt;-<span class="st"> </span>Summary[id, <span class="st">&quot;equiGen&quot;</span>]
+N      &lt;-<span class="st"> </span><span class="kw">length</span>(g)
+n      &lt;-<span class="st"> </span>(<span class="kw">matrix</span>(g, N, N, <span class="dt">byrow=</span><span class="ot">TRUE</span>) +<span class="st"> </span><span class="kw">matrix</span>(g, N, N, <span class="dt">byrow=</span><span class="ot">FALSE</span>))/<span class="dv">2</span>
+deltaC &lt;-<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>(<span class="dv">1</span>-pedKIN[id,id])^(<span class="dv">1</span>/n)
+Ne     &lt;-<span class="st"> </span><span class="dv">1</span>/(<span class="dv">2</span>*<span class="kw">mean</span>(deltaC))
+Ne</code></pre></div>
+<pre><code>## [1] 106.9588</code></pre>
+<p>However, the above formula assumes that ancestors are missing at random. In populations with historic introgression, pedigrees of individuals from foreign breeds are often cut, so their parents are not missing at random. In fact, even a small amount of introgression suffices to prevent a decrease of genetic diversity, so that the effective size of such a population is <span class="math inline">\(\infty\)</span>.</p>
+</div>
+<div id="native-genome-equivalent" class="section level4">
+<h4>Native Genome Equivalent</h4>
+<p>The native genome equivalent NGE of a population is the minimum number of founders that would be needed to create a population consisting of unrelated individuals that has the same diversity at native alleles as the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. It is assumed that the individuals were unrelated in base year <code>base</code>, which could be well before pedigree recording had started. Between the base year and the year <code>lastNative</code> in which the last native founder was born, the population had a historical effective size of <code>histNe</code>. This assumption implies that the founders of the pedigree were related due to ancestors whose pedigrees had not been recorded.</p>
+<p>The decrease of native genome equivalents is estimated below for the time since <code>lastNative=1970</code> by assuming that individuals were unrelated in year <code>base=1800</code> and that the historical effective size was <code>histNe=150</code> between 1800 and 1970. Since the computation for the full pedigree could take some time, the parameters are estimated below from a subset of the pedigree:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(ExamplePed)
+Pedig    &lt;-<span class="st"> </span><span class="kw">prePed</span>(ExamplePed, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)
+Kinships &lt;-<span class="st"> </span><span class="kw">kinlist</span>(<span class="dt">pedIBD=</span><span class="kw">pedIBD</span>(Pedig), <span class="dt">pedIBDatN=</span><span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>))</code></pre></div>
+<pre><code>## Number of Migrant Founders: 117
+## Number of Native  Founders: 213
+## Individuals in Pedigree   : 1179</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Kin      &lt;-<span class="st"> </span><span class="kw">kinwac</span>(Kinships, <span class="dt">Pedig=</span>Pedig, <span class="dt">use=</span>Pedig$Breed==<span class="st">&quot;Hinterwaelder&quot;</span>)
+sy       &lt;-<span class="st"> </span><span class="kw">summary</span>(Kin, <span class="dt">tlim=</span><span class="kw">c</span>(<span class="dv">1970</span>, <span class="dv">1995</span>), <span class="dt">histNe=</span><span class="dv">150</span>, <span class="dt">base=</span><span class="dv">1800</span>)</code></pre></div>
+<pre><code>##    cohort    I pedIBD pedIBDandN pedIBDatN   Ne condGD  NGE
+## 23   1970 5.35  0.010      0.009     0.011 43.8  0.898 4.92
+## 24   1971 5.34  0.005      0.004     0.008 43.4  0.901 5.08
+## 25   1972 5.12  0.011      0.009     0.014 42.7  0.896 4.80
+## 26   1973 5.79  0.010      0.007     0.013 41.9  0.897 4.85
+## 27   1974 5.95  0.016      0.015     0.023 41.4  0.888 4.46
+## 28   1975 5.79  0.008      0.006     0.013 40.9  0.897 4.85
+## 29   1976 5.42  0.016      0.012     0.021 39.5  0.890 4.54
+## 30   1977 5.69  0.018      0.012     0.025 37.3  0.886 4.38
+## 31   1978 5.13  0.015      0.010     0.022 34.5  0.889 4.50
+## 32   1979 5.11  0.012      0.008     0.020 31.4  0.891 4.57
+## 33   1980 5.36  0.009      0.007     0.017 28.8  0.894 4.70
+## 34   1981 5.27  0.020      0.016     0.040 27.0  0.872 3.91
+## 35   1982 5.36  0.019      0.013     0.028 26.1  0.883 4.27
+## 36   1983 5.61  0.019      0.014     0.034 25.8  0.878 4.11
+## 37   1984 5.41  0.030      0.023     0.053 26.0  0.861 3.59
+## 38   1985 5.47  0.018      0.013     0.038 26.8  0.874 3.98
+## 39   1986 5.16  0.024      0.019     0.047 27.7  0.866 3.74
+## 40   1987 5.29  0.025      0.019     0.046 28.7  0.867 3.77
+## 41   1988 5.24  0.022      0.017     0.043 30.0  0.869 3.82
+## 42   1989 5.03  0.036      0.025     0.071 32.5  0.844 3.21
+## 43   1990 4.73  0.019      0.014     0.046 36.5  0.867 3.75
+## 44   1991 5.49  0.028      0.019     0.059 41.6  0.855 3.45
+## 45   1992 4.95  0.018      0.014     0.034 47.0  0.878 4.10
+## 46   1993 4.32  0.032      0.022     0.062 51.6  0.853 3.40
+## 47   1994 6.00  0.025      0.019     0.045 54.7  0.868 3.79
+## 48   1995 4.39  0.025      0.019     0.057 55.6  0.857 3.51</code></pre>
+<p>Not only the native genome equivalents (column <code>NGE</code>), but also the native effective size (column <code>Ne</code>), the mean kinship (column <code>pedIBD</code>), the mean kinship at native alleles <code>pedIBDatN</code>, the diversity at native alleles corrected for the base year (column <code>condGD</code>), and the generation interval (column <code>I</code>) have been estimated for all birth cohorts.</p>
+</div>
+</div>
+<div id="references" class="section level3 unnumbered">
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Cervantes2011">
+<p>Cervantes, I., F. Goyache, A. Molina, M. Valera, and J. P. Guitérrez. 2011. “Estimation of Effective Population Size from the Rate of Coancestry in Pedigreed Populations.” <em>Animal Breeding and Genetics</em> 128.</p>
+</div>
+<div id="ref-Wellmann2011">
+<p>Wellmann, R., and J. Bennewitz. 2011. “Identification and Characterization of Hierarchical Structures in Dog Breeding Schemes, a Novel Method Applied to the Norfolk Terrier.” <em>Journal of Animal Science</em> 89: 3846–58.</p>
+</div>
+<div id="ref-Wellmann2012">
+<p>Wellmann, R., S. Hartwig, and J. Bennewitz. 2012. “Optimum Contribution Selection for Conserved Populations with Historic Migration; with Application to Rare Cattle Breeds.” <em>Genetics Selection Evolution</em> 44 (34).</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

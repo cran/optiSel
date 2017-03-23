@@ -62,7 +62,7 @@ apply(Comp[, -1], 2, mean)
 
 ## Reading native segments from files:
 \dontrun{
-wdir <- file.path(getwd(), "HaplotypeEval")
+wdir <- file.path(tempdir(), "HaplotypeEval")
 file <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, 
            minL=1000, ubFreq=0.01, what="match", w.dir=wdir)
 Comp <- segBreedComp(file$match, map)
@@ -71,6 +71,8 @@ head(Comp)
 apply(Comp[, -1], 2, mean)
 #    native          F          H          R 
 #0.38546920 0.05869088 0.25014228 0.30569764  
+
+#unlink(wdir, recursive = TRUE)
 }
 }
 \author{Robin Wellmann}

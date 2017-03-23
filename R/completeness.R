@@ -4,10 +4,10 @@
   Pedig <- as.data.frame(Pedig)
   if(PedigAsDataTable){setDF(Pedig)}
   
-  if(is.logical(keep)){keep <- Pedig[keep,1]}
+  if(is.logical(keep)){keep <- Pedig[keep, 1]}
   if(!is.null(keep)){
     keep <- as.character(keep)
-    keep <- setdiff(keep, c(NA))
+    keep <- setdiff(keep, c(NA, "", " "))
   }
   
   Pedig <- prePed(Pedig, keep=keep, addNum=TRUE)

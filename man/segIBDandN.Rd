@@ -68,7 +68,7 @@ mean(fIBDN)/mean(fN)
 
 ## using files:
 \dontrun{
-wdir   <- file.path(getwd(),"HaplotypeEval")
+wdir   <- file.path(tempdir(),"HaplotypeEval")
 chr    <- unique(map$Chr)
 GTfile <- file.path( dir, paste("Chr", chr, ".phased",     sep=""))
 file   <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", minSNP=20, ubFreq=0.01, w.dir=wdir)
@@ -76,6 +76,8 @@ fIBDN  <- segIBDandN(GTfile, file$match, map=map, minSNP=20)
  
 mean(fIBDN)
 #[1] 0.01040488
+
+#unlink(wdir, recursive = TRUE)
 }
 
 }

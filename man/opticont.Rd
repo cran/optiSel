@@ -181,7 +181,7 @@ con     <- list(ub.fA=0.03, ub.MC=0.55, ub=c(M=NA, F=-1))
 minfD   <- opticont("min.fD", K=Kin, phen=Phen, con=con, solver = "slsqp")
 minfD.s <- summary(minfD)
 c(minfD.s$fD, noSel.s$fD)
-#[1]  0.06660931 0.07698101
+#[1]  0.06660690 0.07698132
 
 #================================================================#
 # => Choose constraint for fD e.g.  0.073                        #
@@ -196,10 +196,10 @@ con        <- list(ub.fA=0.03, ub.fD=0.073, ub.MC=0.55, ub=c(M=NA, F=-1))
 maxBV.fD   <- opticont("max.BV", K=Kin, phen=Phen, con=con, trace = FALSE)
 maxBV.fD.s <- summary(maxBV.fD)
 maxBV.fD.s$meanBV - noSel.s$meanBV
-#[1]  0.3593038
+#[1]  0.3593
 #================================================================#
 # => Compared to no selection, the BV can be increased           #
-#    by  0.3593038                                               #
+#    by  0.3593                                                  #
 #================================================================#
 
 
@@ -233,9 +233,9 @@ plot(maxBV$parent$oc,    maxBV.fD$parent$oc, pch=18)
 x<-list(maxBV.fD, maxBV.MC, maxBV)
 cor(sapply(x,function(x){x$parent$oc}))
 #           [,1]      [,2]       [,3]
-#[1,] 1.00000000 0.7895464 0.07438411
-#[2,] 0.78954643 1.0000000 0.20823346
-#[3,] 0.07438411 0.2082335 1.00000000
+#[1,] 1.00000000 0.7895413 0.07438266
+#[2,] 0.78954132 1.0000000 0.20823346
+#[3,] 0.07438266 0.2082335 1.00000000
 
 }
 

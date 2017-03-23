@@ -10,7 +10,7 @@ Computes for every individual the genetic contribution from native founders and 
 pedBreedComp(Pedig, thisBreed)}
 
 \arguments{
-\item{Pedig}{Data frame containing the Pedigree. The data frame has columns (1) Individual, (2) Sire, (3) Dam, (4) Sex, and (5) Breed name. Missing parents are coded as \code{NA}. All animals have no parent or both parents missing. If this is not the case use \link{prePed}.}
+\item{Pedig}{Data frame containing the pedigree where the first 3 columns correspond to: Individual ID, Sire, and Dam. Additional columns include column Breed with breed names. Missing parents are coded as \code{NA}. All animals have no parent or both parents missing. If this is not the case use \link{prePed}.}
 \item{thisBreed}{Name of this breed as denoted in column (5) of the pedigree.}
 }
 

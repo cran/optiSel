@@ -5,8 +5,16 @@ rcpp_completeness <- function(Indiv, ArmanumSire, ArmanumDam, maxd) {
     .Call('optiSel_rcpp_completeness', PACKAGE = 'optiSel', Indiv, ArmanumSire, ArmanumDam, maxd)
 }
 
+rcpp_genecont <- function(numSire, numDam, numAnc, rNames, cNames) {
+    .Call('optiSel_rcpp_genecont', PACKAGE = 'optiSel', numSire, numDam, numAnc, rNames, cNames)
+}
+
 rcpp_haplofreq <- function(pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, ArmaBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, M, minSNP, minL, ubFreq, ArmaPos, symB, skip, cskip, getFreq, getOrig) {
     .Call('optiSel_rcpp_haplofreq', PACKAGE = 'optiSel', pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, ArmaBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, M, minSNP, minL, ubFreq, ArmaPos, symB, skip, cskip, getFreq, getOrig)
+}
+
+rcpp_makeA <- function(numSire, numDam, AFounder, numFounder, IndivName) {
+    .Call('optiSel_rcpp_makeA', PACKAGE = 'optiSel', numSire, numDam, AFounder, numFounder, IndivName)
 }
 
 rcpp_nativecont <- function(pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb) {
