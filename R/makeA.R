@@ -8,7 +8,7 @@ makeA <- function(Pedig, keep.only=NULL, keep=keep.only, AFounder=NULL){
   
   ids   <- as.character(Pedig[[1]])
   Pedig <- prePed(Pedig[,1:3], keep=keep, addNum=TRUE)
-  
+
   if(is.null(keep.only)){
     keep.only <- ids
   }else{
@@ -22,10 +22,21 @@ makeA <- function(Pedig, keep.only=NULL, keep=keep.only, AFounder=NULL){
     numFounder <- integer(0)
   }else{
     idF        <- Pedig$Indiv[Pedig$Indiv %in% rownames(AFounder)]
-    AFounder   <- AFounder[idF, idF]
+    AFounder   <- AFounder[idF, idF, drop=FALSE]
     numFounder <- Pedig[idF, "numIndiv"]
   }
-  pedKin <- rcpp_makeA(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, numFounder-1, as.character(Pedig$Indiv))
+  if(length(keep.only)<0.5*nrow(Pedig)){
+    indKeep <- Pedig$Indiv[Pedig$Indiv %in% keep.only]
+    numKeep <- Pedig[indKeep,"numIndiv"]
+    Pedig$nOff <- 0
+    x <- table(Pedig$Sire)
+    Pedig[names(x),"nOff"] <- x
+    x <- table(Pedig$Dam)
+    Pedig[names(x),"nOff"] <- x
+    pedKin  <- rcpp_makeA_lowMem(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(indKeep), as.integer(numKeep-1), as.integer(Pedig$Indiv %in% indKeep), as.integer(Pedig$nOff))
+  }else{
+    pedKin <- rcpp_makeA(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(Pedig$Indiv))
+  }
   if(identical(Pedig$Indiv, keep.only)){return(pedKin)}
   pedKin[keep.only, keep.only]
 }

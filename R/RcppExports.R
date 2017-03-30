@@ -17,6 +17,10 @@ rcpp_makeA <- function(numSire, numDam, AFounder, numFounder, IndivName) {
     .Call('optiSel_rcpp_makeA', PACKAGE = 'optiSel', numSire, numDam, AFounder, numFounder, IndivName)
 }
 
+rcpp_makeA_lowMem <- function(numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff) {
+    .Call('optiSel_rcpp_makeA_lowMem', PACKAGE = 'optiSel', numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff)
+}
+
 rcpp_nativecont <- function(pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb) {
     .Call('optiSel_rcpp_nativecont', PACKAGE = 'optiSel', pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb)
 }

@@ -21,11 +21,12 @@
   if(!("Breed" %in% colnames(Pedig))){stop("Column breed is missing.\n")}
   
   Pedig <- prePed(Pedig, keep=keep, lastNative=1234567, thisBreed=thisBreed)
-  hasWrongBreed <- (!is.na(Pedig$Sire) & !is.na(Pedig$Dam) & !(Pedig$Breed %in% thisBreed) & ((Pedig[Pedig$Sire, "Breed"] %in% thisBreed) | (Pedig[Pedig$Dam, "Breed"] %in% thisBreed)) )
-  Pedig[hasWrongBreed, "Breed"] <- thisBreed
-  Pedig[Pedig$Breed != thisBreed, "Sire"]<-NA
-  Pedig[Pedig$Breed != thisBreed, "Dam"]<-NA
-  Pedig <- prePed(Pedig, keep=keep)
+
+  #hasWrongBreed <- (!is.na(Pedig$Sire) & !is.na(Pedig$Dam) & !(Pedig$Breed %in% thisBreed) & ((Pedig[Pedig$Sire, "Breed"] %in% thisBreed) | (Pedig[Pedig$Dam, "Breed"] %in% thisBreed)) )
+  #Pedig[hasWrongBreed, "Breed"] <- thisBreed
+  #Pedig[Pedig$Breed != thisBreed, "Sire"]<-NA
+  #Pedig[Pedig$Breed != thisBreed, "Dam"]<-NA
+  #Pedig <- prePed(Pedig, keep=keep)
   
   if(!is.null(keep)){
     keep <- Pedig$Indiv[Pedig$Indiv %in% keep]
@@ -56,16 +57,17 @@
   cat(paste0("Number of Native  Founders: ", nrow(ANat), "\n"))
   cat(paste0("Individuals in Pedigree   : ", nrow(Pedig), "\n"))
   GB <- ((nrow(AMig)+nrow(ANat))^2 + length(Selection)^2 + nrow(Pedig)^2)*(7.45058066987776e-09)*1.1
-  if(GB>1){cat(paste0("Ensure that you have more than ", round(GB, 1), " GB memory available.\n"))}
+  if((GB>1)&(length(Selection)>0.5*nrow(Pedig))){cat(paste0("Ensure that you have more than ", round(GB, 1), " GB memory available.\n"))}
   if(GB>1){cat("Computing fOI ...")}
-  fOI  <- 0.5*makeA(Pedig[,1:3], AFounder=AMig)[Selection, Selection]
+  fOI  <- 0.5*makeA(Pedig[,1:3], AFounder=AMig, keep.only=Selection)[Selection, Selection]
   gc()
   if(GB>1){cat("finished\nComputing fII ...")}
-  fII  <- 0.5*makeA(Pedig[,1:3], AFounder=adiag(AMig, ANat))[Selection, Selection]
+  fII  <- 0.5*makeA(Pedig[,1:3], AFounder=adiag(AMig, ANat), keep.only=Selection)[Selection, Selection]
   if(GB>1){cat("finished\nCombining results ...")}
   rm(AMig)
   rm(ANat)
   gc()
+
   
   Res<-list()
   Res$pedZ <- fOI + 1 - fII

@@ -14,7 +14,10 @@ Rcpp::NumericMatrix rcpp_makeA(const arma::ivec& numSire, const arma::ivec& numD
   int NFounder = numFounder.n_elem;
   
   double tmp;
-  arma::mat pedKin(N, N);
+  Rcpp::NumericMatrix rpedKin(N, N);
+  arma::mat pedKin(rpedKin.begin(), rpedKin.nrow(), rpedKin.ncol(), false);
+  
+  
   pedKin.eye();
   
   for(i=0;i<NFounder;i++){
@@ -40,7 +43,6 @@ Rcpp::NumericMatrix rcpp_makeA(const arma::ivec& numSire, const arma::ivec& numD
     }
   }
   
-  Rcpp::NumericMatrix rpedKin(wrap(pedKin));
   rpedKin.attr("dimnames") = Rcpp::List::create(IndivName, IndivName);
   return rpedKin;
 }

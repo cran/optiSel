@@ -82,6 +82,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_makeA_lowMem
+Rcpp::NumericMatrix rcpp_makeA_lowMem(const arma::ivec& numSire, const arma::ivec& numDam, const arma::mat& AFounder, const arma::ivec& numFounder, const Rcpp::CharacterVector IndivName, const arma::ivec& numKeep, const arma::ivec& ainKeep, const arma::ivec& anOff);
+RcppExport SEXP optiSel_rcpp_makeA_lowMem(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP anOffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numSire(numSireSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numDam(numDamSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type AFounder(AFounderSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numFounder(numFounderSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type IndivName(IndivNameSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numKeep(numKeepSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type ainKeep(ainKeepSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type anOff(anOffSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_makeA_lowMem(numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_nativecont
 Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, int M, const arma::vec& ArmaNkb);
 RcppExport SEXP optiSel_rcpp_nativecont(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP MSEXP, SEXP ArmaNkbSEXP) {

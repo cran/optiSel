@@ -21,9 +21,9 @@
   for(cName in setdiff(c(SBreeds, DBreeds), colnames(Cont))){
    Cont[,cName]<-0
   }
-  Cont <- Cont[, SBreeds]+Cont[, DBreeds]
+  Cont <- Cont[, SBreeds, drop=FALSE]+Cont[, DBreeds, drop=FALSE]
   colnames(Cont) <- Breeds
-  Cont <- Cont[ids, rev(order(colMeans(Cont)))]
+  Cont <- Cont[ids, rev(order(colMeans(Cont))), drop=FALSE]
   Cont <- data.frame(Indiv=rownames(Cont), native=1-rowSums(Cont), Cont, stringsAsFactors = FALSE)
   if(PedigAsDataTable){
     setDT(Cont)
