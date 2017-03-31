@@ -386,13 +386,18 @@ The pedigree completeness is an important factor to get reliable results. If an 
 
 Of course, all 3 approaches can be followed simultaneously. First, we prepare the pedigree and classify the breed of founders born after 1970 to be `"unknown"`:
 
-```{r, results="hide"}
-data(PedigWithErrors)
+
+
+```{r,, results="hide"}
+data("PedigWithErrors")
+
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 ```
+
 ```{r}
 head(Pedig)
 ```
+
 Then we define the individuals with offspring born between 2006 and 2007 with breeding values to be selection candidates if their number of equivalent complete generations is at least 3.0. These are the individuals contained in vector `keep`. In a real application the individuals would be used as selection candidates that could become parents of the forthcomming birth cohorts.
 
 ```{r}

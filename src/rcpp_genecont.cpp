@@ -30,7 +30,7 @@ Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& n
     
     if((nSire>0) | (nDam>0)){
       nP = ((nSire<nDam)?nDam:nSire);
-      for(j=0; (numAnc.at(j)<=nP)&(j<NAnc); j++){
+      for(j=0; (j<NAnc)&(numAnc.at(j)<=nP); j++){
         pCont = ((nSire>0)?(GeneCont.at(nSire-1, j)):0.0) + ((nDam>0)?(GeneCont.at(nDam-1,  j)):0.0);
         if(pCont>0){GeneCont.at(i, j) = 0.5*pCont;}
       }

@@ -150,6 +150,10 @@ Rcpp::NumericVector rcpp_segInbreeding(std::string path1, std::string path2, int
   free(thisROH);
   free(cM);
   free(kb);
+  free(thisAllel);
+  free(prevAllel);
+  free(index1);
+  free(index2);
   
   return ArmasegInbr;
 }

@@ -166,9 +166,11 @@ Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathN
   for(i=0; i<NC;i++){
     free(fROH[i]);
     free(thisROH[i]);
+    free(lSEG[i]);
   }
   free(fROH);
   free(thisROH);
+  free(lSEG);
   
   free(kb);
   free(Pos);

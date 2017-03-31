@@ -29,7 +29,7 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   char* BreedSymbol= (char*)malloc((B+1)*sizeof(char));   /*        B - vector */
   char* wLine      = (char*)malloc((2*NC)*sizeof(char));  /*      2NC - matrix */
   char* fLine      = (char*)malloc((6*NC)*sizeof(char));  /*      6NC - matrix */
-  char* smaxFreq   = (char*)malloc(5*sizeof(char));       /*        5 - vector */
+  char* smaxFreq   = (char*)malloc(6*sizeof(char));       /*        6 - vector */
   if(BreedSymbol == NULL){error_return("Memory allocation failed.");};
   if(wLine       == NULL){error_return("Memory allocation failed.");};
   if(fLine       == NULL){error_return("Memory allocation failed.");};
@@ -76,9 +76,10 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   for(i=0; i<NC;    i++){indexC[i]=ArmaIndexC.at(i);}
   for(i=0; i<6*NC-1;i++){fLine[i]=' ';} 
   for(i=0; i<2*NC-1;i++){wLine[i]=' ';} 
-  wLine[2*NC-1]='\0';
-  fLine[6*NC-1]='\0';
-  merge[1]='\0';
+  wLine[2*NC-1]= '\0';
+  fLine[6*NC-1]= '\0';
+  merge[1]     = '\0';
+  smaxFreq[5]  = '\0';
   
   for(i=0; i<NC;i++){
     thisROH[i]= (int**)calloc(B, sizeof(int*));
@@ -365,6 +366,12 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   free(indexC);
   free(currAllelesC);
   free(prevAllelesC);
-
+  free(BreedSymbol);
+  free(NR);
+  free(smaxFreq);
+  free(wLine);
+  free(fLine);
+  free(saveLimit);
+  
   return Rcpp::List::create(Rcpp::Named("freq")=ArmaHapFreq, Rcpp::Named("match")=RcppHapOrig);
 }

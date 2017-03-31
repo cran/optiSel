@@ -164,6 +164,10 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   free(thisROH);
   free(cM);
   free(kb);
+  free(thisAllel);
+  free(prevAllel);
+  free(index1);
+  free(index2);
   
   return ArmasegIBD;
 }

@@ -161,5 +161,8 @@ Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFile
   free(kb);
   free(Pos);
   free(indexC);
+  free(currAllelesC);
+  free(prevAllelesC);
+  
   return confROH;
 }
