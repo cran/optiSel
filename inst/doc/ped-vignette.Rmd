@@ -31,6 +31,7 @@ Animal breeding relies on the prediction of breeding values of selection candida
     - [Native Effective Size](#native-effective-size)
     - [Effective Size](#effective-size)
     - [Native Genome Equivalent](#native-genome-equivalent)
+    - [Change of Breed Compostion](#change-of-breed-composition)
 
 Note that the calculation of breeding values is not included as there already exist a couple of R packages for this purpose. Recommended are the free package [MCMCglmm][1] for small and medium sized data sets, and package [asreml][2] for large data sets.
 
@@ -304,22 +305,45 @@ Ne
 
 However, the above formula assumes that ancestors are missing at random. In populations with historic introgression, pedigrees of individuals from foreign breeds are often cut, so their parents are not missing at random. In fact, even a small amount of introgression suffices to prevent a decrease of genetic diversity, so that the effective size of such a population is $\infty$.
 
-#### Native Genome Equivalent
+#### Change of Native Genome Equivalent and Ne
 
 The native genome equivalent NGE of a population is the minimum number of founders that would be needed to create a population consisting of unrelated individuals that has the same diversity at native alleles as the population under study [@Wellmann2012]. It is assumed that the individuals were unrelated in base year `base`, which could be well before pedigree recording had started. Between the base year and the year `lastNative` in which the last native founder was born, the population had a historical effective size of `histNe`. This assumption implies that the founders of the pedigree were related due to ancestors whose pedigrees had not been recorded.
 
-The decrease of native genome equivalents is estimated below for the time since `lastNative=1970` by assuming that individuals were unrelated in year `base=1800` and that the historical effective size was `histNe=150` between 1800 and 1970. Since the computation for the full pedigree could take some time, the parameters are estimated below from a subset of the pedigree:
+The decrease of native genome equivalents is estimated below for the time since `lastNative=1970` by assuming that individuals were unrelated in year `base=1800` and that the historical effective size was `histNe=150` between 1800 and 1970. Since the computation for the full pedigree could take some time, the parameters are estimated below from a subset of the pedigree, which are the individuals included in vector `keep`. Vector `keep` contains from each birth cohort 50 randomly sampled Hinterwald cattle. 
 
-```{r}
-data(ExamplePed)
-Pedig    <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
-Kinships <- kinlist(pedIBD=pedIBD(Pedig), pedIBDatN=pedIBDatN(Pedig, thisBreed="Hinterwaelder"))
-Kin      <- kinwac(Kinships, Pedig=Pedig, use=Pedig$Breed=="Hinterwaelder")
-sy       <- summary(Kin, tlim=c(1970, 1995), histNe=150, base=1800)
+```{r, results="hide"}
+data("PedigWithErrors")
+set.seed(1)
+Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
+use   <- Pedig$Breed=="Hinterwaelder" & Pedig$Born %in% (1970:2000)
+IDs   <- split(Pedig$Indiv[use], Pedig$Born[use])
+keep  <- unlist(mapply(sample, x=IDs, size=pmin(lapply(IDs,length), 50), SIMPLIFY=FALSE))
+
+Kinships <- kinlist(pedIBD   = pedIBD(Pedig, keep.only=keep), 
+                    pedIBDatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep))
+```
+
+```{r, fig.show='hold'}
+sy <- summary(Kinships, Pedig, tlim=c(1970, 2000), histNe=150, base=1800, df=4)
+ggplot(sy, aes(x=cohort, y=Ne)) + geom_line() + ylim(c(0,100))
+ggplot(sy, aes(x=cohort, y=NGE)) + geom_line() + ylim(c(0,7))
 ```
 
 Not only the native genome equivalents (column `NGE`), but also the native effective size (column `Ne`), the mean kinship (column `pedIBD`), the mean kinship at native alleles `pedIBDatN`, the diversity at native alleles corrected for the base year (column `condGD`), and the generation interval (column `I`) have been estimated for all birth cohorts.
 
+It is possible that the diversity at native alleles increases for a short period of time, in which case the estimate of the native effective size would be `NA`. Choose `df<4` to get a smooth estimate for the native effective size.
+
+
+#### Change of Breed Compostion
+
+For monitoring the introgression from other breeds, the contributions of foreign breeds to all birth cohorts can be estimated with function [conttac][conttac] and then plotted, e.g. with function ggplot.
+
+```{r, fig.width = 5, fig.height = 3}
+use  <- Pedig$Breed=="Hinterwaelder" & Pedig$Born %in% (1950:1995)
+cont <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
+contByYear <- conttac(cont, cohort=Pedig$Born, use=use, mincont = 0.01)
+ggplot(contByYear, aes(x=Year, y=Contribution, fill=Breed)) + geom_area(color="black")
+```
 
 
 ### References
@@ -332,5 +356,6 @@ Not only the native genome equivalents (column `NGE`), but also the native effec
 [pedInbreeding]: https://rdrr.io/cran/optiSel/man/pedInbreeding.html
 [pedIBD]:        https://rdrr.io/cran/optiSel/man/pedIBD.html
 [pedBreedComp]:  https://rdrr.io/cran/optiSel/man/pedBreedComp.html
+[conttac]:       https://rdrr.io/cran/optiSel/man/conttac.html
 
 

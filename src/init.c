@@ -18,6 +18,8 @@ extern SEXP optiSel_rcpp_segIBDandN(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SE
 extern SEXP optiSel_rcpp_segIBDandNVersion2(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP optiSel_rcpp_segInbreeding(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP optiSel_rcpp_segN(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP optiSel_rcpp_makeA(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP optiSel_rcpp_makeA_lowMem(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"optiSel_rcpp_completeness",       (DL_FUNC) &optiSel_rcpp_completeness,        4},
@@ -29,6 +31,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"optiSel_rcpp_segIBDandNVersion2", (DL_FUNC) &optiSel_rcpp_segIBDandNVersion2, 14},
     {"optiSel_rcpp_segInbreeding",      (DL_FUNC) &optiSel_rcpp_segInbreeding,      17},
     {"optiSel_rcpp_segN",               (DL_FUNC) &optiSel_rcpp_segN,                6},
+    {"optiSel_rcpp_makeA",              (DL_FUNC) &optiSel_rcpp_makeA,               5},
+    {"optiSel_rcpp_makeA_lowMem",       (DL_FUNC) &optiSel_rcpp_makeA_lowMem,        8},
     {NULL, NULL, 0}
 };
 

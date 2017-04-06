@@ -1,12 +1,11 @@
 
-"kinwac"<-function(K, Pedig, use=NULL){
+"kinwac"<-function(K, Pedig){
   PedigAsDataTable <- "data.table" %in% class(Pedig)
   Pedig <- as.data.frame(Pedig)
   if(PedigAsDataTable){setDF(Pedig)}
   rownames(Pedig) <- Pedig$Indiv
   cohort <- Pedig[rownames(K[[1]]),"Born"]
-  if(is.null(use))use<-rep(TRUE,length(cohort))
-
+ 
   Indiv<-1; Sire<-2; Dam<-3;
   for(i in c(Indiv, Sire, Dam)){Pedig[,i]<-as.character(Pedig[,i])}
    
@@ -22,25 +21,24 @@
   i<-NULL
   j<-NULL
   for(k in Years){
-    if(sum((cohort==k) & use)>0){
-    i<-c(i,rep(which((cohort==k) & use),sum((cohort==k))))
-    j<-c(j,rep(which((cohort==k)),each=sum((cohort==k) & use)))
+    if(sum(cohort==k)>0){
+    i<-c(i, rep(which(cohort==k), sum(cohort==k)))
+    j<-c(j, rep(which(cohort==k), each=sum(cohort==k)))
     }
   }
   A<-sparseMatrix(i=i[i!=j],j=j[i!=j],dims=c(length(cohort),length(cohort)))
   A <- as(A, "dgCMatrix")
   cohort[cohort==-123456789]<- NA
   
-  kinWithPop <- matrix(NA, nrow=nrow(K[[1]]), ncol=length(K)+3)
-  colnames(kinWithPop)<-c("cohort", "used", "I", names(K))
+  kinWithPop <- matrix(NA, nrow=nrow(K[[1]]), ncol=length(K)+2)
+  colnames(kinWithPop)<-c("cohort", "I", names(K))
   rownames(kinWithPop)<-rownames(K[[1]])
   N<-apply(A,2,sum)
   
   kinWithPop[,1]<-cohort
-  kinWithPop[,2]<-1*use
-  kinWithPop[,3]<-Pedig[rownames(K[[1]]),"I"]
+  kinWithPop[,2]<-Pedig[rownames(K[[1]]),"I"]
   for(k in 1:length(K)){
-    kinWithPop[,k+3]<-apply(K[[k]]*A,2,sum)/N
+    kinWithPop[,k+2]<-apply(K[[k]]*A,2,sum)/N
   }
   kinWithPop <- data.frame(Indiv=rownames(K[[1]]), kinWithPop)
   if(PedigAsDataTable){setDT(kinWithPop)}

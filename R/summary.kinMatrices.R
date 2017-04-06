@@ -1,17 +1,20 @@
 
-"summary.kinwac"<-function(object, tlim=NULL, histNe=NULL, base=NULL, df=4, ...){
-  PedigAsDataTable <- "data.table" %in% class(object)
-  object <- as.data.frame(object)
-  if(PedigAsDataTable){setDF(object)} 
-  condProbMat <- c()
-  for( i in names(attributes(object)$condProb)){
-    condProbMat<-c(condProbMat, attributes(object)$condProb[[i]]["f1"], attributes(object)$condProb[[i]]["f2"])
-  }
-  condProb<- attributes(object)$condProb 
+"summary.kinMatrices"<-function(object, Pedig, tlim=NULL, histNe=NULL, base=NULL, df=4, ...){
+  PedigAsDataTable <- "data.table" %in% class(Pedig)
+  Pedig <- as.data.frame(Pedig)
+  if(PedigAsDataTable){setDF(Pedig)} 
   
-  object <- object[object[,"used"]==1,c(-1,-3)]
-  cohort <- object[,1]
-  Param  <- aggregate(object[,-1],list(cohort),mean, na.rm=TRUE)
+  Kinwac <- kinwac(K=object, Pedig=Pedig)
+  
+  condProbMat <- c()
+  for( i in names(attributes(Kinwac)$condProb)){
+    condProbMat<-c(condProbMat, attributes(Kinwac)$condProb[[i]]["f1"], attributes(Kinwac)$condProb[[i]]["f2"])
+  }
+  condProb<- attributes(Kinwac)$condProb 
+  
+  Kinwac <- Kinwac[,-1]
+  cohort <- Kinwac[,1]
+  Param  <- aggregate(Kinwac[,-1],list(cohort),mean, na.rm=TRUE)
   colnames(Param)[1]<-"cohort"
   if(is.null(tlim)){tlim<-range(cohort)}
   Param   <- Param[Param$cohort>=tlim[1] & Param$cohort<=tlim[2],]
@@ -35,5 +38,10 @@
   Param <- Param[, setdiff(colnames(Param), condProbMat)]
   print(format(round(Param,3), digits=3, scientific=FALSE))
   if(PedigAsDataTable){setDT(Param)}
-  invisible(list(Param=Param,histNe=histNe, base=base, tlim=tlim, df=df))
+  attributes(Param)$histNe <- histNe
+  attributes(Param)$base   <- base
+  attributes(Param)$tlim   <- tlim
+  attributes(Param)$df     <- df
+  
+  invisible(Param)
 }

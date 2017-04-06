@@ -9,6 +9,7 @@
 	
 	Ne       <-1/(2*(deltaf))
 	names(Ne) <-Year
+	Ne[Ne<0]<-NA
 	Ne
 }
 

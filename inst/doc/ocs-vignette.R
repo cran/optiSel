@@ -151,7 +151,7 @@ minKin4mb.s <- summary(minKin4mb)
 minKin4mb.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN", "sKin.acrossBreeds")]
 
 ## ---- results="hide"-----------------------------------------------------
-data(PedigWithErrors)
+data("PedigWithErrors")
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 
 ## ------------------------------------------------------------------------
@@ -164,7 +164,7 @@ table(Pedig[keep, "Sex"])
 
 ## ------------------------------------------------------------------------
 Kin <- kinlist(
-    pKin    = as(pedIBD(Pedig, keep.only=keep), "matrix"),
+    pKin    = pedIBD(Pedig, keep.only=keep),
     pKinatN = pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
 )
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2017-03-23" />
+<meta name="date" content="2017-04-06" />
 
 <title></title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Optimum Contribution Selection</li>
 </ol></h1>
 <h4 class="author"><em>Robin Wellmann</em></h4>
-<h4 class="date"><em>2017-03-23</em></h4>
+<h4 class="date"><em>2017-04-06</em></h4>
 
 
 
@@ -410,8 +410,8 @@ minKin4mb.s &lt;-<span class="st"> </span><span class="kw">summary</span>(minKin
 <li><p>Classify the breed of founders born after some fixed date as <code>unknown</code>, and restrict the genetic contribution from these founders in the offspring. The breed names can be classified by using appropriate values for parameters <code>lastNative</code> and <code>thisBreed</code> in function <a href="https://rdrr.io/cran/optiSel/man/prePed.html">prePed</a>.</p></li>
 <li><p>Classify the breed of founders born after some fixed date as <code>unknown</code>, so that these founders are considered non-native, and restrict or minimize the kinship at native alleles (in addition to the classical pedigree based kinship).</p></li>
 </ul>
-<p>Of course, all 3 approaches can be followed simultaneously. First, we prepare the pedigree and classify the breed of founders born after 1970 to be <code>&quot;unknown&quot;</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(PedigWithErrors)
+<p>Of course, all 3 approaches can be followed simultaneously. First, we prepare the pedigree and classify the breed of founders born after 1970 to be <code>unknown</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)
 Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Pedig)</code></pre></div>
 <pre><code>##                             Indiv Sire  Dam Sex   Breed Born BV
@@ -430,7 +430,7 @@ keep    &lt;-<span class="st"> </span>Summary[Summary$equiGen&gt;=<span class="f
 ## 106 309</code></pre>
 <p>A matrix containing the <em>pedigree based kinship</em> between all pairs of individuals can be computed with function <a href="https://rdrr.io/cran/optiSel/man/pedIBD.html">pedIBD</a>. It is half the additive relationship matrix. The <em>pedigree based kinship at native alleles</em> can be calculated from the results of function <a href="https://rdrr.io/cran/optiSel/man/pedIBDatN.html">pedIBDatN</a>. Both kinships are computed below and combined into a single R-object with function <a href="https://rdrr.io/cran/optiSel/man/kinlist.html">kinlist</a>. Below, the <em>pedigree based kinship</em> is named <code>pKin</code>, and the <em>kinship at native alleles</em> is named <code>pKinatN</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Kin &lt;-<span class="st"> </span><span class="kw">kinlist</span>(
-    <span class="dt">pKin    =</span> <span class="kw">as</span>(<span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>keep), <span class="st">&quot;matrix&quot;</span>),
+    <span class="dt">pKin    =</span> <span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>keep),
     <span class="dt">pKinatN =</span> <span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>keep)
 )</code></pre></div>
 <pre><code>## Number of Migrant Founders: 335

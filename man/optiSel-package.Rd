@@ -46,7 +46,8 @@ For pairs of individuals the following kinships can be computed:
 \link{segIBDatN} \tab  Calculates \bold{seg}ment based probability of alleles to be \bold{IBD}  \bold{at} segments with \bold{N}ative origin,\cr
 \link{pedIBDorM} \tab  Calculates \bold{ped}igree based probability of alleles to be \bold{IBD} \bold{or} \bold{M}igrant alleles,\cr
 \link{segIBDandN} \tab Calculates \bold{seg}ment based probability of alleles to be \bold{IBD}  \bold{and} have \bold{N}ative origin,\cr 
-\link{segN}       \tab Calculates \bold{seg}ment based probability of alleles to have \bold{N}ative origin.\cr 
+\link{segN}       \tab Calculates \bold{seg}ment based probability of alleles to have \bold{N}ative origin,\cr 
+\link{makeA} \tab Calculates the pedigree-based additive relationship matrix. \cr
 }
 
 Results from these functions can be combined with function \link{kinlist} into a single R object, which can then be used as an argument
@@ -117,7 +118,7 @@ Finally, there are some functions for estimating population parameters:
 \link{conttac}   \tab Calculates genetic \bold{cont}ributions of breeds \bold{t}o  \bold{a}ge \bold{c}ohorts,\cr
 \link{kinwac}         \tab Calculates for every individual it's mean \bold{kin}ship \bold{w}ith the \bold{a}ge \bold{c}ohort to which \cr
     \tab it belongs,\cr
-\link{summary.kinwac} \tab Calculates for every age cohort several genetic parameters. These may \cr
+\link{summary.kinMatrices} \tab Calculates for every age cohort several genetic parameters. These may \cr
                       \tab include average kinships, genetic diversities, gene diversity at native loci,\cr
                       \tab the native effective size, and the native genome equivalent.\cr
 }
@@ -151,7 +152,7 @@ Wellmann, R., and Bennewitz, J. (2011). Identification and characterization of h
 
 Wellmann, R., Hartwig, S., Bennewitz, J. (2012). Optimum contribution selection for conserved populations with historic migration; with application to rare cattle breeds. {Genetics Selection Evolution}. 44: 34
 
-Wellmann, R., Bennewitz, J., Meuwissen, T.H.E. (2014) A unified approach to characterize and conserve adaptive and neutral genetic diversity in subdivided populations. {Genetics Selection Evolution}. 69, e16
+Wellmann, R., Bennewitz, J., Meuwissen, T.H.E. (2014) A unified approach to characterize and conserve adaptive and neutral genetic diversity in subdivided populations. {Genet Res (Camb)}. 69: e16
 }
 
 \keyword{ package }
@@ -176,28 +177,25 @@ head(Pedig)
 ############################################
 
 Kinships <- kinlist(pedIBD=pedIBD(Pedig), pedIBDatN=pedIBDatN(Pedig, thisBreed="Hinterwaelder"))
-Kin      <- kinwac(Kinships, Pedig=Pedig, use=Pedig$Breed=="Hinterwaelder")
-Kin[1000:1010,]
+Param  <- summary(Kinships, Pedig, tlim=c(1970,2005), histNe=150, base=1800, df=4)
 
-x  <- summary(Kin, tlim=c(1970,2005), histNe=150, base=1800)
-xP <- x$Param
+plot(Param$cohort, Param$Ne, type="l", ylim=c(0,150), 
+     main="Native Effective Size", ylab="Ne", xlab="")
 
-plot(xP$cohort, xP$Ne, type="l", ylim=c(0,150), 
-     main="Native Effective Size",ylab="Ne",xlab="")
-
-matplot(xP$cohort, xP[,c("pedIBD", "pedIBDatN")], 
+matplot(Param$cohort, Param[,c("pedIBD", "pedIBDatN")], 
         type="l",ylim=c(0,1),main="Kinships", xlab="Year", ylab="mean Kinship")
 abline(0,0)
-legend("topleft", legend = c("pedIBD", "pedIBDatN"),lty=1:2,col=1:2,cex=0.6)
+legend("topleft", legend = c("pedIBD", "pedIBDatN"), lty=1:2, col=1:2, cex=0.6)
 
+info <- paste("Base Year =", attributes(Param)$base, "  historic Ne =", attributes(Param)$histNe)
 
-plot(xP$cohort, xP$condGD, type="l", ylim=c(0,1), 
+plot(Param$cohort, Param$condGD, type="l", ylim=c(0,1), 
      main="Diversity at native alleles",ylab="condGD",xlab="")
-mtext(paste("Base Year =", x$base, "  historic Ne =", x$histNe), cex=0.7)
+mtext(info, cex=0.7)
 
-plot(xP$cohort,xP$NGE,type="l",main="Native Genome Equivalents", 
+plot(Param$cohort,Param$NGE,type="l",main="Native Genome Equivalents", 
      ylab="NGE",xlab="",ylim=c(0,7))
-mtext(paste("Base Year =", x$base, "  historic Ne =", x$histNe), cex=0.7)
+mtext(info, cex=0.7)
 
 
 ############################################

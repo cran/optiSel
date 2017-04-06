@@ -384,13 +384,10 @@ The pedigree completeness is an important factor to get reliable results. If an 
  
 - Classify the breed of founders born after some fixed date as `unknown`, so that these founders are considered non-native, and restrict or minimize the kinship at native alleles (in addition to the classical pedigree based kinship).
 
-Of course, all 3 approaches can be followed simultaneously. First, we prepare the pedigree and classify the breed of founders born after 1970 to be `"unknown"`:
-
-
+Of course, all 3 approaches can be followed simultaneously. First, we prepare the pedigree and classify the breed of founders born after 1970 to be `unknown`:
 
 ```{r,, results="hide"}
 data("PedigWithErrors")
-
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 ```
 
@@ -410,7 +407,7 @@ A matrix containing the *pedigree based kinship* between all pairs of individual
  The *pedigree based kinship at native alleles* can be calculated from the results of function [pedIBDatN][pedIBDatN]. Both kinships are computed below and combined into a single R-object with function [kinlist][kinlist]. Below, the *pedigree based kinship* is named `pKin`, and the *kinship at native alleles* is named `pKinatN`:
 ```{r}
 Kin <- kinlist(
-    pKin    = as(pedIBD(Pedig, keep.only=keep), "matrix"),
+    pKin    = pedIBD(Pedig, keep.only=keep),
     pKinatN = pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
 )
 ```

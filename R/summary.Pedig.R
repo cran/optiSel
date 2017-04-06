@@ -33,6 +33,7 @@
   Res   <- sRes[Res, list(Indiv, equiGen, fullGen, maxGen, meanCom), on="Indiv"]
   Res$meanCom[is.na(Res$meanCom)]<-0
   Pedig <- Res[Pedig,list(Indiv, numSire, numDam, equiGen, fullGen, maxGen, meanCom, Inbreeding), on="Indiv"]
+  Pedig <- as.data.frame(Pedig)
   setDF(Pedig)
   Pedig$patIndex <- 0
   Pedig[Pedig$numSire!=0,"patIndex"]<-Pedig[Pedig$numSire[Pedig$numSire!=0],"meanCom"] 
