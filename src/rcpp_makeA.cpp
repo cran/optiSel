@@ -12,12 +12,9 @@ Rcpp::NumericMatrix rcpp_makeA(const arma::ivec& numSire, const arma::ivec& numD
   int i, j, nSire, nDam, ni, nj;
   int N = numSire.n_elem;
   int NFounder = numFounder.n_elem;
-  
   double tmp;
   Rcpp::NumericMatrix rpedKin(N, N);
   arma::mat pedKin(rpedKin.begin(), rpedKin.nrow(), rpedKin.ncol(), false);
-  
-  
   pedKin.eye();
   
   for(i=0;i<NFounder;i++){

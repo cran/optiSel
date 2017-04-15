@@ -54,7 +54,7 @@ f     <- segInbreeding(files, map, minSNP=20, minL=2000)
 Cattle2 <- merge(Cattle, f, by="Indiv")
 tapply(Cattle2$Inbr, Cattle2$Breed, mean)
 #    Angler  Fleckvieh   Holstein    Rotbunt 
-#0.03908811 0.05522691 0.12393375 0.09686664 
+#0.03842552 0.05169508 0.12431393 0.08386849 
 
 boxplot(Inbr~Breed, data=Cattle2, ylim=c(0,1), main="Segment Based Inbreeding")
 
@@ -63,7 +63,7 @@ identical(rownames(fIBD), f$Indiv)
 #[1] TRUE
 
 range(2*diag(fIBD)-1-f$Inbr)
-#[1] -2.220446e-16  2.220446e-16
+#[1] -2.012279e-16  2.081668e-16
 }
 \author{Robin Wellmann}
 

@@ -5,18 +5,21 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFileC, int NC, int M, const arma::ivec& ArmaIndexC, const arma::mat& ArmaNat, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, char symB, int skip, int cskip) {
+Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFileC, int NC, int M, const arma::ivec& ArmaIndexC, const arma::mat& ArmaNat, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
   int m, m2, i, j, r, rK, endoffile, gleich;
   double L, w, lSEG ;
-  char str1[100],  Line[2000000];
+  char str1[100];
+  char symB = stdsymB.at(0);
   FILE *fC;
-  
   Rcpp::NumericMatrix confROH(NC, NC);
-  
   int K  = (minSNP<=60)?(minSNP/2):(30);
+
+  size_t bufsize = 2*NFileC;  
+  char* Line = (char*)malloc(bufsize*sizeof(char));
+  if(Line == NULL){error_return("Memory allocation failed.");};
   
   int** Nat         = (int**)calloc(NC,sizeof(int*));
   double** fROH     = (double**)calloc(NC,sizeof(double*));
@@ -58,7 +61,7 @@ Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFile
   fC = fopen(pathThisBreed.c_str(),"r");
   if(fC == NULL){error_return("File opening failed.");}; 
   for(i=0;i<skip+1;i++){
-    fgets(Line,2000000,fC);
+    while(fgetc(fC)!='\n'){}
   }
   
   endoffile=0;
@@ -163,6 +166,7 @@ Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFile
   free(indexC);
   free(currAllelesC);
   free(prevAllelesC);
+  free(Line);
   
   return confROH;
 }

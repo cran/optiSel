@@ -38,8 +38,11 @@ data(PedigWithErrors)
 data(Phen)
 keep  <- Phen$Indiv
 Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
-fD    <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
+fD    <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep, nGen=6)
 
+#Number of Migrant Founders: 237
+#Number of Native  Founders: 150
+#Individuals in Pedigree   : 1658
 #Native Ne = 49.5 (estimated from 6 previous generations)
 #Mean kinship of native alleles:  0.0777
 }

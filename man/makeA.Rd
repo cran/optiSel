@@ -31,9 +31,10 @@ Additive relationship matrix.
 \examples{
 data(PedigWithErrors)
 data(Phen)
-keep  <- Phen$Indiv
-Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
-pedA  <- pedIBD(Pedig, keep.only=keep)
+Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
+keep  <- Pedig$Indiv[summary(Pedig)$equiGen>5 & Pedig$Indiv \%in\% Phen$Indiv]
+A     <- makeA(Pedig, keep.only=keep)
+A[1:3,1:3]
 }
 
 

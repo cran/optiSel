@@ -5,16 +5,17 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string ArmaBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC,int NFileR, int NC, const arma::ivec& ArmaNR, int M,  int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, char symB, int skip, int cskip, int getFreq, int getOrig) {
+Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string stdBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC,int NFileR, int NC, const arma::ivec& ArmaNR, int M,  int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, std::string  stdsymB, int skip, int cskip, int getFreq, int getOrig) {
   /* ***** initialize variables ****** */
   int m, mx, ms, i, j, r, rK, b, gleich, BreedIndex, endoffile;
   double L, maxFreq, thisFreq;
-  char str1[100], rLine[2000000];
+  char str1[100];
   FILE *fC, *fR, *fFreq, *fOrig;
   char merge[2];
+  char symB = stdsymB.at(0);
   
   int K            = (minSNP<=60)?(minSNP/2):(30);
   int B            = ArmaIndexR.n_cols;
@@ -26,14 +27,18 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   arma::mat ArmaHapFreq(M*returnFreq, NC*returnFreq);
   Rcpp::CharacterMatrix RcppHapOrig(M*returnOrig, NC*returnOrig);
     
-  char* BreedSymbol= (char*)malloc((B+1)*sizeof(char));   /*        B - vector */
-  char* wLine      = (char*)malloc((2*NC)*sizeof(char));  /*      2NC - matrix */
-  char* fLine      = (char*)malloc((6*NC)*sizeof(char));  /*      6NC - matrix */
+  char* BreedSymbol= (char*)malloc((B+1)*sizeof(char));   /*      B+1 - vector */
+  char* wLine      = (char*)malloc((2*NC)*sizeof(char));  /*      2NC - vector */
+  char* fLine      = (char*)malloc((6*NC)*sizeof(char));  /*      6NC - vector */
   char* smaxFreq   = (char*)malloc(6*sizeof(char));       /*        6 - vector */
   if(BreedSymbol == NULL){error_return("Memory allocation failed.");};
   if(wLine       == NULL){error_return("Memory allocation failed.");};
   if(fLine       == NULL){error_return("Memory allocation failed.");};
   if(smaxFreq    == NULL){error_return("Memory allocation failed.");};
+
+  size_t bufsize = 2*(NFileC+NFileR);  
+  char* rLine = (char*)malloc(bufsize*sizeof(char));
+  if(rLine == NULL){error_return("Memory allocation failed.");};
   
   int*** HapCount  = (int***)calloc(M, sizeof(int**));    /* M xNCxB  - matrix */
   int*** thisROH   = (int***)calloc(NC,sizeof(int**));    /* NCxB xNR - matrix */
@@ -59,7 +64,7 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   if(indexC      == NULL){error_return("Memory allocation failed.");};
   if(indexR      == NULL){error_return("Memory allocation failed.");};
 
-  strcpy(BreedSymbol, ArmaBreedSymbol.c_str());
+  strcpy(BreedSymbol, stdBreedSymbol.c_str());
   
   for(b=0;b<B;b++){
     NR[b]          = ArmaNR.at(b);
@@ -108,9 +113,9 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   if(saveOrig){fOrig = fopen(pathOrig.c_str(), "a"); if(fOrig== NULL){error_return("File opening failed.");};}else{fOrig=fC;/* avoid warning */}
   
   for(i=0;i<skip+1;i++){
-    fgets(rLine,2000000,fC);
-    fgets(rLine,2000000,fR);
-  }
+    while(fgetc(fC)!='\n'){}
+    while(fgetc(fR)!='\n'){}
+   }
   endoffile=0;
   m=0;
   ms=0;
@@ -369,6 +374,7 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   free(BreedSymbol);
   free(NR);
   free(smaxFreq);
+  free(rLine);
   free(wLine);
   free(fLine);
   free(saveLimit);

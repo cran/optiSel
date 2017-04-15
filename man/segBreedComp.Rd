@@ -55,7 +55,7 @@ GTfiles <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 Haplo   <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1000)
 Comp    <- segBreedComp(Haplo$freq<0.01, map)
 mean(Comp$native)
-#[1] 0.3854692
+#[1] 0.3853432
 
 Comp <- segBreedComp(Haplo$match, map)
 apply(Comp[, -1], 2, mean)
@@ -70,7 +70,7 @@ head(Comp)
 
 apply(Comp[, -1], 2, mean)
 #    native          F          H          R 
-#0.38546920 0.05869088 0.25014228 0.30569764  
+#0.38534317 0.05503451 0.25986508 0.29975724 
 
 #unlink(wdir, recursive = TRUE)
 }

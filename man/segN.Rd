@@ -42,12 +42,12 @@ files <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 Freq  <- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="others", minSNP=20)$freq
 fN   <- segN(Freq<0.01, map)
 mean(fN)
-#[1] 0.1543153
+#[1] 0.15418
 
 # Computing mean kinship at native segments:
 fIBDN <- segIBDandN(files, Freq<0.01, map)
 mean(fIBDN)/mean(fN)
-#[1] 0.06742614
+#[1] 0.06695171
 
 
 
@@ -60,7 +60,7 @@ files  <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", w.dir=wdir)
 fN     <- segN(files$match, map)
 
 mean(fN)
-#[1] 0.1543153
+#[1] 0.15418
 
 #unlink(wdir, recursive = TRUE)
 }

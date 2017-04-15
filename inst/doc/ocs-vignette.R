@@ -158,7 +158,8 @@ Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 head(Pedig)
 
 ## ------------------------------------------------------------------------
-Summary <- summary(Pedig, keep=Pedig$Born %in% (2006:2007) & !is.na(Pedig$BV))
+data("Phen")
+Summary <- summary(Pedig, keep=Pedig$Indiv %in% Phen$Indiv)
 keep    <- Summary[Summary$equiGen>=5.0, "Indiv"]
 table(Pedig[keep, "Sex"])
 
@@ -174,20 +175,21 @@ Pedig$MC <- 1-cont$native
 head(cont[keep, 2:6])
 
 ## ------------------------------------------------------------------------
-phen <- Pedig[Pedig$Indiv %in% keep, c("Indiv", "Sex", "Breed", "Born", "BV", "MC")]
-phen$BV <- phen$BV + 4*(phen$MC-mean(phen$MC))
-head(phen[,-1])
+Phen <- merge(Pedig, Phen[,c("Indiv", "BV")], by="Indiv")
+Phen <- Phen[Phen$Indiv %in% keep, c("Indiv", "Sex","Breed", "Born", "BV", "MC")]
+Phen$BV <- Phen$BV - mean(Phen$BV)
+head(Phen)
 
 ## ------------------------------------------------------------------------
-help.opticont(Kin, phen)
+help.opticont(Kin, Phen)
 
 ## ------------------------------------------------------------------------
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$pKin[phen$Indiv, phen$Indiv])
+meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
-maxBV   <- opticont(method="max.BV", K=Kin, phen=phen, con=con, trace=FALSE)
+maxBV   <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, trace=FALSE)
 maxBV.s <- summary(maxBV)
 
 ## ------------------------------------------------------------------------
@@ -196,8 +198,8 @@ maxBV.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 ## ---- results="hide"-----------------------------------------------------
 meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- mean(phen$MC)
-maxBV2         <- opticont(method="max.BV", K=Kin, phen=phen, con=con, solver="slsqp")
+con$ub.MC      <- mean(Phen$MC)
+maxBV2         <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
 maxBV2.s       <- summary(maxBV2)
 
 ## ------------------------------------------------------------------------
@@ -208,7 +210,7 @@ Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 con  <- list(ub=c(M=NA, F=-1))
 
 ## ---- results="hide"-----------------------------------------------------
-minKin   <- opticont(method="min.pKin", K=Kin, phen=phen, con=con, trace=FALSE)
+minKin   <- opticont(method="min.pKin", K=Kin, phen=Phen, con=con, trace=FALSE)
 minKin.s <- summary(minKin)
 
 ## ------------------------------------------------------------------------
@@ -216,11 +218,11 @@ minKin.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
 con  <- list(ub=c(M=NA, F=-1))
-con$ub.MC   <- 0.50
-meanKin     <- mean(Kin$pKin[phen$Indiv, phen$Indiv])
+con$ub.MC   <- 0.45
+meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
-minKin2     <- opticont(method="min.pKinatN", K=Kin, phen=phen, con=con, solver="slsqp")
+minKin2     <- opticont(method="min.pKinatN", K=Kin, phen=Phen, con=con, solver="slsqp")
 minKin2.s   <- summary(minKin2)
 
 ## ------------------------------------------------------------------------
@@ -229,19 +231,19 @@ Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
 con            <- list(ub=c(M=NA, F=-1))
-meanKin        <- mean(Kin$pKin[phen$Indiv, phen$Indiv])
+meanKin        <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
 meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
 con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, trace=FALSE)
+minMC   <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
 minMC.s <- summary(minMC)
 
 ## ------------------------------------------------------------------------
 minMC.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-con$lb.BV <- mean(phen$BV)
-minMC2    <- opticont(method="min.MC", K=Kin, phen=phen, con=con, trace=FALSE)
+con$lb.BV <- mean(Phen$BV)
+minMC2    <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
 minMC2.s  <- summary(minMC2)
 
 ## ------------------------------------------------------------------------

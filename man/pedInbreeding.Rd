@@ -30,7 +30,7 @@ keep  <- Phen$Indiv
 Pedig <- prePed(PedigWithErrors, keep=keep)
 Res   <- pedInbreeding(Pedig)
 mean(Res[keep, "Inbr"])
-#[1] 0.02303006
+#[1] 0.01943394
 }
 
 

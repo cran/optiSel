@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2017-04-06" />
+<meta name="date" content="2017-04-14" />
 
 <title></title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Optimum Contribution Selection</li>
 </ol></h1>
 <h4 class="author"><em>Robin Wellmann</em></h4>
-<h4 class="date"><em>2017-04-06</em></h4>
+<h4 class="date"><em>2017-04-14</em></h4>
 
 
 
@@ -100,7 +100,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="example-data-set" class="section level2">
 <h2>Example Data Set</h2>
 <p>All evaluations using marker data are demonstrated at the example of cattle data included in the package. This multi-breed data has already been described in the <a href="seg-vignette.html">companion vignette for basic marker-based evaluations</a>.</p>
-<p>Data frame <code>phen</code> includes the phenotypic information and has columns <code>Indiv</code> (individual IDs), <code>Born</code> (year of birth), <code>Breed</code> (breed name), <code>BV</code> (breeding values), and <code>Sex</code> (sexes). Sexes are recoded as 1 for males and 2 for females.</p>
+<p>Data frame <code>Cattle</code> includes the phenotypic information and has columns <code>Indiv</code> (individual IDs), <code>Born</code> (year of birth), <code>Breed</code> (breed name), <code>BV</code> (breeding values), and <code>Sex</code> (sexes). Sexes are recoded as 1 for males and 2 for females.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;optiSel&quot;</span>)
 <span class="kw">data</span>(Cattle)
 <span class="kw">head</span>(Cattle)</code></pre></div>
@@ -298,7 +298,7 @@ Cattle[<span class="kw">rownames</span>(Comp), <span class="st">&quot;MC&quot;</
 </ul>
 <div id="maximize-genetic-gain" class="section level3">
 <h3><a name="maximize-genetic-gain-marker-based"></a>Maximize Genetic Gain</a></h3>
-<p>Fist we define a data frame containing only the phenotypes of the selection candidates and create a list of constraints:</p>
+<p>First we define a data frame containing only the phenotypes of the selection candidates and create a list of constraints:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phen        &lt;-<span class="st"> </span>Cattle[Cattle$Breed==<span class="st">&quot;Angler&quot;</span>,]
 con         &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">M=</span><span class="ot">NA</span>, <span class="dt">F=</span>-<span class="dv">1</span>))
 meanKin     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$sKin[phen$Indiv, phen$Indiv])
@@ -414,53 +414,55 @@ minKin4mb.s &lt;-<span class="st"> </span><span class="kw">summary</span>(minKin
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)
 Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Pedig)</code></pre></div>
-<pre><code>##                             Indiv Sire  Dam Sex   Breed Born BV
-## S276000890888469 S276000890888469 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA
-## S276000891160479 S276000891160479 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA
-## S276000811209491 S276000811209491 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA
-## S276000811063904 S276000811063904 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA
-## S276000892147965 S276000892147965 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA
-## S276000891895524 S276000891895524 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA NA</code></pre>
-<p>Then we define the individuals with offspring born between 2006 and 2007 with breeding values to be selection candidates if their number of equivalent complete generations is at least 3.0. These are the individuals contained in vector <code>keep</code>. In a real application the individuals would be used as selection candidates that could become parents of the forthcomming birth cohorts.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Summary &lt;-<span class="st"> </span><span class="kw">summary</span>(Pedig, <span class="dt">keep=</span>Pedig$Born %in%<span class="st"> </span>(<span class="dv">2006</span>:<span class="dv">2007</span>) &amp;<span class="st"> </span>!<span class="kw">is.na</span>(Pedig$BV))
+<pre><code>##                             Indiv Sire  Dam Sex   Breed Born
+## S276000890888469 S276000890888469 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA
+## S276000891160479 S276000891160479 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA
+## S276000811209491 S276000811209491 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA
+## S276000811063904 S276000811063904 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA
+## S276000892147965 S276000892147965 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA
+## S276000891895524 S276000891895524 &lt;NA&gt; &lt;NA&gt;   1 unknown   NA</code></pre>
+<p>We define the individuals included in data.frame <code>Phen</code> to be selection candidates if their number of equivalent complete generations is at least 5.0. These are the individuals contained in vector <code>keep</code>. In a real application the individuals would be used as selection candidates that could become parents of the forthcomming birth cohorts.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;Phen&quot;</span>)
+Summary &lt;-<span class="st"> </span><span class="kw">summary</span>(Pedig, <span class="dt">keep=</span>Pedig$Indiv %in%<span class="st"> </span>Phen$Indiv)
 keep    &lt;-<span class="st"> </span>Summary[Summary$equiGen&gt;=<span class="fl">5.0</span>, <span class="st">&quot;Indiv&quot;</span>]
 <span class="kw">table</span>(Pedig[keep, <span class="st">&quot;Sex&quot;</span>])</code></pre></div>
 <pre><code>## 
-##   1   2 
-## 106 309</code></pre>
+##  1  2 
+## 91 45</code></pre>
 <p>A matrix containing the <em>pedigree based kinship</em> between all pairs of individuals can be computed with function <a href="https://rdrr.io/cran/optiSel/man/pedIBD.html">pedIBD</a>. It is half the additive relationship matrix. The <em>pedigree based kinship at native alleles</em> can be calculated from the results of function <a href="https://rdrr.io/cran/optiSel/man/pedIBDatN.html">pedIBDatN</a>. Both kinships are computed below and combined into a single R-object with function <a href="https://rdrr.io/cran/optiSel/man/kinlist.html">kinlist</a>. Below, the <em>pedigree based kinship</em> is named <code>pKin</code>, and the <em>kinship at native alleles</em> is named <code>pKinatN</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Kin &lt;-<span class="st"> </span><span class="kw">kinlist</span>(
     <span class="dt">pKin    =</span> <span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>keep),
     <span class="dt">pKinatN =</span> <span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>keep)
 )</code></pre></div>
-<pre><code>## Number of Migrant Founders: 335
-## Number of Native  Founders: 166
-## Individuals in Pedigree   : 2811
-## Mean kinship at native alleles:  0.0774</code></pre>
+<pre><code>## Number of Migrant Founders: 148
+## Number of Native  Founders: 148
+## Individuals in Pedigree   : 1481
+## Mean kinship at native alleles:  0.0785</code></pre>
 <p>The <em>breed composition</em> of individuals can be estimated with function <a href="https://rdrr.io/cran/optiSel/man/pedBreedComp.html">pedBreedComp</a>. The migrant contributions <code>MC</code> of the Angler cattle are added as an additional column to the pedigree.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cont     &lt;-<span class="st"> </span><span class="kw">pedBreedComp</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)
 Pedig$MC &lt;-<span class="st"> </span><span class="dv">1</span>-cont$native
 <span class="kw">head</span>(cont[keep, <span class="dv">2</span>:<span class="dv">6</span>])</code></pre></div>
-<pre><code>##                    native   unknown      unbek0  Fleckvieh Vorderwaelder
-## 276000813616211 0.7685547 0.0312500 0.041503906 0.08837891    0.07031250
-## 276000813369196 0.5747070 0.0156250 0.048583984 0.11108398    0.25000000
-## 276000813151807 0.6916504 0.0156250 0.035888672 0.09667969    0.16015625
-## 276000813677682 0.4113770 0.1093750 0.008544922 0.06054688    0.16015625
-## 276000813609151 0.6544189 0.0234375 0.011596680 0.08593750    0.22460938
-## 276000813315987 0.5856934 0.1875000 0.030395508 0.09680176    0.09960938</code></pre>
-<p>Data frame <code>phen</code> defined below contains the individual IDs in Colmumn 1 (<code>Indiv</code>), sexes in Column 2 (<code>Sex</code>), breed names (<code>Breed</code>), years of birth (<code>Born</code>), breeding values (<code>BV</code>), and the migrant contributions (<code>MC</code>) of the selection candidates. The breeding values are simulated such that breeding values and migrant contributions are positively correlated. This mimics historic introgression from a high-yielding commercial breed:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phen &lt;-<span class="st"> </span>Pedig[Pedig$Indiv %in%<span class="st"> </span>keep, <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Breed&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;BV&quot;</span>, <span class="st">&quot;MC&quot;</span>)]
-phen$BV &lt;-<span class="st"> </span>phen$BV +<span class="st"> </span><span class="dv">4</span>*(phen$MC-<span class="kw">mean</span>(phen$MC))
-<span class="kw">head</span>(phen[,-<span class="dv">1</span>])</code></pre></div>
-<pre><code>##                 Sex         Breed Born         BV        MC
-## 276000813616211   1 Hinterwaelder 2006 -1.6308321 0.2314453
-## 276000813369196   2 Hinterwaelder 2006  0.1929867 0.4252930
-## 276000813151807   2 Hinterwaelder 2006  0.1055514 0.3083496
-## 276000813677682   2 Hinterwaelder 2007 -0.1521481 0.5886230
-## 276000813609151   1 Hinterwaelder 2006 -1.2954090 0.3455811
-## 276000813315987   2 Hinterwaelder 2007 -2.3918885 0.4143066</code></pre>
+<pre><code>##                    native  unknown     unbek0  Fleckvieh Vorderwaelder
+## 276000812496744 0.7360840 0.062500 0.02465820 0.10644531    0.07031250
+## 276000891862786 0.6164551 0.187500 0.02270508 0.09130859    0.08203125
+## 276000812202159 0.4367676 0.265625 0.01416016 0.08032227    0.20312500
+## 276000812922523 0.3649902 0.437500 0.02246094 0.06567383    0.10937500
+## 276000812497659 0.6274414 0.187500 0.02612305 0.07690430    0.08203125
+## 276000812497289 0.7441406 0.015625 0.03051758 0.08471680    0.12500000</code></pre>
+<p>Below, the columns from the pedigree are added to data frame <code>Phen</code>. Hence, it contains the individual IDs in Colmumn 1 (<code>Indiv</code>), sexes in Column 2 (<code>Sex</code>), breed names (<code>Breed</code>), years of birth (<code>Born</code>), breeding values (<code>BV</code>), and the migrant contributions (<code>MC</code>) of the selection candidates. The breeding values are simulated such that breeding values and migrant contributions are positively correlated. This mimics historic introgression from a high-yielding commercial breed:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Phen &lt;-<span class="st"> </span><span class="kw">merge</span>(Pedig, Phen[,<span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;BV&quot;</span>)], <span class="dt">by=</span><span class="st">&quot;Indiv&quot;</span>)
+Phen &lt;-<span class="st"> </span>Phen[Phen$Indiv %in%<span class="st"> </span>keep, <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>,<span class="st">&quot;Breed&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;BV&quot;</span>, <span class="st">&quot;MC&quot;</span>)]
+Phen$BV &lt;-<span class="st"> </span>Phen$BV -<span class="st"> </span><span class="kw">mean</span>(Phen$BV)
+<span class="kw">head</span>(Phen)</code></pre></div>
+<pre><code>##             Indiv Sex         Breed Born         BV        MC
+## 2 276000811082118   1 Hinterwaelder 2003 -1.2992206 0.5294189
+## 3 276000811287745   2 Hinterwaelder 2001 -1.1810360 0.4195862
+## 5 276000811597110   1 Hinterwaelder 2003  0.1357706 0.4387512
+## 6 276000811597136   2 Hinterwaelder 2002  1.6858244 0.7654114
+## 7 276000811597157   1 Hinterwaelder 2001 -2.2173449 0.3006592
+## 9 276000811760294   2 Hinterwaelder 2001  1.2015762 0.6163940</code></pre>
 <p>The parameters that can be constrained or optimized can be viewed with function <a href="https://rdrr.io/cran/optiSel/man/help.opticont.html">help.opticont</a></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help.opticont</span>(Kin, phen)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help.opticont</span>(Kin, Phen)</code></pre></div>
 <pre><code>## Available objective functions: 
 ##        min.pKin  min.pedIBDandN  min.pKinatN  
 ##        min.BV  min.MC  
@@ -475,7 +477,7 @@ phen$BV &lt;-<span class="st"> </span>phen$BV +<span class="st"> </span><span cl
 ## 
 ## Attention: Probably not all these objective functions and
 ##            constraints make sense in animal breeding</code></pre>
-<p>Compared to the introductory example the possibility to restrict or to minimize migrant contributions becomes available because column <code>MC</code> is now included in data frame <code>phen</code>. Additionally, there is the possibility to minimize or to restrict the <em>kinship at native alleles</em> <code>pKinatN</code> and the <em>pedigree based kinship</em> <code>pKin</code>.</p>
+<p>Compared to the introductory example the possibility to restrict or to minimize migrant contributions becomes available because column <code>MC</code> is now included in data frame <code>Phen</code>. Additionally, there is the possibility to minimize or to restrict the <em>kinship at native alleles</em> <code>pKinatN</code> and the <em>pedigree based kinship</em> <code>pKin</code>.</p>
 <p>Depending on what the objective of your breeding program is, you may continue reading at the appropriate section:</p>
 <ul>
 <li><a href="#maximize-genetic-gain-pedigree-based">Maximize Genetic Gain</a></li>
@@ -486,27 +488,27 @@ phen$BV &lt;-<span class="st"> </span>phen$BV +<span class="st"> </span><span cl
 <h3><a name="maximize-genetic-gain-pedigree-based"></a>Maximize Genetic Gain</a></h3>
 <p>This is the traditional approach proposed by <span class="citation">T. H. E. Meuwissen (1997)</span>. First we create a list of constraints:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con         &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">M=</span><span class="ot">NA</span>, <span class="dt">F=</span>-<span class="dv">1</span>))
-meanKin     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[phen$Indiv, phen$Indiv])
+meanKin     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<span class="dv">1</span>-meanKin)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))</code></pre></div>
 <p>Here, equal contributions are assumed for the females and only the contributions of males are to be optimized. The upper bound for the mean segment based kinship was derived from the effective population size as explained above. Now the optimum contributions of the selection candidates can be calculated:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;max.BV&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;max.BV&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
 maxBV.s &lt;-<span class="st"> </span><span class="kw">summary</span>(maxBV)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##       valid   meanBV    meanMC       pKin   pKinatN
-## maxBV  TRUE 1.000721 0.5855356 0.03665814 0.0930294</code></pre>
+<pre><code>##       valid    meanBV    meanMC      pKin   pKinatN
+## maxBV  TRUE 0.7317145 0.5005278 0.0423654 0.0950404</code></pre>
 <p>This approach may be apppropriate for a population without introgression and complete pedigrees, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the migrant contributions should be restricted in order not to increase. Otherwise the genetic originality of the breed may get lost in the long term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meanKinatN     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pedIBDandN)/<span class="kw">mean</span>(Kin$pedN)
 con$ub.pKinatN &lt;-<span class="st"> </span>meanKinatN +(<span class="dv">1</span>-meanKinatN)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
-con$ub.MC      &lt;-<span class="st"> </span><span class="kw">mean</span>(phen$MC)
-maxBV2         &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;max.BV&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">solver=</span><span class="st">&quot;slsqp&quot;</span>)
+con$ub.MC      &lt;-<span class="st"> </span><span class="kw">mean</span>(Phen$MC)
+maxBV2         &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;max.BV&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">solver=</span><span class="st">&quot;slsqp&quot;</span>)
 maxBV2.s       &lt;-<span class="st"> </span><span class="kw">summary</span>(maxBV2)</code></pre></div>
 <p>For comparison, the summaries of both scenarios are combined into a single data frame with <code>rbind</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(maxBV.s, maxBV2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##        valid    meanBV    meanMC       pKin    pKinatN
-## maxBV   TRUE 1.0007207 0.5855356 0.03665814 0.09302940
-## maxBV2  TRUE 0.7549783 0.4956402 0.03469981 0.08201541</code></pre>
-<p>Genetic gain in Method 2 is only slightly below the genetic gain in Method 1, but the migrant contributions do not increase and the kinship at native alleles increases at a lower rate.</p>
+## maxBV   TRUE 0.7317145 0.5005278 0.04236540 0.09504040
+## maxBV2  TRUE 0.5887357 0.4543727 0.04008022 0.08309971</code></pre>
+<p>Thus, genetic gain in Method 2 is only slightly below the genetic gain in Method 1, but the migrant contributions do not increase and the kinship at native alleles increases at a lower rate.</p>
 </div>
 <div id="minimize-inbreeding-1" class="section level3">
 <h3><a name="minimize-inbreeding-pedigree-based"></a>Minimize Inbreeding</a></h3>
@@ -514,52 +516,52 @@ Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <s
 <p>First we create a list of constraints:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con  &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">M=</span><span class="ot">NA</span>, <span class="dt">F=</span>-<span class="dv">1</span>))</code></pre></div>
 <p>Again, equal contributions are assumed for the females and only the contributions of males are to be optimized. The segment based kinship is not constrained in this example because it should be minimized.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minKin   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.pKin&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minKin   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.pKin&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
 minKin.s &lt;-<span class="st"> </span><span class="kw">summary</span>(minKin)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minKin.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##        valid    meanBV    meanMC      pKin    pKinatN
-## minKin  TRUE 0.2687059 0.5470033 0.0258729 0.07268504</code></pre>
+<pre><code>##        valid    meanBV    meanMC       pKin    pKinatN
+## minKin  TRUE 0.1590485 0.4915464 0.03075652 0.07206247</code></pre>
 <p>The approach shown above has the disadvantage that kinships between individuals are less reliable if ancestors are missing in the pedigree. The alternative approach, shown below, is to minimize the kinship at native alleles and to restrict pedigree based kinship.</p>
 <p>While in livestock breeds the migrant contributions should be diminished in order to maintain the genetic originality of the breeds, in several companion breeds the opposite is true. Several companion breeds have high inbreeding coefficients and descend from only very few (e.g. 3) founders. Hence, a sufficient genetic diversity cannot be achieved in the population. For these breeds it may be appropriate to use unrelated individuals from a variety of other breeds in order to increase the genetic diversity. However, only a small contribution from other breeds is needed, so the migrant contributions should be restricted also for these breeds in order to preserve their genetic originality. The difference between a breed with high diversity and a breed with low diversity suffering from inbreeding depression is, that the optimum value for the migrant contribution is larger than 0 for the latter. For such a breed it is advisable to allow the use of individuals from other breeds but to restrict the admissible mean contribution from other breeds.</p>
 <p>In summary, the alternative approach is to minimize the kinship at native alleles and to restrict pedigree based kinship and migrant contributions:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con  &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">M=</span><span class="ot">NA</span>, <span class="dt">F=</span>-<span class="dv">1</span>))
-con$ub.MC   &lt;-<span class="st"> </span><span class="fl">0.50</span>
-meanKin     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[phen$Indiv, phen$Indiv])
+con$ub.MC   &lt;-<span class="st"> </span><span class="fl">0.45</span>
+meanKin     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<span class="dv">1</span>-meanKin)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
 
-minKin2     &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.pKinatN&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">solver=</span><span class="st">&quot;slsqp&quot;</span>)
+minKin2     &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.pKinatN&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">solver=</span><span class="st">&quot;slsqp&quot;</span>)
 minKin2.s   &lt;-<span class="st"> </span><span class="kw">summary</span>(minKin2)</code></pre></div>
 <p>For comparison, the summaries of both scenarios are combined into a single data frame with <code>rbind</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(minKin.s, minKin2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##         valid     meanBV    meanMC       pKin    pKinatN
-## minKin   TRUE 0.26870592 0.5470033 0.02587290 0.07268504
-## minKin2  TRUE 0.08188994 0.4817010 0.02880479 0.06857486</code></pre>
+<pre><code>##         valid      meanBV    meanMC       pKin    pKinatN
+## minKin   TRUE  0.15904850 0.4915464 0.03075652 0.07206247
+## minKin2  TRUE -0.01083841 0.4500000 0.03262322 0.06895879</code></pre>
 <p>The pedigree based kinship is slightly higher in the second approach, but the kinship at native alleles is lower. Since pedigree based kinships are less reliable due to missing ancestors in the pedigree, the second approach is recommended. However, the use of pedigree data has the disadvantage that only the expected kinships can be minimized. The expected kinships deviate from the realized kinships due to mendelian segregation. Hence, for breeds with serious inbreeding problems it is recommended to genotype the selection candidates and to perform marker-based optimum contribution selection.</p>
 </div>
 <div id="recover-the-native-genetic-background-1" class="section level3">
 <h3><a name="recover-the-native-genetic-background-pedigree-based"></a>Recover the Native Genetic Background</a></h3>
 <p>For endangered breeds the priority of a breeding program could be to recover the original genetic background by minimizing migrant contributions. However, since the individuals with smallest migrant contributions are related, this may considerably increase the inbreeding coefficients if the diversity at native alleles is not preserved. Hence, constraints are defined below not only for the pedigree based kinship, but also for the kinship at native alleles in accordance with the desired effective size:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con            &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">ub=</span><span class="kw">c</span>(<span class="dt">M=</span><span class="ot">NA</span>, <span class="dt">F=</span>-<span class="dv">1</span>))
-meanKin        &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[phen$Indiv, phen$Indiv])
+meanKin        &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pKin[Phen$Indiv, Phen$Indiv])
 meanKinatN     &lt;-<span class="st"> </span><span class="kw">mean</span>(Kin$pedIBDandN)/<span class="kw">mean</span>(Kin$pedN)
 con$ub.pKin    &lt;-<span class="st"> </span>meanKin    +<span class="st"> </span>(<span class="dv">1</span>-meanKin)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
 con$ub.pKinatN &lt;-<span class="st"> </span>meanKinatN +<span class="st"> </span>(<span class="dv">1</span>-meanKinatN)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
-minMC   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.MC&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
+minMC   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.MC&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
 minMC.s &lt;-<span class="st"> </span><span class="kw">summary</span>(minMC)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minMC.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##       valid     meanBV    meanMC       pKin   pKinatN
-## minMC  TRUE -0.1595658 0.4230985 0.03665832 0.0754081</code></pre>
+<pre><code>##       valid     meanBV   meanMC      pKin    pKinatN
+## minMC  TRUE -0.2391261 0.393115 0.0423655 0.08006655</code></pre>
 <p>For some breeds, migrant contributions and breeding values are positively correlated, so minimizing migrant contributions results in negative genetic. This can be avoided by adding an additional constraint for the breeding values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con$lb.BV &lt;-<span class="st"> </span><span class="kw">mean</span>(phen$BV)
-minMC2    &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.MC&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con$lb.BV &lt;-<span class="st"> </span><span class="kw">mean</span>(Phen$BV)
+minMC2    &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.MC&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
 minMC2.s  &lt;-<span class="st"> </span><span class="kw">summary</span>(minMC2)</code></pre></div>
 <p>For comparison, the summaries of both scenarios are combined into a single data frame with <code>rbind</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(minMC.s, minMC2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##        valid     meanBV    meanMC       pKin    pKinatN
-## minMC   TRUE -0.1595658 0.4230985 0.03665832 0.07540810
-## minMC2  TRUE  0.1018865 0.4269057 0.03665823 0.07581931</code></pre>
+<pre><code>##        valid        meanBV    meanMC       pKin    pKinatN
+## minMC   TRUE -2.391261e-01 0.3931150 0.04236550 0.08006655
+## minMC2  TRUE  1.180769e-06 0.3966719 0.04236576 0.08061762</code></pre>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

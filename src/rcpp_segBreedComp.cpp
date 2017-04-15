@@ -5,15 +5,19 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
 Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int Nfile, int N, const arma::ivec& ArmaIndexN, const arma::ivec& MatChr, const arma::vec& Armakb) {
   int m, i, iB, nB, cB, iSNP;
   unsigned int chr;
   int M = Armakb.n_elem;
-  char str[100], Line[2000000], merge[2];
+  char str[100], merge[2];
   FILE *fN;
+  
+  size_t bufsize = 2*Nfile;  
+  char* Line = (char*)malloc(bufsize*sizeof(char));
+  if(Line == NULL){error_return("Memory allocation failed.");};
   
   int* indexN        = (int*)calloc(N,sizeof(int));                    /*     N - vector */
   double* kb         = (double*)calloc(Armakb.n_elem, sizeof(double)); /*    MatChr+1 - vector */
@@ -38,8 +42,8 @@ Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int N
   iSNP = 0;
   for(chr=0;chr<pathNative.size();chr++){
     fN = fopen(pathNative[chr].c_str(),"r");
-    if(fN== NULL){error_return("File opening failed.");}; 
-    fgets(Line,2000000,fN);
+    if(fN== NULL){error_return("File opening failed.");};
+    while(fgetc(fN)!='\n'){}
     m=0;
     while(fscanf(fN, "%s ", str)>0){
       fgets(Line, 2*Nfile, fN);
@@ -83,6 +87,7 @@ Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int N
   free(kb);
   free(indexN);
   free(hasCont);
+  free(Line);
   
   return RcppBreedCont;
 }

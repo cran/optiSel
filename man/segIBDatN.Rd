@@ -60,7 +60,7 @@ Res   <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=100
                
 ## Mean kinship at native segments:
 attributes(Res)$meanIBDatN
-#[1] 0.06742614
+#[1] 0.06695171
 
 ## Results for individuals:
 kin <-Res$segIBDandN/Res$segN
@@ -73,7 +73,7 @@ Res <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1000)
                
 ## Mean kinship at native segments:
 attributes(Res)$meanIBDatN
-#[1] 0.06742614
+#[1] 0.06695171
 }
 }
 \author{Robin Wellmann}

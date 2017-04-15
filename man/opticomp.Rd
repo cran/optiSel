@@ -57,24 +57,24 @@ mb  <- opticomp(IBD, Breed=Cattle$Breed, obj.fun="NGD")
 
 #### Optimum breed composition: ###
 round(mb$bc,3)
-#    Angler Fleckvieh  Holstein   Rotbunt
-#     0.512     0.404     0.084     0.000 
+#   Angler Fleckvieh  Holstein   Rotbunt 
+#    0.484     0.395     0.072     0.049 
 
 #### Average kinships within and between breeds: ###
 round(mb$f,4)
 #          Angler Fleckvieh Holstein Rotbunt
-#Angler    0.0709    0.0180   0.0629  0.0664
-#Fleckvieh 0.0180    0.0950   0.0147  0.0158
-#Holstein  0.0629    0.0147   0.1269  0.1130
-#Rotbunt   0.0664    0.0158   0.1130  0.1327
+#Angler    0.0699    0.0171   0.0584  0.0590
+#Fleckvieh 0.0171    0.0956   0.0135  0.0138
+#Holstein  0.0584    0.0135   0.1233  0.1065
+#Rotbunt   0.0590    0.0138   0.1065  0.1227
 
 #### Genetic distances between breeds: ###
 round(mb$Dist,4)
 #          Angler Fleckvieh Holstein Rotbunt
-#Angler    0.0000    0.2549   0.1896  0.1882
-#Fleckvieh 0.2549    0.0000   0.3102  0.3132
-#Holstein  0.1896    0.3102   0.0000  0.1296
-#Rotbunt   0.1882    0.3132   0.1296  0.0000
+#Angler    0.0000    0.2561   0.1953  0.1930
+#Fleckvieh 0.2561    0.0000   0.3098  0.3087
+#Holstein  0.1953    0.3098   0.0000  0.1284
+#Rotbunt   0.1930    0.3087   0.1284  0.0000
 
 #####################################################################
 #   The optimum breed composition depends on the kinship matrix     #
@@ -83,8 +83,8 @@ round(mb$Dist,4)
 
 bc <- opticomp(IBD, Breed=Cattle$Breed, obj.fun="NTD")$bc
 round(bc,3)
-#    Angler Fleckvieh  Holstein   Rotbunt
-#     0.248     0.445     0.176     0.131 
+#   Angler Fleckvieh  Holstein   Rotbunt 
+#    0.253     0.433     0.168     0.146 
 
 }
 

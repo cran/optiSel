@@ -117,8 +117,8 @@ Comp <- segBreedComp(Haplo$match, map)
 Cattle$MC <- NA
 Cattle[rownames(Comp), "MC"] <- 1-Comp$native
 apply(Comp[,-1],2,mean)
-#    native          F          H          R 
-#0.54345962 0.01109934 0.19122468 0.25421635
+#     native           F           H           R 
+#0.551844104 0.009739393 0.202216271 0.236200232 
 
 
 ########################################
@@ -128,7 +128,7 @@ lb <- c(Angler=0.10, Holstein=0.20, Fleckvieh=0.20)
 bc <- opticomp(G, Breed=Cattle$Breed, obj.fun="NGD", lb=lb)$bc
 round(bc,3)
 #   Angler Fleckvieh  Holstein   Rotbunt 
-#    0.348     0.452     0.200     0.000 
+#    0.355     0.445     0.200     0.000 
 
 ########################################
 #  Check available objective functions #
@@ -147,7 +147,7 @@ noSel   <- opticont4mb("min.G", Kin, Cattle, bc=bc, thisBreed="Angler", con=con)
 noSel.s <- summary(noSel)
 noSel.s[,c("G.acrossBreeds","G", "GN")]
 #      G.acrossBreeds          G         GN
-#noSel      0.0270982 0.04734072 0.04478484
+#noSel     0.02601745 0.04632786 0.04212197
 
 #===============================================================#
 # => Allow the kinship within the breed in the next generation  #
@@ -163,7 +163,7 @@ con  <- list(ub.G=0.05, ub=c(M=NA, F=-1))
 minG <- opticont4mb("min.G.acrossBreeds", Kin, Cattle, bc, thisBreed="Angler", con=con, trace=FALSE)
 minG.s <- summary(minG)
 minG.s[,c("G.acrossBreeds")]
-#[1] 0.02387325
+#[1] 0.02289039
 }
 ##################################################################
 # Compute the genetic progress achievable while constraining     #
@@ -174,7 +174,7 @@ con     <- list(ub.G=0.05, ub=c(M=NA, F=-1))
 maxBV   <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
 maxBV.s <- summary(maxBV)
 maxBV.s$meanBV - noSel.s$meanBV
-# [1]  0.9113505
+# [1]  0.9710311
 
 ##################################################################
 # Compute the genetic progress achievable while constraining     #
@@ -185,7 +185,7 @@ con       <- list(ub.G=0.05, ub.MC=0.32,  ub=c(M=NA, F=-1))
 maxBV.MC <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
 maxBV.MC.s <- summary(maxBV.MC)
 maxBV.MC.s$meanBV - noSel.s$meanBV
-#0.1661787
+#0.2457528
 
 #Alternatively, function opticont() could have been used,
 #because across breed diversity was not managed in this example:
@@ -193,7 +193,7 @@ maxBV.MC.s$meanBV - noSel.s$meanBV
 maxBV.MC2 <- opticont("max.BV", Kin, Cattle[Cattle$Breed=="Angler",], con=con, trace = FALSE)
 maxBV.MC2.s <- summary(maxBV.MC2)
 maxBV.MC2.s$meanBV - noSel.s$meanBV
-#[1] 0.1661782
+#[1] 0.2457515
 
 cor(maxBV.MC$parent$oc,maxBV.MC2$parent$oc)
 #[1] 1
@@ -208,7 +208,7 @@ con          <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.MC=0.32,  ub=c(M=NA,
 maxBV.G.MC   <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, trace=FALSE)
 maxBV.G.MC.s <- summary(maxBV.G.MC)
 maxBV.G.MC.s$meanBV - noSel.s$meanBV
-# [1] 0.1661851
+# [1] 0.2457653
 
 ##################################################################
 #    Compute the minimum achievable kinship at native alleles    #
@@ -220,7 +220,7 @@ con   <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.MC=0.32, ub=c(M=NA, F=-1))
 minGN <- opticont4mb("min.GN", Kin, Cattle, bc, thisBreed="Angler", con=con, solver="slsqp")
 minGN.s <- summary(minGN)
 minGN.s$GN
-#[1] 0.0445639
+#[1] 0.04114953
 }
 ##################################################################
 # Compute the genetic progress achievable while constraining     #
@@ -232,7 +232,7 @@ con           <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.GN=0.05, ub.MC=0.32
 maxBV.G.MC.GN <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, solver="slsqp")
 maxBV.G.MC.GN.s <- summary(maxBV.G.MC.GN)
 maxBV.G.MC.GN.s$meanBV - noSel.s$meanBV
-#[1] -0.1816013
+#[1] -0.01790695
 }
 ##################################################################
 # Summary statistics from different optimizations                #
@@ -242,11 +242,11 @@ maxBV.G.MC.GN.s$meanBV - noSel.s$meanBV
 \dontrun{
 Res<-rbind(noSel.s, maxBV.s, maxBV.G.MC.s,maxBV.G.MC.GN.s)
 format(Res[,c("valid","meanBV", "meanMC", "G.acrossBreeds", "G", "GN")],digits=4)
-#              valid   meanBV meanMC G.acrossBreeds       G      GN
-#noSel          TRUE  0.03935 0.4573        0.02710 0.04734 0.04478
-#maxBV          TRUE  0.95070 0.4723        0.02743 0.05000 0.05283
-#maxBV.G.MC     TRUE  0.20554 0.3200        0.02547 0.05000 0.06861
-#maxBV.G.MC.GN  TRUE -0.14225 0.3200        0.02436 0.04082 0.05000
+#              valid  meanBV meanMC G.acrossBreeds       G      GN
+#noSel          TRUE 0.03935 0.4484        0.02602 0.04633 0.04212
+#maxBV          TRUE 1.01039 0.4755        0.02674 0.05000 0.05216
+#maxBV.G.MC     TRUE 0.28512 0.3200        0.02475 0.05000 0.06830
+#maxBV.G.MC.GN  TRUE 0.02145 0.3200        0.02362 0.04087 0.05000
 }
 #================================================================#
 # => Genetic progress could be reduced considerably when migrant #
@@ -269,9 +269,9 @@ format(Res[,c("valid","meanBV", "meanMC", "G.acrossBreeds", "G", "GN")],digits=4
 \dontrun{
 cor(cbind(maxBV.G.MC.GN$parent$oc, maxBV.G.MC$parent$oc, maxBV$parent$oc))
 #           [,1]      [,2]       [,3]
-#[1,] 1.00000000 0.8500451 0.06390155
-#[2,] 0.85004510 1.0000000 0.17709707
-#[3,] 0.06390155 0.1770971 1.00000000
+#[1,] 1.00000000 0.8705023 0.07074633
+#[2,] 0.87050233 1.0000000 0.14724942
+#[3,] 0.07074633 0.1472494 1.00000000
 }
 }
 

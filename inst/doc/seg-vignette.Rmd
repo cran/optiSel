@@ -362,7 +362,7 @@ Function [opticomp][opticomp] can be used to compute the contributions of the br
 CoreSet <- opticomp(segKIN, Breed)
 CoreSet$bc
 ```
-The Rotbunt cattle are not part of the core set, as their genes are already present in Angler and Holstein cattle. For this core set the diversity is
+The Rotbunt cattle have only a small contribution to the core set, as their genes are already present in Angler and Holstein cattle. For this core set the diversity is
 
 ```{r}
 CoreSet$value

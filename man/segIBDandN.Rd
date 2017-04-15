@@ -58,12 +58,12 @@ Freq   <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", refBreeds="others",
 fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20)
 
 mean(fIBDN)
-#[1] 0.01040488
+#[1] 0.01032261
 
 # Computing mean kinship at native segments:
 fN <- segN(Freq<0.01, map)
 mean(fIBDN)/mean(fN)
-#[1]  0.06742614
+#[1]  0.06695171
 
 
 ## using files:
@@ -75,7 +75,7 @@ file   <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", minSNP=20, ubFreq=0
 fIBDN  <- segIBDandN(GTfile, file$match, map=map, minSNP=20)
  
 mean(fIBDN)
-#[1] 0.01040488
+#[1] 0.01032261
 
 #unlink(wdir, recursive = TRUE)
 }

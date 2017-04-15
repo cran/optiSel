@@ -5,7 +5,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
 Rcpp::DataFrame rcpp_completeness(Rcpp::StringVector Indiv, const arma::ivec& ArmanumSire, const arma::ivec& ArmanumDam, int maxd){
@@ -27,8 +27,8 @@ Rcpp::DataFrame rcpp_completeness(Rcpp::StringVector Indiv, const arma::ivec& Ar
   
   n = 0;
   for(i=0; i<N;i++){
-    sDepth = ((numSire[i]>0)?(pedDepth[numSire[i]]):(0));
-    dDepth = ((numDam[i]>0)?(pedDepth[numDam[i]]):(0));
+    sDepth = ((numSire[i]>0)?(pedDepth[numSire[i]-1]):(0));
+    dDepth = ((numDam[i]>0)?(pedDepth[numDam[i]-1]):(0));
     pedDepth[i] = 1 + ((sDepth>dDepth)?(sDepth):(dDepth));
     if(pedDepth[i]>(maxd+1)){pedDepth[i] = maxd+1;}
     n = n + pedDepth[i];
@@ -36,8 +36,8 @@ Rcpp::DataFrame rcpp_completeness(Rcpp::StringVector Indiv, const arma::ivec& Ar
     if(pedCompl[i] == NULL){error_return("Memory allocation failed.");};
     pedCompl[i][0] = 1.0;
     for(g=1; g<pedDepth[i]; g++){
-      sCont = ((sDepth>=g)?(pedCompl[numSire[i]][g-1]):(0.0));
-      dCont = ((dDepth>=g)?(pedCompl[numDam[i]][ g-1]):(0.0));
+      sCont = ((sDepth>=g)?(pedCompl[numSire[i]-1][g-1]):(0.0));
+      dCont = ((dDepth>=g)?(pedCompl[numDam[i]-1][ g-1]):(0.0));
       pedCompl[i][g] = 0.5*(sCont + dCont);
     }
   }

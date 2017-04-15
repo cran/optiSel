@@ -20,20 +20,22 @@ sPed <- subPed(Pedig, keep = c("Chantalle","Angelika"), prevGen = 2, succGen = 1
 pedplot(sPed, label = c("Indiv", "Born", "Breed"), cex = 0.55)
 
 ## ---- results="hide"-----------------------------------------------------
-data(PedigWithErrors)
+data("PedigWithErrors")
+data("Phen")
+PedigWithErrors <- merge(PedigWithErrors, Phen[,c("Indiv", "BV")], by="Indiv", all="TRUE")
 Pedig <- prePed(PedigWithErrors)
 
 ## ------------------------------------------------------------------------
-compl <- completeness(Pedig, keep=Pedig$Born %in% (2006:2007), by="Indiv")
+compl <- completeness(Pedig, keep=Phen$Indiv, by="Indiv")
 head(compl)
 
 ## ---- warning=FALSE------------------------------------------------------
-compl <- completeness(Pedig, keep=Pedig$Born %in% (2006:2007), by="Sex")
+compl <- completeness(Pedig, keep=Phen$Indiv, by="Sex")
 library("ggplot2")
 ggplot(compl, aes(x=Generation, y=Completeness, col=Sex)) + geom_line()
 
 ## ------------------------------------------------------------------------
-keep <- Pedig$Indiv[Pedig$Born %in% (2006:2007)]
+keep <- Phen$Indiv
 Summary <- summary(Pedig, keep.only=keep)
 head(Summary[Summary$equiGen>3.0, -1])
 
@@ -43,9 +45,9 @@ mean(Animal$Inbr[Animal$Indiv %in% keep])
 
 ## ------------------------------------------------------------------------
 pedKIN <- pedIBD(Pedig, keep.only=keep)
-use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.7
+use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
 Males  <- Pedig$Indiv[use]
-pedKIN[rownames(pedKIN) %in% Males, "276000813677683", drop=FALSE]
+pedKIN[rownames(pedKIN) %in% Males, "276000812750188", drop=FALSE]
 
 ## ---- results="hide"-----------------------------------------------------
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)

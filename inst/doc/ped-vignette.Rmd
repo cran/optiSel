@@ -30,7 +30,7 @@ Animal breeding relies on the prediction of breeding values of selection candida
     - [Kinship and Diversity at Native Alleles](#kinship-and-diversity-at-native-alleles)
     - [Native Effective Size](#native-effective-size)
     - [Effective Size](#effective-size)
-    - [Native Genome Equivalent](#native-genome-equivalent)
+    - [Change of Native Genome Equivalent and Ne](#change-of-native-genome-equivalent-and-ne)
     - [Change of Breed Compostion](#change-of-breed-composition)
 
 Note that the calculation of breeding values is not included as there already exist a couple of R packages for this purpose. Recommended are the free package [MCMCglmm][1] for small and medium sized data sets, and package [asreml][2] for large data sets.
@@ -82,7 +82,7 @@ The result is:
 Pedig
 ```
 
-Plots can be created to show specified individuals and their relatives. In the first step, function [subPed][subPed] is used below to create a small pedigree that includes only the individuals to be plotted, which are `"Chantalle"`, up to `prevGen` previous (ancestral) generations, and up to `succGen` succeeding (descendant) generations. The pedigree was plotted with function [pedplot][pedplot]. It is basically a wrapper function for function `plot.pedigree` from package `kinship2`, but has additional arguments. Parameter `label`
+Plots can be created to show specified individuals and their relatives. In the first step, function [subPed][subPed] is used below to create a small pedigree that includes only the individuals to be plotted, which are `"Chantalle"` and `"Angelika"`, up to `prevGen` previous (ancestral) generations, and up to `succGen` succeeding (descendant) generations. The pedigree was plotted with function [pedplot][pedplot]. It is basically a wrapper function for function `plot.pedigree` from package `kinship2`, but has additional arguments. Parameter `label`
 contains the columns of the pedigree to be used for labeling. By default, symbols of individuals
 included in vector `keep` are plotted in black and for individuals from other breeds the
 symbol is crossed out.
@@ -99,23 +99,26 @@ Hereby, `SAnna-Lena` denotes the unknown sire of `Anna-Lena`.
 
 ## Quality Control
 
-The next step is to find out if the completeness of the pedigree is sufficient for the intended evaluation, and to identify individuals with insufficient pedigree information. This will be demonstrated at the example of a pedigree of Hinterwald cattle. 
+The next step is to find out if the completeness of the pedigree is sufficient for the intended evaluation, and to identify individuals with insufficient pedigree information. This will be demonstrated at the example of a pedigree of Hinterwald cattle. Data frame `Phen` contains selection candidates with breeding values. The breeding values are added below as a new column to the pedigree.
+
 ```{r, results="hide"}
-data(PedigWithErrors)
+data("PedigWithErrors")
+data("Phen")
+PedigWithErrors <- merge(PedigWithErrors, Phen[,c("Indiv", "BV")], by="Indiv", all="TRUE")
 Pedig <- prePed(PedigWithErrors)
 ```
 
 Function [completeness][completeness] can be used to determine the proportion of known ancestors of each individual of the actual breeding population in each ancestral generation:
 
 ```{r}
-compl <- completeness(Pedig, keep=Pedig$Born %in% (2006:2007), by="Indiv")
+compl <- completeness(Pedig, keep=Phen$Indiv, by="Indiv")
 head(compl)
 ```
 
 or the mean completeness of the pedigree within groups of individuals:
 
 ```{r, warning=FALSE}
-compl <- completeness(Pedig, keep=Pedig$Born %in% (2006:2007), by="Sex")
+compl <- completeness(Pedig, keep=Phen$Indiv, by="Sex")
 library("ggplot2")
 ggplot(compl, aes(x=Generation, y=Completeness, col=Sex)) + geom_line()
 ```
@@ -123,7 +126,7 @@ ggplot(compl, aes(x=Generation, y=Completeness, col=Sex)) + geom_line()
 The completeness of the pedigree of each individual can be summarized with function [summary][summary.Pedig]:
 
 ```{r}
-keep <- Pedig$Indiv[Pedig$Born %in% (2006:2007)]
+keep <- Phen$Indiv
 Summary <- summary(Pedig, keep.only=keep)
 head(Summary[Summary$equiGen>3.0, -1])
 ```
@@ -168,13 +171,13 @@ Wheter mating to a sound inbred individual should be favored or avoided depends 
 
 #### Kinship
 
-The kinship between two individuals is the probability that two alleles randomly chosen from both individuals are IBD. A sparse matrix containing the kinship between all pairs of individuals can be computed with function [pedIBD][pedIBD]. It is half the numerator relationship matrix. The R code below computes the kinship between the female with ID `276000813677683` and all males from the actual breeding population that have a breeding value larger than 1.7 and a pedigree with at least 5 equivalent complete generations.
+The kinship between two individuals is the probability that two alleles randomly chosen from both individuals are IBD. A matrix containing the kinship between all pairs of individuals can be computed with function [pedIBD][pedIBD]. It is half the numerator relationship matrix. The R code below computes the kinship between the female with ID `276000812750188` and all male selection candidates that have a breeding value larger than 1.0 and a pedigree with at least 5 equivalent complete generations.
 
 ```{r}
 pedKIN <- pedIBD(Pedig, keep.only=keep)
-use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.7
+use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
 Males  <- Pedig$Indiv[use]
-pedKIN[rownames(pedKIN) %in% Males, "276000813677683", drop=FALSE]
+pedKIN[rownames(pedKIN) %in% Males, "276000812750188", drop=FALSE]
 ```
 
 The males with lowest kinship should be favoured for mating.
@@ -218,7 +221,7 @@ sK    <- pedKIN[use, use]
 sKatN <- pedKINatN[use, use]
 cor(sK[upper.tri(sK)], sKatN[upper.tri(sKatN)], use="complete.obs")
 ```
-But the correlation is much smaller if all individuals are considered, which may lead to different selection decisions:
+But the correlation is smaller if all individuals are considered, which may lead to different selection decisions:
 
 ```{r}
 use   <- rownames(fD$pedN)[diag(fD$pedN)>0.01]
@@ -334,7 +337,7 @@ Not only the native genome equivalents (column `NGE`), but also the native effec
 It is possible that the diversity at native alleles increases for a short period of time, in which case the estimate of the native effective size would be `NA`. Choose `df<4` to get a smooth estimate for the native effective size.
 
 
-#### Change of Breed Compostion
+#### Change of Breed Composition
 
 For monitoring the introgression from other breeds, the contributions of foreign breeds to all birth cohorts can be estimated with function [conttac][conttac] and then plotted, e.g. with function ggplot.
 

@@ -50,7 +50,7 @@ dir   <- system.file("extdata", package = "optiSel")
 files <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 f     <- segIBD(files, map, minSNP=15, minL=1000)
 mean(f)
-#[1] 0.06013028
+#[1] 0.05677993
 
 
 ## Multidimensional scaling of animals:

@@ -90,153 +90,110 @@ A list with class \code{"opticont"}
 
 
 \examples{
+#################################################
+# Example 1: Advanced OCS using pedigree data   #
+# Objective: maximize genetic gain              #
+# Constraints:                                  #
+#   - mean kinship                              #
+#   - mean kinship at native alleles            #
+#   - genetic contributions from other breeds   #
+#################################################
 data(PedigWithErrors)
 data(Phen)
-Phen[1:5,]
 
 keep  <- Phen$Indiv
 Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
+Pedig$MC <- 1-pedBreedComp(Pedig, thisBreed="Hinterwaelder")$native
+Phen  <- merge(Pedig, Phen[,c("Indiv", "BV")], by="Indiv")
+Kin   <- kinlist(pKin    = pedIBD(Pedig, keep.only=keep), 
+                 pKinatN = pedIBDatN(Pedig, thisBreed="Hinterwaelder",  keep.only=keep))
 
-data(Kin)
-\dontrun{
-fA    <- pedIBD(Pedig, keep.only=keep)
-fD    <- pedIBDatN(Pedig, thisBreed="Hinterwaelder",  keep.only=keep)
-Kin2  <- kinlist(fA=fA, fD=fD)
-identical(Kin, Kin2)
-#[1] TRUE
-}
+head(Phen)
+cor(Phen$MC, Phen$BV)
+help.opticont(Kin, Phen)
 
+# Compute offspring parameters for unselected population
+noSel      <- opticont(method="min.pKin", K=Kin, phen=Phen, con=list(ub=c(M=-1, F=-1)))
+noSel.s    <- summary(noSel)
+round(noSel.s[,c("pKin","pKinatN", "meanMC", "meanBV")],4)
+meanMC     <- noSel.s$meanMC
+meanKin    <- noSel.s$pKin
+meanKinatN <- noSel.s$pKinatN
+meanBV     <- noSel.s$meanBV
 
-########################################
-#  Check available objective functions #
-#  and constraints                     #
-########################################
+# Define Constraints
+Ne <- 100
+
+con            <- list(ub=c(M=NA, F=-1))
+con$ub.pKin    <- meanKin    + (1-meanKin   )*(1/(2*Ne))
+con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
+con$ub.MC      <- 0.97*meanMC
+
+# Compute the genetic progress achievable
+maxBV   <- opticont("max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
+maxBV.s <- summary(maxBV)
+maxBV.s$meanBV 
+# [1] 0.5403463
+
+# Get optimum contributions of sires
+Sire <- maxBV$parent[maxBV$parent$Sex==1,]
+ord  <- order(Sire$oc, decreasing=TRUE)
+head(Sire[ord,])
+
+#################################################
+# Example 2: Advanced OCS using genotype data   #
+# Objective: minimize inbreeding                #
+# Constraints:                                  #
+#   - breeding values                           #
+#   - mean kinship at native alleles            #
+#   - genetic contributions from other breeds   #
+#################################################
+
+data(map)
+data(Cattle)
+dir   <- system.file("extdata", package = "optiSel")
+files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
+Kin   <- kinlist(sKin    = segIBD(files, map, minSNP=20, minL=2000), 
+                 sKinatN = segIBDatN(files, Cattle, map, thisBreed="Angler", 
+                                     ubFreq=0.01, minSNP=20, minL=2000))
+Haplo <- haplofreq(files, Cattle, map, thisBreed="Angler", 
+                   minSNP=20, minL=2000, ubFreq=0.01, what="match")
+Comp  <- segBreedComp(Haplo$match, map)
+Comp$MC <- 1-Comp$native
+Phen  <- merge(Cattle, Comp[,c("Indiv", "MC")], by="Indiv", all=FALSE)
 
 help.opticont(Kin, Phen)
 
-#########################
-#   Check data          #
-#########################
+cor(Phen$MC, Phen$BV,use="complete.obs")
+#[1] 0.5033714
 
-plot(Phen$MC, Phen$BV)
-points(Phen$MC[Phen$Sex==1], Phen$BV[Phen$Sex==1], col="red", pch=18)
+# Compute offspring parameters for unselected population
+noSel      <- opticont(method="min.sKin", K=Kin, phen=Phen, con=list(ub=c(M=-1, F=-1)))
+noSel.s    <- summary(noSel)
+round(noSel.s[,c("sKin","sKinatN", "meanMC", "meanBV")],4)
+meanMC     <- noSel.s$meanMC
+meanKin    <- noSel.s$sKin
+meanKinatN <- noSel.s$sKinatN
+meanBV     <- noSel.s$meanBV
 
-#################################################################
-#       Compute the mean kinship fA that would be achieved      #
-#          in the offspring without selection                   #
-#################################################################
-con     <- list(ub=c(M=-1, F=-1))
-noSel   <- opticont(method="min.fA", K=Kin, phen=Phen, con=con)
-noSel.s <- summary(noSel)
-noSel.s$fA
-# 0.02284205
-#===============================================================#
-# => Allow the kinship in the next generation                   #
-#    to be slightly larger, e.g. 0.03                           #
-#===============================================================#
+# Define Constraints
+Ne <- 100
 
+con            <- list(ub=c(M=NA, F=-1))
+con$ub.sKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
+con$ub.MC      <- 0.97*meanMC
+con$lb.BV      <- meanBV
 
-##################################################################
-#                   Compute the genetic progress                 #
-#            achievable while constraining only fA               #
-##################################################################
-con     <- list(ub.fA=0.03, ub=c(M=NA, F=-1))
-maxBV   <- opticont("max.BV", K=Kin, phen=Phen, con=con, trace = FALSE)
-maxBV.s <- summary(maxBV)
-maxBV.s$meanBV - noSel.s$meanBV
-# [1] 1.159723
+# Compute the smallest mean kinship achievable
+minKin   <- opticont("min.sKin", K=Kin, phen=Phen, con=con, solver="slsqp")
+minKin.s <- summary(minKin)
+minKin.s$sKin
+# [1] 0.03880943
 
-
-#################################################################
-#  Compute the minimum migrant contributions achievable while   #
-#        constraining mean kinship fA in the offspring.         #
-#################################################################
-con     <- list(ub.fA=0.03, ub=c(M=NA, F=-1))
-minMC   <- opticont("min.MC", K=Kin, phen=Phen, con=con, trace = FALSE)
-minMC.s <- summary(minMC)
-c(minMC.s$meanMC, noSel.s$meanMC)
-#[1] 0.4958524 0.5764507
-#===============================================================#
-# => choose an upper bound for the migrant contribution MC in   #
-#    the offspring between 0.492 and 0.574, e.g. 0.55           #
-#===============================================================#
-
-
-##################################################################
-#                   Compute the genetic progress                 #
-#            achievable while constraining fA and MC             #
-##################################################################
-con     <- list(ub.fA=0.03, ub.MC=0.55, ub=c(M=NA, F=-1))
-maxBV.MC<- opticont("max.BV", K=Kin, phen=Phen, con=con, trace = FALSE)
-maxBV.MC.s <- summary(maxBV.MC)
-maxBV.MC.s$meanBV - noSel.s$meanBV
-# [1] 0.5809614
-
-
-##################################################################
-# compute the minimum conditional kinship fD achievable while    #
-# constraining fA and MC:                                        #
-##################################################################
-con     <- list(ub.fA=0.03, ub.MC=0.55, ub=c(M=NA, F=-1))
-minfD   <- opticont("min.fD", K=Kin, phen=Phen, con=con, solver = "slsqp")
-minfD.s <- summary(minfD)
-c(minfD.s$fD, noSel.s$fD)
-#[1]  0.06660690 0.07698132
-
-#================================================================#
-# => Choose constraint for fD e.g.  0.073                        #
-#================================================================#
-
-
-##################################################################
-#                   Compute the genetic progress                 #
-#            achievable while constraining MC, fA and fD         #
-##################################################################
-con        <- list(ub.fA=0.03, ub.fD=0.073, ub.MC=0.55, ub=c(M=NA, F=-1))
-maxBV.fD   <- opticont("max.BV", K=Kin, phen=Phen, con=con, trace = FALSE)
-maxBV.fD.s <- summary(maxBV.fD)
-maxBV.fD.s$meanBV - noSel.s$meanBV
-#[1]  0.3593
-#================================================================#
-# => Compared to no selection, the BV can be increased           #
-#    by  0.3593                                                  #
-#================================================================#
-
-
-
-##################################################################
-# Summary statistics from different optimizations                #
-# can be combined in a data frame. The most important parameters #
-# are printed for comparison:                                    #
-##################################################################
-Res<-rbind(noSel.s,  maxBV.fD.s, maxBV.MC.s, maxBV.s)
-format(Res[,c("valid","meanBV", "meanMC", "fA", "fD")],digits=3)
-#         valid meanBV meanMC     fA     fD
-#noSel     TRUE 0.0985  0.576 0.0228 0.0770
-#maxBV.fD  TRUE 0.4578  0.550 0.0241 0.0730
-#maxBV.MC  TRUE 0.6794  0.550 0.0300 0.0908
-#maxBV     TRUE 1.2582  0.760 0.0300 0.0908
-
-#================================================================#
-# => Genetic progress could be reduced considerably when migrant #
-# contributions and diversity of native alleles are taken into   #
-# account in optimum contribution selection.                     #
-#================================================================#
-
-
-##################################################################
-# Compare the optimum contributions with and without controlling #
-# diversity of native alleles by using different constraints:    #
-##################################################################
-plot(maxBV.fD$parent$oc, maxBV.MC$parent$oc, pch=18)
-plot(maxBV$parent$oc,    maxBV.fD$parent$oc, pch=18)
-x<-list(maxBV.fD, maxBV.MC, maxBV)
-cor(sapply(x,function(x){x$parent$oc}))
-#           [,1]      [,2]       [,3]
-#[1,] 1.00000000 0.7895413 0.07438266
-#[2,] 0.78954132 1.0000000 0.20823346
-#[3,] 0.07438266 0.2082335 1.00000000
-
+# Get optimum contributions of sires
+Sire <- minKin$parent[minKin$parent$Sex==1,]
+ord  <- order(Sire$oc, decreasing=TRUE)
+head(Sire[ord,])
 }
 
 \references{

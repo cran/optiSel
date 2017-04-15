@@ -5,19 +5,22 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int M, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, char symB, int skip, int cskip) {
+Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int M, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
   int m, i, j, rK, r, endoffile, gleich;
   double L;
-  char str1[100], Line[2000000];
+  char str1[100];
   FILE *f1, *f2;
-  
+  char symB = stdsymB.at(0);
   int N  = N1 + N2;
   int K  = (minSNP<=60)?(minSNP/2):(30);
-  
   Rcpp::NumericMatrix ArmasegIBD(N, N);
+  
+  size_t bufsize = 2*(NFile1+NFile2);  
+  char* Line = (char*)malloc(bufsize*sizeof(char));
+  if(Line == NULL){error_return("Memory allocation failed.");};
   
   double** fROH  = (double**)calloc(N,sizeof(double*));
   int** thisROH  = (int**)calloc(N,sizeof(int*));
@@ -54,14 +57,14 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   f1 = fopen(path1.c_str(),"r");
   if(f1== NULL){error_return("File opening failed.");};
   for(i=0;i<skip+1;i++){
-    fgets(Line,2000000,f1);
+    while(fgetc(f1)!='\n'){}
   }
   
   if(N2>0){
     f2 = fopen(path2.c_str(),"r");
     if(f2 == NULL){error_return("File opening failed.");};	 
     for(i=0;i<skip+1;i++){
-      fgets(Line,2000000,f2);
+      while(fgetc(f2)!='\n'){}
     }
   }else{f2 = f1; /* avoid warnings */}
   
@@ -168,6 +171,7 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   free(prevAllel);
   free(index1);
   free(index2);
+  free(Line);
   
   return ArmasegIBD;
 }
