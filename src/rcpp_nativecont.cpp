@@ -5,19 +5,14 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp11)]]
+
 // [[Rcpp::export]]
 
 Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, int M, const arma::vec& ArmaNkb) {
   int m, i;
-  char str2[100];
+  char str2[100], Line[2000000];
   FILE *fN;
   Rcpp::NumericVector ArmaNatCont(NC);
-
-  size_t bufsize = 2*NFileN;  
-  char* Line = (char*)malloc(bufsize*sizeof(char));
-  if(Line == NULL){error_return("Memory allocation failed.");};
-  
   
   int* indexN     = (int*)calloc(NC,sizeof(int));                    /*     NC - vector */
   double* Nkb     = (double*)calloc(ArmaNkb.n_elem, sizeof(double)); /*    M+1 - vector */
@@ -32,7 +27,7 @@ Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, 
   /* ******* Main part ******** */
   fN = fopen(pathNative.c_str(),"r");
   if(fN == NULL){error_return("File opening failed.");};	 
-  while(fgetc(fN)!='\n'){}
+  fgets(Line,2000000,fN);
   
   m=0;
   while(fscanf(fN, "%s ", str2)>0){
@@ -55,7 +50,6 @@ Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, 
   free(NatCont);
   free(Nkb);
   free(indexN);
-  free(Line);
   
   return ArmaNatCont;
 }

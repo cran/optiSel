@@ -39,7 +39,7 @@ Although Method 2 may provide lower stress values in some cases, Method 1 has th
 data(map)
 dir   <- system.file("extdata", package = "optiSel")
 files <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
-f     <- segIBD(files, map, minSNP=15, minL=1000)
+f     <- segIBD(files, map, minSNP=15, minL=1.0)
 D     <- sim2dis(f, 4)
 
 ## Multidimensional scaling of animals:

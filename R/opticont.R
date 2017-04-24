@@ -26,7 +26,17 @@
 }
 
 
-"opticont"<-function(method, K, phen, con=list(), solver="cccp", quiet=FALSE, make.definite=solver=="csdp", ...){
+"opticont"<-function(method=NULL, K, phen, con=list(), solver="cccp", quiet=FALSE, make.definite=solver=="csdp", ...){
+  if(is.null(method)){
+    if("condProb" %in% names(attributes(K))){
+      method <- paste0("min.", names(attributes(K)$condProb)[1])
+    }else{
+      method <- paste0("min.", names(K)[1])
+    }
+  }
+  if(identical(con, "equal.cont")){
+    con <- list(ub=c(M=-1, F=-1))
+  }
   gc()
   phenAsDataTable <- "data.table" %in% class(phen)
   phen <- as.data.frame(phen)
@@ -79,9 +89,9 @@
   lb     <- con$lb
   ub     <- con$ub
   if("Sex" %in% colnames(phen)){
-    sex    <- phen[,"Sex"]
+    sex    <- as.integer(mapvalues(phen[,"Sex"], from=c("male","female"), to=c(1,2)))
   }else{
-    sex    <- phen[,1]
+    sex    <- as.integer(mapvalues(phen[,1], from=c("male","female"), to=c(1,2)))
   }
   Res     <- list(parent=phen, con=con, method=method, solver=solver, quadcon=quadcon, lincon=const, cKin=cKin)
   relax   <- FALSE#length(quadcon)==0
@@ -370,14 +380,23 @@
   }
 
   if(min.Kin){
-    Res$parent$oc[isV] <- opticontx(X=X, P=as(P,"matrix"), q=q,                lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
+    res <- opticontx(X=X, P=as(P,"matrix"), q=q,                lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
   }else{
     if(min.cKin){
-      Res$parent$oc[isV] <- opticontx(X=X, f0=f0, g0=g0,  h0=h0,               lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
+      res <- opticontx(X=X, f0=f0, g0=g0,  h0=h0,               lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
     }else{
-      Res$parent$oc[isV] <- opticontx(X=X, P=NULL, q=fun.sig*phen[isV,obj.var],lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
+      res <- opticontx(X=X, P=NULL, q=fun.sig*phen[isV,obj.var],lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
     }
   }
+  
+  if(is.matrix(res)){
+    res <- c(res)
+    }
+  if((!is.vector(res))||(is.vector(res)&&(length(res)!=sum(isV)))){
+    cat("The optimization problem seems to have no solution.\n")
+    res <- rep(NA, sum(isV))
+    }
+  Res$parent$oc[isV] <- res
   kinNames<-setdiff(names(K),union(names(cKin),condProbMat))
   Res$meanKin<-setNames(rep(NA,length(kinNames)),kinNames)
   for(i in kinNames){

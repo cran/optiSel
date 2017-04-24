@@ -7,9 +7,9 @@
 For each haplotype from \code{thisBreed} and every SNP the occurence of the haplotype segment containing the SNP in a set of reference breeds is evaluated. The maximum frequency each segment has in one of these reference breeds is computed, and the breed in which the segment has maximum frequency is identified. Results are either returned in a list or saved to files.
 }
 \usage{
-haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1000, 
-  unitL="kb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, 
-  what=c("freq", "match"))
+haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0, 
+  unitL="Mb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, 
+  what=c("freq", "match"), cores=1)
 }
 
 \arguments{
@@ -25,12 +25,12 @@ haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1000,
 %}
 }
 \item{phen}{Data frame containing the ID (column \code{"Indiv"}) and the breed name (column \code{"Breed"}) of each genotyped individual.}
-\item{map}{Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in kilo base pairs \code{'kb'}, and the position in centimorgan \code{'cM'}. The order of the markers must be the same as in the files \code{files}. Marker names must have no white spaces.}
+\item{map}{Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in mega base pairs \code{'Mb'}, and the position in centimorgan \code{'cM'}. The order of the markers must be the same as in the files \code{files}. Marker names must have no white spaces.}
 \item{thisBreed}{Name of a breed from column \code{Breed} in \code{phen}: The occurence of each haplotype segment from this breed in the reference breeds will be evaluated.}
 \item{refBreeds}{Vector with names of breeds from column \code{Breed} in \code{phen}. These breeds are used as reference breeds.  The occurence of haplotype segments in these breeds will be evaluated. By default, all breeds in \code{phen}, except \code{thisBreed} are used as reference breeds. In contrast, for \code{refBreeds="all"}, all genotyped breeds are used as reference breeds.}
 \item{minSNP}{Minimum number of marker SNPs included in a segment.}
-\item{minL}{Minimum length of a segment in \code{unitL} (e.g. in cM or kb).}
-\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the genetic  distances between the first and the last marker in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+\item{minL}{Minimum length of a segment in \code{unitL} (e.g. in cM or Mb).}
+\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of mega base pairs (\code{'Mb'}), and the genetic  distances between the first and the last marker in centiMorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
 \item{ubFreq}{If a haplotype segment has frequency smaller than \code{ubFreq} in all reference breeds then the breed name is replaced by \code{'1'}, which indicates that the segment is native.}
  \item{keep}{Subset of the IDs of the individuals from data frame \code{phen}, or a logical vector indicating the animals in data frame \code{phen} that should be used.
  The default \code{keep=NULL} means that all individuals included in \code{phen} will be considered.}
@@ -38,6 +38,7 @@ haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1000,
  \item{cskip}{Take column \code{cskip+1} of the files as the first column with genotypes. By default, the number is determined automatically.}
  \item{w.dir}{Output file directory. Writing results to files has the advantage that much less working memory is required. By default, no files are created. The function returns only the file names if files are created. }
  \item{what}{For \code{what="freq"}, the maximum frequency each haplotype segment has in the reference breeds will be computed. For \code{what="match"}, the name of the reference breed in which the segment has maximum frequency will be determined. By default, the frequencies and the breed names both are determined.}
+ \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
  }
 \value{
 If \code{w.dir=NA} then a list is returned. The list may have the following components:
@@ -60,13 +61,22 @@ dir   <- system.file("extdata", package="optiSel")
 files <- file.path(dir, paste("Chr", 1:2, ".phased", sep=""))
 
 Freq <- freqlist(
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt",   minL=2000),
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Holstein",  minL=2000),
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Fleckvieh", minL=2000)
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt",   minL=2.0),
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Holstein",  minL=2.0),
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Fleckvieh", minL=2.0)
   )
 
 plot(Freq, ID=1, hap=2, refBreed="Rotbunt")
 plot(Freq, ID=1, hap=2, refBreed="Holstein", Chr=1)
+
+\dontshow{
+## Test for using multiple cores:
+
+Freq1 <- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt", 
+                   minL=2.0, cores=NA)$freq
+range(Freq[[1]]-Freq1)
+#[1] 0 0
+}
 
 ## Creating output files with allele frequencies and allele origins:
 \dontrun{
@@ -74,7 +84,7 @@ rdir  <- system.file("extdata", package = "optiSel")
 wdir  <- file.path(tempdir(), "HaplotypeEval")
 chr   <- unique(map$Chr)
 files <- file.path(rdir, paste("Chr", chr, ".phased", sep=""))
-wfile <- haplofreq(files, Cattle, map, thisBreed="Angler", minL=2000, w.dir=wdir)
+wfile <- haplofreq(files, Cattle, map, thisBreed="Angler", minL=2.0, w.dir=wdir)
 
 View(read.table(wfile$match[1],skip=1))
 #unlink(wdir, recursive = TRUE)

@@ -26,9 +26,9 @@ dir   <- system.file("extdata", package="optiSel")
 files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
 
 Freq <- freqlist(
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt",   minL=2000),
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Holstein",  minL=2000),
- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Fleckvieh", minL=2000)
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt",   minL=2.0),
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Holstein",  minL=2.0),
+ haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Fleckvieh", minL=2.0)
   )
 
 #The component names are the reference breeds by default:

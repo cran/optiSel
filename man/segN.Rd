@@ -8,7 +8,7 @@
  For each pair of individuals the probability is computed that two SNPs taken at random position from randomly chosen haplotypes both belong to native segments.
 }
 \usage{
-segN(Native, map, unitP="kb", keep=NULL)
+segN(Native, map, unitP="Mb", keep=NULL, cores=1)
 }
 
 \arguments{
@@ -22,11 +22,12 @@ or
 There is one file per chromosome and file names must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.nat"}.
 }
 \item{map}{
-Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in kilo base pairs \code{'kb'}, and the position in centimorgan \code{'cM'}. The markers must be in the same order as in \code{Native}.
+Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in Mega base pairs \code{'Mb'}, and the position in centiMorgan \code{'cM'}. The markers must be in the same order as in \code{Native}.
 }
 \item{unitP}{The unit for measuring the proportion of the genome included in native segments.
-  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
  \item{keep}{Vector with IDs of individuals (from this breed) for which the probabilities are to be computed. By default, they will be computed for all individuals included in \code{Native}.}
+  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
 }
 \value{
 \code{NxN} matrix with \code{N} being the number of genotyped individuals from this breed (which are also included in vector \code{keep}).
@@ -44,10 +45,10 @@ fN   <- segN(Freq<0.01, map)
 mean(fN)
 #[1] 0.15418
 
-# Computing mean kinship at native segments:
-fIBDN <- segIBDandN(files, Freq<0.01, map)
-mean(fIBDN)/mean(fN)
-#[1] 0.06695171
+fN   <- segN(Freq<0.01, map, cores=NA)
+mean(fN)
+#[1] 0.15418
+
 
 
 
@@ -57,8 +58,12 @@ wdir   <- file.path(tempdir(),"HaplotypeEval")
 chr    <- unique(map$Chr)
 GTfile <- file.path( dir, paste("Chr", chr, ".phased",     sep=""))
 files  <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", w.dir=wdir)
-fN     <- segN(files$match, map)
 
+fN     <- segN(files$match, map)
+mean(fN)
+#[1] 0.15418
+
+fN     <- segN(files$match, map, cores=NA)
 mean(fN)
 #[1] 0.15418
 

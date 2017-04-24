@@ -34,7 +34,8 @@ This vignette is organized as follows:
 
 All evaluations using marker data are demonstrated at the example of cattle data included in the package. This multi-breed data has already been described in the [companion vignette for basic marker-based evaluations](seg-vignette.html).
 
-Data frame `Cattle` includes the phenotypic information and has columns `Indiv` (individual IDs), `Born` (year of birth), `Breed` (breed name), `BV`  (breeding values), and `Sex` (sexes). Sexes are recoded as 1 for males and 2 for females.
+Data frame `Cattle` includes the phenotypic information and has columns `Indiv` (individual IDs), `Born` (year of birth), `Breed` (breed name), `BV`  (breeding values), and `Sex` (sexes). 
+
 
 ```{r}
 library("optiSel")
@@ -45,7 +46,7 @@ head(Cattle)
 The data frame contains information on the `r length(unique(Cattle$Breed))` breeds `r names(table(Cattle$Breed))`. The "Angler" is an endangered German cattle breed, which had been upgraded with Red Holstein (also called "Rotbunt"). The Rotbunt cattle are a subpopulation of the "Holstein" breed. The "Fleckvieh" or Simmental breed is unrelated to the Angler. The Angler cattle are the selection candidates.
 
 This small example data set contains only genotypes from the first parts of the first two chromosomes.
-Vector `GTfiles` defined below contains the names of the genotype files. There is one file for each chromosome. Data frame `map` contains the marker map and has columns `Name` (marker name), `Chr` (chromosome number), `Position`, `kb` (position in kilo base pairs), and `cM` (position in centiMorgan):
+Vector `GTfiles` defined below contains the names of the genotype files. There is one file for each chromosome. Data frame `map` contains the marker map and has columns `Name` (marker name), `Chr` (chromosome number), `Position`, `Mb` (position in Mega base pairs), and `cM` (position in centiMorgan):
 
 ```{r}
 data(map)
@@ -98,14 +99,19 @@ con$ub <- c(M=NA, F=-1)
 
 In this case, `ub` is a named vector with two components, which define the upper bounds for the contributions of males and females. The value `F=-1` means that females have equal contributions, so optimization will be done only for the males, and `M=NA` means that there is no upper bound for the contributions of males. Alternatively, different lower bounds and upper bounds could be defined for each selection candidate (see the help page of function [opticont][opticont]).
 
+```{r, results='hide', echo=FALSE}
+mKin<-summary(opticont(K=Kin, phen=phen, con=list(ub=c(M=-1, F=-1))))$sKin
+```
+
 To define an upper bound for the mean kinship `sKin` in the offspring, put component `ub.sKin` into the list. In general, if an upper bound for a kinship $K$ should be defined, it is recommended to derive the threshold value from the desired effective size $N_e$ of the population by the formula
 $$ub.K=\overline{K}+(1-\overline{K})\Delta F,$$
-where $\overline{K}$ is the mean kinship in the actual population, and $\Delta F=\frac{1}{2 N_e}$. The critical effective size, i. e. the size below which the fitness of the population steadily decreases, depends on the population and is usually between 50 and 100. But there seems to be a consensus that 50-100 is a long-term
+where $\overline{K}$ is the mean kinship in the actual population, and $\Delta F=\frac{1}{2 N_e}$. We will see below that the mean kinship in the actual population can be estimated as `r round(mKin,4)`.
+The critical effective size, i. e. the size below which the fitness of the population steadily decreases, depends on the population and is usually between 50 and 100. But there seems to be a consensus that 50-100 is a long-term
 viable effective size. To be on the safe side, an effective size of $N_e=100$ should be envisaged [@Meuwissen2009]. Thus, the constraint is defined as
 
 ```{r}
 Ne <- 100
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
+meanKin     <- 0.0569
 con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 ```
 
@@ -173,8 +179,8 @@ A matrix containing the *segment based kinship* between all pairs of individuals
 
 ```{r, results="hide"}
 Kin  <- kinlist(
-            sKin    = segIBD(GTfiles, map, minSNP=20, minL=1000), 
-            sKinatN = segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1000)
+            sKin    = segIBD(GTfiles, map, minSNP=20, minL=1.0), 
+            sKinatN = segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1.0)
             )
 ```
 
@@ -182,7 +188,7 @@ The *breed composition* of individuals can be estimated with function [segBreedC
 
 ```{r, results="hide"}
 wdir  <- file.path(tempdir(), "HaplotypeEval")
-wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1000, w.dir=wdir)
+wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1.0, w.dir=wdir)
 Comp  <- segBreedComp(wfile$match, map)
 Cattle[rownames(Comp), "MC"] <- 1 - Comp$native
 ```
@@ -204,6 +210,30 @@ help.opticont4mb(Kin, phen=Cattle)
 
 Here, the additional possibility becomes available to minimize or to restrict the mean kinship `sKin` in a core set consisting of individuals from several breeds. The offspring of the selection candidates is included in the core set. This can be done by using method `min.sKin.acrossBreeds` in function [opticont4m][opticont4mb] or by defining the constraint `ub.sKin.acrossBreeds`.
 
+
+For defining appropriate threshold values for the constraints, the mean kinships `meanKin` and `meanKinatN`, the mean migrant contribution `meanMC`, and the mean breeding value in the actual population need to be known. They are equal to the respective values in a hypothetical offspring population that is created with no selection at all, meaning that all selection candidates are used for breeding, and all candidates of a particular sex have equal contributions. 
+First we define a data frame containing only the phenotypes of the selection candidates:
+
+```{r}
+phen <- Cattle[Cattle$Breed=="Angler",]
+```
+
+The values for the actual population can be obtained as
+
+```{r, results="hide"}
+eqCont     <- summary(opticont(K=Kin, phen=phen, con="equal.cont"))
+meanKin    <- eqCont$sKin
+meanKinatN <- eqCont$sKinatN
+meanMC     <- eqCont$meanMC
+phen$BV    <- phen$BV - eqCont$meanBV
+meanBV     <- 0
+```
+```{r}
+eqCont[,c("sKin", "sKinatN", "meanMC")]
+```
+The breeding values are standardized to have mean 0 in the actual population.
+
+
 Depending on what the objective of your breeding program is, you may continue reading at the appropriate section:
 
   - [Maximize Genetic Gain](#maximize-genetic-gain-marker-based)
@@ -215,12 +245,10 @@ Depending on what the objective of your breeding program is, you may continue re
 ### <a name="maximize-genetic-gain-marker-based"/>Maximize Genetic Gain</a> 
 
 
-First we define a data frame containing only the phenotypes of the selection candidates and create a list of constraints:
+First we create a list of constraints:
 
 ```{r}
-phen        <- Cattle[Cattle$Breed=="Angler",]
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
 con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 ```
 
@@ -238,9 +266,8 @@ maxBV.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 The results are the same as in the introductory example (as expected). This approach may be apppropriate for a population without introgression, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the migrant contributions should be restricted in order not to increase. Otherwise the genetic originality of the breed may get lost in the long term.
 
 ```{r, results="hide"}
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
 con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- mean(phen$MC)
+con$ub.MC      <- meanMC
 maxBV2         <- opticont(method="max.BV", K=Kin, phen=phen, con=con, solver="slsqp")
 maxBV2.s       <- summary(maxBV2)
 ```
@@ -258,11 +285,9 @@ Since migrant contributions and breeding values are positively correlated, the g
 
 Minimizing inbreeding means to minimize the average kinship of the population in order to enable breeders to avoid inbreeding. This is the appropriate approach e.g. for companion animals suffering from a historic bottleneck. It can be done with or without accounting for breeding values. In the example below no breeding values are considered since accurate breeding values are not available for most of these breeds.
 
-
-First we define a data frame containing only the phenotypes of the selection candidates and create a list of constraints:
+First we create a list of constraints:
 
 ```{r}
-phen <- Cattle[Cattle$Breed=="Angler",]
 con  <- list(ub=c(M=NA, F=-1))
 ```
 
@@ -284,13 +309,11 @@ For such a breed it is advisable to allow the use of individuals from other bree
 
 
 ```{r, results="hide"}
-con$ub.MC      <- 0.50
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
+con$ub.MC      <- 0.95*meanMC
 con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
 minKin2        <- opticont(method="min.sKin", K=Kin, phen=phen, con=con, solver="slsqp", trace=FALSE)
 minKin2.s      <- summary(minKin2)
 ```
-
 
 For comparison, the summaries of both scenarios are combined into a single data frame with `rbind`:
 
@@ -307,11 +330,9 @@ For endangered breeds the priority of a breeding program could be to recover the
 ```{r, results="hide"} 
 phen           <- Cattle[Cattle$Breed=="Angler",]
 con            <- list(ub=c(M=NA, F=-1))
-meanKin        <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
 con$ub.sKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
 con$ub.sKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="slsqp", trace=FALSE)
+minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="slsqp")
 minMC.s <- summary(minMC)
 ```
 
@@ -322,7 +343,7 @@ minMC.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 For this breed, minimizing migrant contributions results in negative genetic gain because migrant contributions and breeding values are positively correlated. This can be avoided by adding an additional constraint for the breeding values:
 
 ```{r, results="hide"} 
-con$lb.BV <- mean(phen$BV)
+con$lb.BV <- 0
 minMC2    <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="cccp", trace=FALSE)
 minMC2.s  <- summary(minMC2)
 ```
@@ -354,12 +375,10 @@ Second, the constraints are defined:
 
 ```{r} 
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
 con$ub.sKin <- meanKin  + (1-meanKin)*(1/(2*Ne))
 ```
 
 Equal contributions are assumed for the females and only the contributions of males are to be optimized. The upper bound for the mean segment based kindship was derived from the effective population size as explained above. Now the optimum contributions of the selection candidates can be calculated with fumction [opticont4mb][opticont4mb]:
-
 
 ```{r, results="hide"} 
 minKin4mb <- opticont4mb("min.sKin.acrossBreeds", Kin, phen=Cattle, CoreSet$bc, 
@@ -400,7 +419,7 @@ We define the individuals included in data.frame `Phen` to be selection candidat
 ```{r}
 data("Phen")
 Summary <- summary(Pedig, keep=Pedig$Indiv %in% Phen$Indiv)
-keep    <- Summary[Summary$equiGen>=5.0, "Indiv"]
+keep    <- Summary[Summary$equiGen>=3.0, "Indiv"]
 table(Pedig[keep, "Sex"])
 ```
 
@@ -438,6 +457,23 @@ help.opticont(Kin, Phen)
 Compared to the introductory example the possibility to restrict or to minimize migrant contributions becomes available because column `MC` is now included in data frame `Phen`. Additionally, there is the possibility to minimize or to restrict the *kinship at native alleles* `pKinatN` and the *pedigree based kinship* `pKin`.
 
 
+
+For defining appropriate threshold values for the constraints, the mean kinships `meanKin` and `meanKinatN`, the mean migrant contribution `meanMC`, and the mean breeding value in the actual population need to be known. They are equal to the respective values in a hypothetical offspring population that is created with no selection at all, meaning that all selection candidates are used for breeding, and all candidates of a particular sex have equal contributions. 
+Thus, the values for the actual population can be obtained as
+
+```{r, results="hide"}
+eqCont     <- summary(opticont(K=Kin, phen=Phen, con="equal.cont"))
+meanKin    <- eqCont$pKin
+meanKinatN <- eqCont$pKinatN
+meanMC     <- eqCont$meanMC
+Phen$BV    <- Phen$BV - eqCont$meanBV
+meanBV     <- 0
+```
+
+```{r}
+eqCont[,c("pKin", "pKinatN", "meanMC")]
+```
+
 Depending on what the objective of your breeding program is, you may continue reading at the appropriate section:
 
   - [Maximize Genetic Gain](#maximize-genetic-gain-pedigree-based)
@@ -453,7 +489,6 @@ This is the traditional approach proposed by @Meuwissen1997. First we create a l
 
 ```{r}
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 ```
 
@@ -471,9 +506,8 @@ maxBV.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 This approach may be apppropriate for a population without introgression and complete pedigrees, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the migrant contributions should be restricted in order not to increase. Otherwise the genetic originality of the breed may get lost in the long term.
 
 ```{r, results="hide"}
-meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- mean(Phen$MC)
+con$ub.MC      <- meanMC
 maxBV2         <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
 maxBV2.s       <- summary(maxBV2)
 ```
@@ -515,8 +549,7 @@ In summary, the alternative approach is to minimize the kinship at native allele
 
 ```{r, results="hide"}
 con  <- list(ub=c(M=NA, F=-1))
-con$ub.MC   <- 0.45
-meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
+con$ub.MC   <- 0.95*meanMC
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 minKin2     <- opticont(method="min.pKinatN", K=Kin, phen=Phen, con=con, solver="slsqp")
@@ -539,8 +572,6 @@ For endangered breeds the priority of a breeding program could be to recover the
 
 ```{r, results="hide"} 
 con            <- list(ub=c(M=NA, F=-1))
-meanKin        <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
-meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
 con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
 minMC   <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
@@ -554,7 +585,7 @@ minMC.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 For some breeds, migrant contributions and breeding values are positively correlated, so minimizing migrant contributions results in negative genetic. This can be avoided by adding an additional constraint for the breeding values:
 
 ```{r, results="hide"} 
-con$lb.BV <- mean(Phen$BV)
+con$lb.BV <- 0
 minMC2    <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
 minMC2.s  <- summary(minMC2)
 ```

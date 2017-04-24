@@ -8,7 +8,7 @@
   
   oc  <- phen[,"oc"]
   con <- x$con
-  sex <- phen[,"Sex"]
+  sex <- as.integer(mapvalues(phen[,"Sex"], from=c("male","female"), to=c(1,2)))
   obj.var <- substr(x$method,5,nchar(x$method))
   min.Kin <- (x$method %in% paste("min.",names(x$meanKin),sep=""))
 
@@ -61,12 +61,15 @@
   
   cat("Checking constraints:\n")
   isOK  <- min(oc)+0.0001>=0
+  isOK <- !is.na(isOK) & isOK
   valid <- valid & isOK
   cat("  min(oc) >= 0           : ", isOK, "\n", sep="")
   isOK  <- sum(oc[sex==1])>0.4999 & sum(oc[sex==1])<0.5001
+  isOK <- !is.na(isOK) & isOK
   valid <- valid & isOK
   cat("  total male cont   = 0.5: ", isOK, "\n", sep="")
   isOK  <- sum(oc[sex==2])>0.4999 & sum(oc[sex==2])<0.5001
+  isOK <- !is.na(isOK) & isOK
   valid <- valid & isOK
   cat("  total female cont = 0.5: ", isOK, "\n", sep="")
   equalFemaleCont <- "F" %in% names(con$ub) & (con$ub["F"] == -1)
@@ -75,26 +78,31 @@
   equalMaleCont   <- equalMaleCont   | (sum(is.na(phen$ub[sex==1]))==0 & all(phen$lb[sex==1]==phen$ub[sex==1]) & sd(phen$ub[sex==1])==0)
   if(equalMaleCont){
     isOK <- sd(oc[sex==1])==0
+    isOK <- !is.na(isOK) & isOK
     valid <- valid & isOK
     cat("  males have equal cont  : ", isOK, "\n", sep="")
   }
   if(equalFemaleCont){
     isOK <- sd(oc[sex==2])==0
+    isOK <- !is.na(isOK) & isOK
     valid <- valid & isOK
     cat("  females have equal cont: ", isOK, "\n", sep="")
   }
   if(!equalMaleCont){
     isOK <- all(oc[sex==1]-0.0001<=con$ub[sex==1])
+    isOK <- !is.na(isOK) & isOK
     valid <- valid & isOK
     cat("  all male cont <= ub    : ", isOK, "\n", sep="")
   } 
   if(!equalFemaleCont){
     isOK <- all(oc[sex==2]-0.0001<=con$ub[sex==2])
+    isOK <- !is.na(isOK) & isOK
     valid <- valid & isOK
     cat("  all female cont <= ub  : ", isOK, "\n", sep="")
   } 
   for(i in names(x$quadcon)){
     isOK  <- x$meanKin[i]-0.0001 <= x$quadcon[i]
+    isOK <- !is.na(isOK) & isOK
     valid <- valid & isOK
     cat("  mean ",i," <= ub.",i,"       : ", isOK, "\n", sep="")    
   }
@@ -112,17 +120,20 @@
     if(is.na(Res[, lb.var]))Res[, lb.var]<-as.numeric(x$lincon[eq.var,"val"])
     if(is.na(Res[, ub.var]))Res[, ub.var]<-as.numeric(x$lincon[eq.var,"val"])
     if(!is.na(Res[, lb.var])){
-      isOK  <- Res[, lb.var]<= c(t(oc)%*%phen[,vari])+0.0001
+      isOK <- Res[, lb.var]<= c(t(oc)%*%phen[,vari])+0.0001
+      isOK <- !is.na(isOK) & isOK
       valid <- valid & isOK
       cat("  mean ",vari," >= lb.",vari,"       : ", isOK, "\n", sep="")   
     }
     if(!is.na(Res[, ub.var])){
       isOK  <- Res[, ub.var]>= c(t(oc)%*%phen[,vari])-0.0001
+      isOK <- !is.na(isOK) & isOK
       valid <- valid & isOK
       cat("  mean ",vari," <= ub.",vari,"       : ", isOK, "\n", sep="")   
     }
   }
   cat(" \n")
+  if(is.na(valid)){valid<-FALSE}
   Res$valid <- valid
   
   if(phenAsDataTable){setDT(Res)}

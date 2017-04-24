@@ -10,7 +10,7 @@ Calculates the \bold{seg}ment based \bold{Breed} \bold{Comp}osition:
 For every individual from this breed the breed composition is estimated, including the genetic contribution from native ancestors.
 }
 \usage{
-segBreedComp(Native, map, unitP="kb")
+segBreedComp(Native, map, unitP="Mb")
 }
 
  
@@ -30,10 +30,10 @@ or
 There is one file per chromosome and file names must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.nat"}.
 }
 \item{map}{
-Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in kilo base pairs \code{'kb'}, and the position in centimorgan \code{'cM'}. The markers must be in the same order as in  in \code{Native}.
+Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in Mega base pairs \code{'Mb'}, and the position in centimorgan \code{'cM'}. The markers must be in the same order as in  in \code{Native}.
 }
 \item{unitP}{The unit for measuring the proportion of the genome included in native segments.
-  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
 }
 \value{
 Data frame with the number of rows being the number of individuals from this breed. The columns are
@@ -52,7 +52,7 @@ data(map)
 data(Cattle)
 dir     <- system.file("extdata", package = "optiSel")
 GTfiles <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
-Haplo   <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1000)
+Haplo   <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1.0)
 Comp    <- segBreedComp(Haplo$freq<0.01, map)
 mean(Comp$native)
 #[1] 0.3853432
@@ -64,7 +64,7 @@ apply(Comp[, -1], 2, mean)
 \dontrun{
 wdir <- file.path(tempdir(), "HaplotypeEval")
 file <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, 
-           minL=1000, ubFreq=0.01, what="match", w.dir=wdir)
+           minL=1.0, ubFreq=0.01, what="match", w.dir=wdir)
 Comp <- segBreedComp(file$match, map)
 head(Comp)
 

@@ -8,12 +8,13 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, int M, const arma::vec& ArmaNkb) {
+Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, const arma::vec& ArmaNkb) {
   int m, i, j;
   char str2[100];
   FILE *fN;
-  Rcpp::NumericMatrix RcppsegN(NC, NC);
-
+  Rcpp::NumericMatrix ArmasegN(NC, NC);
+  
+  int M = ArmaNkb.n_elem;
   size_t bufsize = 2*NFileN;  
   char* Line = (char*)malloc(bufsize*sizeof(char));
   if(Line == NULL){error_return("Memory allocation failed.");};
@@ -65,8 +66,8 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
   
   for(i=0; i<NC;i++){
     for(j=i; j<NC; j++){
-      RcppsegN.at(j,i) = fsegN[i][j];
-      RcppsegN.at(i,j) = fsegN[i][j];
+      ArmasegN.at(j,i) = fsegN[i][j];
+      ArmasegN.at(i,j) = fsegN[i][j];
     }
   }
 
@@ -77,5 +78,5 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
   free(indexN);
   free(Line);
   
-  return RcppsegN;
+  return ArmasegN;
 }

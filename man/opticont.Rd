@@ -14,7 +14,7 @@ opticont(method, K, phen, con=list(), solver="cccp", quiet=FALSE,
 \item{method}{Possible values are \code{"min.VAR"}, and \code{"max.VAR"}, where \code{VAR} is the name of a column in data frame \code{phen}, or \code{"min.KIN"}, where \code{KIN} is the name of a kinship as defined by function \link{kinlist}. Use \link{help.opticont} to see the available objective functions.
 }
 \item{K}{List created by function \link{kinlist}, containing e.g. kinship matrices of the selection candidates.}
-\item{phen}{Data frame with IDs of selection candidates in column 1, and sex in column 2. The other columns may contain breeding values or migrant contributions. The sex is 1 for males and 2 for females.}
+\item{phen}{Data frame with IDs of selection candidates in column 1, and sex in column 2. The other columns may contain breeding values or migrant contributions. The sex is coded as \code{'male'} and \code{'female'}.}
 \item{con}{List defining the constraints. The compomnents are described in the Details section. If a component is missing, then the respective constraint is not applied. Use \link{help.opticont} to see the available constraints. 
 }
 
@@ -136,7 +136,7 @@ maxBV.s$meanBV
 # [1] 0.5403463
 
 # Get optimum contributions of sires
-Sire <- maxBV$parent[maxBV$parent$Sex==1,]
+Sire <- maxBV$parent[maxBV$parent$Sex=="male",]
 ord  <- order(Sire$oc, decreasing=TRUE)
 head(Sire[ord,])
 
@@ -153,11 +153,11 @@ data(map)
 data(Cattle)
 dir   <- system.file("extdata", package = "optiSel")
 files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
-Kin   <- kinlist(sKin    = segIBD(files, map, minSNP=20, minL=2000), 
+Kin   <- kinlist(sKin    = segIBD(files, map, minSNP=20, minL=2.0), 
                  sKinatN = segIBDatN(files, Cattle, map, thisBreed="Angler", 
-                                     ubFreq=0.01, minSNP=20, minL=2000))
+                                     ubFreq=0.01, minSNP=20, minL=2.0))
 Haplo <- haplofreq(files, Cattle, map, thisBreed="Angler", 
-                   minSNP=20, minL=2000, ubFreq=0.01, what="match")
+                   minSNP=20, minL=2.0, ubFreq=0.01, what="match")
 Comp  <- segBreedComp(Haplo$match, map)
 Comp$MC <- 1-Comp$native
 Phen  <- merge(Cattle, Comp[,c("Indiv", "MC")], by="Indiv", all=FALSE)
@@ -191,7 +191,7 @@ minKin.s$sKin
 # [1] 0.03880943
 
 # Get optimum contributions of sires
-Sire <- minKin$parent[minKin$parent$Sex==1,]
+Sire <- minKin$parent[minKin$parent$Sex=="male",]
 ord  <- order(Sire$oc, decreasing=TRUE)
 head(Sire[ord,])
 }

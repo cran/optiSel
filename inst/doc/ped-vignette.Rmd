@@ -59,7 +59,7 @@ Individual IDs must be unique and should not contain blank spaces. The above ped
 - renames the first three columns as `Indiv`, `Sire`, `Dam`,
 - replaces 0, "", and " " in columns `Sire` and `Dam` by `NA`,
 - breaks loops and reports which animal was included in a loop,
-- adds or updates column `Sex`. Sexes will be recoded as 1 for males and 2 for females.
+- adds or updates column `Sex`. Sexes will be recoded as `male` and `female`.
 - adds one row for each founder if the row is not already included,
 - sorts the pedigree such that individuals appear in the pedigree before they appear as parent,
 - guesses the breed name of animals with missing breeds (including added founders),
@@ -175,7 +175,7 @@ The kinship between two individuals is the probability that two alleles randomly
 
 ```{r}
 pedKIN <- pedIBD(Pedig, keep.only=keep)
-use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
+use    <- Pedig$Sex=="male" & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
 Males  <- Pedig$Indiv[use]
 pedKIN[rownames(pedKIN) %in% Males, "276000812750188", drop=FALSE]
 ```

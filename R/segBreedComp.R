@@ -1,5 +1,5 @@
 
-"segBreedComp"<-function(Native, map, unitP="kb"){
+"segBreedComp"<-function(Native, map, unitP="Mb"){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################

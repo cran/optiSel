@@ -14,7 +14,7 @@ opticont4mb(method, K, phen, bc, thisBreed=names(bc)[1], con=list(),
 \item{method}{Possible values are \code{"min.VAR"}, and \code{"max.VAR"}, where \code{VAR} is the name of a column in data frame \code{phen}, or \code{"min.KIN"}, or \code{"min.KIN.acrossBreeds"}, where \code{KIN} is the name of a kinship as defined by function \link{kinlist}. Use \link{help.opticont4mb} to see the available objective functions. If kinship \code{KIN} is available for all animals from the multi-breed population, then \code{"min.KIN.acrossBreeds"} minimizes the kinship in the multi-breed population by optimizing the contributions of selection candidates from the breed of interest.
 }
 \item{K}{List created by function \link{kinlist} containing kinships of genotyped individuals.}
-\item{phen}{Data frame with  one row for each animal from the multi-breed population that is to be included in the analysis.  The animal IDs is in column 1 (named \code{Indiv}) and the sex is in column 2 (named \code{Sex}).  The sex is 1 for males and 2 for females. Column \code{Breed} contains the breed name of every genotyped animal. Further columns contain e.g. breeding values or migrant contributions that may be used for defining linear constraints.
+\item{phen}{Data frame with  one row for each animal from the multi-breed population that is to be included in the analysis.  The animal IDs is in column 1 (named \code{Indiv}) and the sex is in column 2 (named \code{Sex}).  The sex is coded as \code{'male'} and \code{'female'}. Column \code{Breed} contains the breed name of every genotyped animal. Further columns contain e.g. breeding values or migrant contributions that may be used for defining linear constraints.
 }
 \item{bc}{Named vector containing the proportion of every genotyped breed in the hypothetical multi-breed offspring population. The names  of the components are the breed names. Note that only the contributions of selection candidates from \code{thisBreed} will be optimized. Animals from other breeds have fixed contributions. }
 \item{thisBreed}{The breed to which the selection candidates belong. }
@@ -105,14 +105,14 @@ dir  <- system.file("extdata", package = "optiSel")
 files<- file.path(dir, paste("Chr", 1:2, ".phased", sep=""))
 
 ### Compute genomic kinship and genomic kinship at native segments
-G    <- segIBD(files, map, minSNP=20, minL=3000)
+G    <- segIBD(files, map, minSNP=20, minL=3.0)
 GN   <- segIBDatN(files, Cattle, map, thisBreed="Angler", refBreeds="others", 
-           ubFreq=0.02, minSNP=20, minL=3000, lowMem=TRUE)
+           ubFreq=0.02, minSNP=20, minL=3.0, lowMem=TRUE)
 Kin  <- kinlist(G=G, GN=GN)
 
 ### Compute migrant contributions of selection candidates 
 Haplo<- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="others",
-           minSNP=20, minL=3000, ubFreq=0.02, what="match")
+           minSNP=20, minL=3.0, ubFreq=0.02, what="match")
 Comp <- segBreedComp(Haplo$match, map)
 Cattle$MC <- NA
 Cattle[rownames(Comp), "MC"] <- 1-Comp$native

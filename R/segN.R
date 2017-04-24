@@ -1,6 +1,6 @@
 
 
-"segN"<-function(Native, map, unitP="kb", keep=NULL){
+"segN"<-function(Native, map, unitP="Mb", keep=NULL, cores=1){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -45,36 +45,66 @@
   NFileN <- length(IndivFileN)
   Indiv  <- IndivFileN[indexN]
   NC     <- length(indexN)
-
-  if(is.vector(Native)){
-    Res  <- matrix(0,nrow=NC, ncol=NC)
-    GenL <- 0
-    for(chr in names(Native)){
-      cat(paste("Reading chromosome ", chr, "...  "))
-      submap <- map[map$Chr==chr, ]
-      M      <- nrow(submap)
-      submap$SNP <- 1:M
-      x   <- submap[, unitP]
-      kb  <- (c(0,x)+c(x,x[length(x)]+x[1]))/2
-      Nkb <- kb[2:length(kb)]-kb[1:(length(kb)-1)]
-      Res <- Res + rcpp_segN(as.character(Native[chr]), as.integer(NFileN), as.integer(NC), as.integer(indexN-1), as.integer(M), as.double(Nkb))
-      GenL <- GenL + sum(Nkb)
-      }
-  }else{
+  
+  if(!is.vector(Native)){
     map <- map[rownames(Native),]
-    map$SNP <- NA
-    map$nUnits <- NA
-    for(chr in unique(map$Chr)){
-      map[map$Chr==chr, "SNP"] <- (1:sum(map$Chr==chr))
-      x   <- map[map$Chr==chr, unitP]
-      kb  <- (c(0,x)+c(x,x[length(x)]+x[1]))/2
-      Nkb <- kb[2:length(kb)]-kb[1:(length(kb)-1)]
-      map[map$Chr==chr, "nUnits"] <- Nkb
+  }
+  
+  Chromosomes <- unique(map$Chr)
+  for(chr in Chromosomes){
+    submap <- map[map$Chr==chr, ]
+    M      <- nrow(submap)
+    submap$SNP <- 1:M
+    x    <- submap[, unitP]
+    kb   <- (c(0,x)+c(x,x[length(x)]+x[1]))/2
+    Nkb  <- kb[2:length(kb)]-kb[1:(length(kb)-1)]
+    map$nUnits[map$Chr==chr] <- Nkb
+  }
+  GenL <- sum(map$nUnits)
+  
+  if(is.na(cores)){
+    cores <- detectCores()-1
+    if(is.na(cores)){cores <- 1}
+    cores <- min(cores,floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(2*NC^2))))
+    cores <- max(cores, 1)
+    cores <- min(cores, length(Chromosomes))
+  }
+
+  gc()
+  if(cores==1){
+    Res  <- matrix(0,nrow=NC, ncol=NC)
+    for(chr in Chromosomes){
+      if(is.vector(Native)){
+        cat(paste("Reading chromosome ", chr, "...  "))
+        Res <- Res + rcpp_segN(as.character(Native[chr]), as.integer(NFileN), as.integer(NC), as.integer(indexN-1), as.double(map$nUnits[map$Chr==chr]))
+      }else{
+        Units      <- matrix(map$nUnits[map$Chr==chr],ncol=NC, nrow=sum(map$Chr==chr), byrow=FALSE)
+        thisNative <- Native[map$Chr==chr, indexN]
+        Res        <- Res + t(thisNative)%*%(thisNative*Units)
+      }
     }
-    Units  <- matrix(map$nUnits,ncol=NC, nrow=nrow(Native), byrow=FALSE)
-    Native <- Native[, indexN]
-    Res    <- t(Native)%*%(Native*Units)
-    GenL   <- sum(map$nUnits)
+  }else{
+    cat(paste0("Using ",cores," cores... "))
+    use_cor <- 1 + ((1:length(Chromosomes)) %% cores)
+    Cores   <- unique(use_cor)
+    cl <- makeCluster(cores)
+    registerDoParallel(cl)
+    Res <- foreach(thisCore=Cores, .combine='+', .inorder=FALSE) %dopar% {
+      x <- matrix(0,NC, NC)
+      for(chr in Chromosomes[use_cor==thisCore]){
+        if(is.vector(Native)){
+          x <- x + rcpp_segN(as.character(Native[chr]), as.integer(NFileN), as.integer(NC), as.integer(indexN-1), as.double(map$nUnits[map$Chr==chr]))
+        }else{
+          Units      <- matrix(map$nUnits[map$Chr==chr],ncol=NC, nrow=sum(map$Chr==chr), byrow=FALSE)
+          thisNative <- Native[map$Chr==chr, indexN]
+          x <- x + t(thisNative)%*%(thisNative*Units)
+        }
+        gc()
+      }
+      x
+    }
+    stopCluster(cl)
+    cat("finished.\n")
   }
   
   N   <- ncol(Res)/2

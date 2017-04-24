@@ -1,8 +1,8 @@
 Package: optiSel
 Type: Package
 Title: Optimum Contribution Selection and Population Genetics
-Version: 0.7.1
-Date: 2017-04-14
+Version: 0.8
+Date: 2017-04-24
 Author: Robin Wellmann
 Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
 Depends: R (>= 3.3.2)
@@ -10,12 +10,13 @@ Description: A framework for the optimization of breeding programs via optimum c
 License: GPL-2
 Imports: Matrix, plyr, Rcsdp, alabama, cccp, kinship2, nadiv, nloptr,
         pedigree, pspline, stringr, MASS, methods, stats, graphics,
-        quadprog, data.table, magic, Rcpp (>= 0.12.4)
+        quadprog, data.table, magic, parallel, doParallel, foreach,
+        Rcpp (>= 0.12.4)
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr, ggplot2, rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-04-15 06:04:44 UTC; Robin
+Packaged: 2017-04-24 10:54:44 UTC; Robin
 Repository: CRAN
-Date/Publication: 2017-04-15 06:36:35 UTC
+Date/Publication: 2017-04-24 12:18:06 UTC

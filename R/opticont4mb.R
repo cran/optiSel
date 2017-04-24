@@ -81,7 +81,7 @@
   ### Use simulated sexes for breeds whose contributions                 ###
   ###  are not optimized                                                 ### 
   ##########################################################################
-  Sex   <- 1+(1:nrow(phen))%%2
+  Sex   <- c("male","female")[1+(1:nrow(phen))%%2]
   phen$Sex[phen$Breed!=thisBreed] <- Sex[phen$Breed!=thisBreed]
   
   ##########################################################################
@@ -105,7 +105,7 @@
   
   nIndiv  <- table(phen$Breed, phen$Sex)
   nBreeds <- nrow(nIndiv)
-  nIndiv  <- ifelse(phen$Sex==1, nIndiv[phen$Breed, 1], nIndiv[phen$Breed, 2])
+  nIndiv  <- ifelse(phen$Sex=="male", nIndiv[phen$Breed, "male"], nIndiv[phen$Breed, "female"])
   ub      <- bc[phen$Breed]/(2*nIndiv)
   names(ub)<-NULL
   lb      <- ub
@@ -114,12 +114,12 @@
     equalMaleCont   <- con$ub["M"] %in% c(-1)
     equalFemaleCont <- con$ub["F"] %in% c(-1)
     if(!equalMaleCont){
-      ub[phen$Breed == thisBreed & phen$Sex == 1] <- bc[thisBreed]*con$ub["M"]
-      lb[phen$Breed == thisBreed & phen$Sex == 1] <- bc[thisBreed]*con$lb["M"]
+      ub[phen$Breed == thisBreed & phen$Sex == "male"] <- bc[thisBreed]*con$ub["M"]
+      lb[phen$Breed == thisBreed & phen$Sex == "male"] <- bc[thisBreed]*con$lb["M"]
       }
     if(!equalFemaleCont){
-      ub[phen$Breed == thisBreed & phen$Sex == 2] <- bc[thisBreed]*con$ub["F"]
-      lb[phen$Breed == thisBreed & phen$Sex == 2] <- bc[thisBreed]*con$lb["F"]
+      ub[phen$Breed == thisBreed & phen$Sex == "female"] <- bc[thisBreed]*con$ub["F"]
+      lb[phen$Breed == thisBreed & phen$Sex == "female"] <- bc[thisBreed]*con$lb["F"]
       }
   }else{
     ub[names(con$ub)] <- bc[thisBreed]*con$ub

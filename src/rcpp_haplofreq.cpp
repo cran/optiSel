@@ -8,7 +8,7 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string stdBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC,int NFileR, int NC, const arma::ivec& ArmaNR, int M,  int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, std::string  stdsymB, int skip, int cskip, int getFreq, int getOrig) {
+Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string stdBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC,int NFileR, int NC, const arma::ivec& ArmaNR, int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, std::string  stdsymB, int skip, int cskip, int getFreq, int getOrig) {
   /* ***** initialize variables ****** */
   int m, mx, ms, i, j, r, rK, b, gleich, BreedIndex, endoffile;
   double L, maxFreq, thisFreq;
@@ -16,6 +16,7 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   FILE *fC, *fR, *fFreq, *fOrig;
   char merge[2];
   char symB = stdsymB.at(0);
+  int M  = ArmaPos.n_elem - 1;
   
   int K            = (minSNP<=60)?(minSNP/2):(30);
   int B            = ArmaIndexR.n_cols;

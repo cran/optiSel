@@ -1,5 +1,5 @@
 
-"segInbreeding"<-function(files, map, minSNP=20, minL=1000, unitP="kb", unitL="kb", a=0.0, keep=NULL, skip=NA, cskip=NA){
+"segInbreeding"<-function(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################

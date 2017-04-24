@@ -8,7 +8,7 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathNative, int NFileC, int NFileN, const arma::ivec& ArmaIndexC, const arma::ivec& ArmaIndexN, int NC, int M, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
+Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathNative, int NFileC, int NFileN, const arma::ivec& ArmaIndexC, const arma::ivec& ArmaIndexN, int NC, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
   /* ***** initialize variables ****** */
   int m, i, j, r, r2, rK, endoffile, gleich;
   double L;
@@ -17,7 +17,8 @@ Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathN
   char symB = stdsymB.at(0);
   Rcpp::NumericMatrix confROH(NC, NC);
   int K  = (minSNP<=60)?(minSNP/2):(30);
-
+  int M  = Armakb.n_elem - 1;
+  
   size_t bufsize = 2*(NFileC+NFileN);  
   char* Line = (char*)malloc(bufsize*sizeof(char));
   if(Line == NULL){error_return("Memory allocation failed.");};

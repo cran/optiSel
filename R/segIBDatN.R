@@ -1,5 +1,5 @@
 
-"segIBDatN" <- function(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20, unitP="kb", minL=1000, unitL="kb", a=0.0, keep=NULL, lowMem=TRUE, skip=NA, cskip=NA){
+"segIBDatN" <- function(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20, unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, skip=NA, cskip=NA, cores=1){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -43,16 +43,16 @@
   if(lowMem){
     wdir <- file.path(getwd(), "tempHapGFFdBvcw")
     dir.create(wdir, showWarnings=FALSE)
-    Res <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, ubFreq=ubFreq, keep=keep, skip=skip, cskip=cskip, what="match", w.dir=wdir)
+    Res <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, ubFreq=ubFreq, keep=keep, skip=skip, cskip=cskip, what="match", w.dir=wdir, cores=cores)
     Native <- Res$match
   }else{
-    Native <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, keep=keep, skip=skip, cskip=cskip, what="freq")$freq < ubFreq
+    Native <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, keep=keep, skip=skip, cskip=cskip, what="freq", cores=cores)$freq < ubFreq
   }
   Res  <- list()
   cat("Computing probabilities for segments to be shared and native...\n")
-  Res$segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip)
+  Res$segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip, cores=cores)
   cat("Computing probabilities for segments to be native...\n")
-  Res$segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep)
+  Res$segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores)
   Res$segZ       <- 1+Res$segIBDandN-Res$segN
   attributes(Res)$condProb <- list(segIBDatN=c(f1="segZ", f2="segN"))
   class(Res)     <- "kinMatrices"

@@ -7,7 +7,8 @@
 \bold{Seg}ment based probability of alleles to be \bold{IBD at N}ative haplotype segments ("kinship at native segments").}
 \usage{
 segIBDatN(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20,
-  unitP="kb", minL=1000, unitL="kb", a=0.0, keep=NULL, lowMem=TRUE, skip=NA, cskip=NA)
+  unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, 
+  skip=NA, cskip=NA, cores=1)
 }
 
 \arguments{
@@ -23,21 +24,22 @@ File names must contain the chromosome name as specified in the \code{map} in th
 }
 
 \item{phen}{Data frame containing the ID (column \code{"Indiv"}) and the breed name (column \code{"Breed"}) of each individual.}
-\item{map}{Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in kilo base pairs \code{'kb'}, and the position in centimorgan \code{'cM'}. (The position in base pairs could result in an integer overflow). The order of the markers must bethe same as in the files.}
+\item{map}{Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in Mega base pairs \code{'Mb'}, and the position in centimorgan \code{'cM'}. (The position in base pairs could result in an integer overflow). The order of the markers must bethe same as in the files.}
 \item{thisBreed}{Breed name: Results will be computed for individuals from \code{thisBreed}.}
 \item{refBreeds}{Vector containing names of genotyped breeds. A segment is considered native if its frequency is smaller than \code{ubFreq}  in all \code{refBreeds}. The default \code{"others"} means that all genotyped breeds except \code{thisBreed} are considered.}
 \item{ubFreq}{A segment is considered native if its frequency is smaller than \code{ubFreq} in all reference breeds.}
 \item{minSNP}{Minimum number of marker SNPs included in a segment.}
 \item{unitP}{The unit for measuring the proportion of the genome included in native segments.
-  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
 \item{minL}{Minimum length of a segment in \code{unitL} (e.g. in cM).}
-\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the genetic  distances between the first and the last marker in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the genetic  distances between the first and the last marker in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
 \item{a}{The function providing the weighting factor for each segment is w(x)=x*x/(a+x*x). The parameter of the function is the length of the segment in \code{unitL}. The default value \code{a=0.0} implies no weighting, whereas \code{a>0.0} implies that old inbreeding has less influence on the result than new inbreeding.}
  \item{keep}{
  Subset of the IDs of the individuals from data frame \code{phen} (including individuals from other breeds) or a logical vector indicating the animals in data frame \code{phen} that should be used. By default all individuals included in \code{phen} will be used.}
 \item{lowMem}{If \code{lowMem=TRUE} then temporary files will be created and deleted.}
      \item{skip}{Take line \code{skip+1} of the genotype files as the row with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the genotype files as the first column with genotypes. By default, the number is determined automatically.}
+  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
 }
 \value{
 A list containing matrices needed for computing the segment based pobability of alleles to be IBD at native segments. The list has components
@@ -56,7 +58,8 @@ data(map)
 data(Cattle)
 dir   <- system.file("extdata", package = "optiSel")
 files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
-Res   <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1000, lowMem=FALSE)
+Res   <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, 
+                   minL=1.0, lowMem=FALSE)
                
 ## Mean kinship at native segments:
 attributes(Res)$meanIBDatN
@@ -67,14 +70,14 @@ kin <-Res$segIBDandN/Res$segN
 use <-upper.tri(kin) & Res$segN>0.2
 boxplot(kin[use], ylim=c(0,1))
 
-## Using temporary files to reduce working memory:
-\dontrun{
-Res <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1000)
+## Use temporary files to reduce working memory:
+
+Res <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01,  minL=1.0)
                
 ## Mean kinship at native segments:
 attributes(Res)$meanIBDatN
 #[1] 0.06695171
-}
+
 }
 \author{Robin Wellmann}
 

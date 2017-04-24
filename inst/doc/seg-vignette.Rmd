@@ -16,9 +16,9 @@ In any case, the goal is to select animals for breeding in a way that accelerate
 
 All genomic evaluations included in this package are based on haplotype segments. Every individual has two haplotypes: a paternal and a maternal one. A haplotype segment is usually present in many individuals because the individuals have a common ancestor from which the segment originates. It is, however, also possible that two segments are identical by chance. Of course, the likelihood for being identical by chance is the smaller the more markers are included in the segments. Therefor, a part of a chromosome is considered a segment only if it contains at least `minSNP>=15` consecutive markers. 
 
-If a segment is in a region with low recombination rate or high marker density, however, then two segments could be identical even though they originate from an ancestor who lived long time before breed separation. Therefor, segments must have a minimum length which may be measured in centiMorgan (`unitL="cM"`) or kilo base pairs (`unitL="kb"`). The minimum length of a segment is often defined as `minL=2000` kb.
+If a segment is in a region with low recombination rate or high marker density, however, then two segments could be identical even though they originate from an ancestor who lived long time before breed separation. Therefor, segments must have a minimum length which may be measured in centiMorgan (`unitL="cM"`) or Mega base pairs (`unitL="Mb"`). The minimum length of a segment is often defined as `minL=2.0` Mb.
 
-The proportion of the genome captured by a segment is usually obtained from it's length in kilo base pairs (`unitP="kb"`) as the length of the segment divided by the length of the genome.
+The proportion of the genome captured by a segment is usually obtained from it's length in Mega base pairs (`unitP="Mb"`) as the length of the segment divided by the length of the genome.
 
 This section covers the following evaluations based on marker data:
 
@@ -99,14 +99,14 @@ For all functions reading from genotype files, a marker map must be provided in 
 
 `Chr`: chromosome number, and possibly 
 
-`kb`: position on the chromosome in kilo base pairs, and 
+`Mb`: position on the chromosome in Mega base pairs, and 
 
 `cM`: position in centiMorgan. 
 
 The order of the markers must be the same as in the genotype files.
 
 ### Example Data Set
-All evaluations are demonstrated at the example of cattle data contained in the package. Breed names, years of birth, simulated breeding values, and simulated sexes are provided in data frame `Cattle`. Sexes are recoded as 1 for males and 2 for females.
+All evaluations are demonstrated at the example of cattle data contained in the package. Breed names, years of birth, simulated breeding values, and simulated sexes are provided in data frame `Cattle`.
 
 ```{r}
 library("optiSel")
@@ -132,7 +132,7 @@ head(map)
 This small example data set contains only genotypes from the first parts of the first two chromosomes:
 
 ```{r}
-tapply(map$kb, map$Chr, max)
+tapply(map$Mb, map$Chr, max)
 ```
 
 Consequently the results obtained for specific individuals will be rather inaccurate. The genotypes are included in the following files:
@@ -149,7 +149,7 @@ GTfiles <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 The inbreeding coefficient of an individual is the probability that two alleles chosen at random from the maternal and paternal haplotypes belong to identical segments. This parameter estimates the extent to which the individual may suffer from inbreeding depression and predicts the homogeneity of its offspring. It can be calculated with
 
 ```{r, results="hide"}
-Animal <- segInbreeding(GTfiles, map, minSNP=20, minL=1000)
+Animal <- segInbreeding(GTfiles, map, minSNP=20, minL=1.0)
 ```
 ```{r}
 head(Animal)
@@ -161,7 +161,7 @@ head(Animal)
 The segment based kinship between two individuals is the probability that two alleles randomly chosen from both individuals belong to segments which are identical in both individuals. A matrix containing the kinship between all pairs of individuals can be computed with function [segIBD][segIBD]:
 
 ```{r, results="hide"}
-segKIN <- segIBD(GTfiles, map, minSNP=20, minL=1000)
+segKIN <- segIBD(GTfiles, map, minSNP=20, minL=1.0)
 ```
 ```{r}
 segKIN[1:3,1:3]
@@ -170,7 +170,7 @@ segKIN[1:3,1:3]
 The R code below displays the kinship between the female with ID `276000102372349` and all genotyped Angler males that have a breeding value larger than 2.0.
 
 ```{r}
-Males  <- phen$Indiv[phen$Sex==1 & phen$Breed=="Angler" & phen$BV>2.0]
+Males  <- phen$Indiv[phen$Sex=="male" & phen$Breed=="Angler" & phen$BV>2.0]
 segKIN[rownames(segKIN) %in% Males, "276000102372349", drop=FALSE]
 ```
 
@@ -201,7 +201,7 @@ For individuals with genetic contributions from several breeds, each marker belo
 Below, the frequency of each segment from haplotype 2 of Angler 276000101676415 in Rotbunt cattle is plotted with function [plot][plot.HaploFreq] (red area). The grey area is the maximum frequency a segment from an Angler has in Rotbunt cattle.
 
 ```{r, fig.width = 5, results="hide"}
-Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt",   minSNP=20, minL=1000)
+Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt",   minSNP=20, minL=1.0)
 plot(Haplo, ID="276000101676415", hap=2)
 ```
 
@@ -213,9 +213,9 @@ The red area shows the frequency of each haplotype segment in Rotbunt cattle, wh
 
 ```{r, fig.width = 5, results="hide"}
 Haplo <- freqlist(
-  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt",   minSNP=20, minL=1000),
-  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Holstein",  minSNP=20, minL=1000),
-  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Fleckvieh", minSNP=20, minL=1000)
+  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt",   minSNP=20, minL=1.0),
+  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Holstein",  minSNP=20, minL=1.0),
+  haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Fleckvieh", minSNP=20, minL=1.0)
   )
 
 plot(Haplo, ID=1, hap=2, refBreed="Rotbunt")
@@ -226,7 +226,7 @@ Hence, most segments from Chromosome 2 have very low frequency in other breeds, 
 The classification of haplotype segments can be done with a single call to function [haplofreq][haplofreq]. In this case, argument `refBreeds` is either the vector with breeds to be used as reference breeds, or the default `refBreeds="others"` is used, in which case all breeds with genotypes are used as reference breeds, except `thisBreed`.
 
 ```{r, results="hide"}
-Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="others", ubFreq=0.01, minL=2500)
+Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="others", ubFreq=0.01, minL=2.5)
 ```
 The result is a list. Component `freq` is a matrix containing the maximum frequency each haplotype segment has in one of the reference breeds.
 
@@ -244,7 +244,7 @@ If individuals are genotyped for many markers, then the working memory could bec
 
 ```{r, results="hide"}
 wdir  <- file.path(tempdir(), "HaplotypeEval")
-wfile <- haplofreq(GTfiles, phen, map, thisBreed="Angler", minSNP=20, minL=1000, w.dir=wdir)
+wfile <- haplofreq(GTfiles, phen, map, thisBreed="Angler", minSNP=20, minL=1.0, w.dir=wdir)
 ```
 
 
@@ -271,7 +271,7 @@ Since Red Holstein is a subpopulation of Holstein cattle, their contributions sh
 Since animals with low migrant contributions tend to be related, the inbreeding level could increase considerably when introgressed genetic material is removed from the population. This could be avoided by restricting the increase in kinship at native haplotype segments in the population. Matrix `segKINatN` containing the kinship of individuals at native haplotype segments can be calculated from the results of function [segIBDatN][segIBDatN]:
 
 ```{r, results="hide"}
-fD <- segIBDatN(GTfiles, phen, map, thisBreed="Angler", ubFreq=0.01, minL=1000)
+fD <- segIBDatN(GTfiles, phen, map, thisBreed="Angler", ubFreq=0.01, minL=1.0)
 ```
 
 ```{r}
@@ -329,7 +329,7 @@ Most evaluations for multiple breeds with segment based methods require high den
 Average segment based kinships between and within breeds can be computed with function [opticomp][opticomp]:
 
 ```{r, results="hide"}
-segKIN  <- segIBD(GTfiles, map, minSNP=20, minL=1000)
+segKIN  <- segIBD(GTfiles, map, minSNP=20, minL=1.0)
 ```
 ```{r}
 Breed   <- phen[rownames(segKIN),"Breed"]

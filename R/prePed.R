@@ -85,7 +85,7 @@
       ux[which.max(tabulate(match(x, ux)))]
     }
     
-    ### code sexes as 1 (males) and 2 (females) ####
+    ### code sexes as male and females ####
     if(sum(!is.na(Pedig$Sex))>0){
       sexes<-names(table(Pedig$Sex))
       if(length(sexes)>2){
@@ -97,23 +97,23 @@
       if(is.na(Mval)){Mval <- setdiff(sexes, Fval)}
       if(is.na(Fval)){Fval <- setdiff(sexes, Mval)}
       if(!is.na(Mval)&!is.na(Fval)&(Mval!=Fval)){
-        Pedig$Sex <- mapvalues(Pedig$Sex, from=c(Mval, Fval), to=c(1,2))
+        Pedig$Sex <- mapvalues(Pedig$Sex, from=c(Mval, Fval), to=c("male","female"))
       }else{
       cat("Meaning of sex labels cannot be determined from pedigree structure.\n")
       }
     }
 
     #### determine sexes from pedigree structure ####
-    wrongMale   <- Pedig$Indiv %in% Pedig$Sire & !(Pedig$Sex %in% c(1, NA))
-    wrongFemale <- Pedig$Indiv %in% Pedig$Dam  & !(Pedig$Sex %in% c(2, NA))
+    wrongMale   <- Pedig$Indiv %in% Pedig$Sire & !(Pedig$Sex %in% c("male", NA))
+    wrongFemale <- Pedig$Indiv %in% Pedig$Dam  & !(Pedig$Sex %in% c("female", NA))
     if(sum(wrongMale)+sum(wrongFemale)>0){
       cat("The sex of the following animals was not compatible with the pedigree, so\n")
       cat("it was modified:\n")
       print(Pedig[wrongMale|wrongFemale, 2:3])
       cat("\n")
     }
-    Pedig$Sex[Pedig$Indiv %in% Pedig$Sire] <- 1
-    Pedig$Sex[Pedig$Indiv %in% Pedig$Dam] <- 2
+    Pedig$Sex[Pedig$Indiv %in% Pedig$Sire] <- "male"
+    Pedig$Sex[Pedig$Indiv %in% Pedig$Dam] <- "female"
     
     ######  prune Pedigree   #######
     if(!is.null(keep)){

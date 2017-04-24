@@ -25,7 +25,7 @@ This function takes a pedigree, adds missing founders, and sorts the pedigree. I
 
 If the pedigree contains loops, then the loops will be broken by setting the parents of one animal in each loop to \code{NA}. 
 
-If the pedigree contains columnn \code{Sex} then the sexes will be recoded as 1 for males and 2 for females. Missing sexes will be determined from pedigree structure if possible. 
+If the pedigree contains columnn \code{Sex} then the sexes will be recoded as  \code{'male'} and \code{'female'}. Missing sexes will be determined from pedigree structure if possible. 
 
 If the pedigree contains column \code{Breed} then for ancestors with missing breed the breed name is estimated. If parameter \code{lastNative} is not \code{NA} then for each animal with one missing parent an imaginary founder is added to the pedigree in order to enable classifying the breed names of all founders as follows: 
 In general animals with missing breed are assumed to have the same breed as most of their offspring. But there is one exception: For founders belonging to \code{thisBreed} who are born after \code{lastNative} the breed name will be set to \code{"unknown"}. Moreover for founders from \code{thisBreed} with unknown year of birth the breed name will be set to \code{"unknown"} if all their descendants are born after \code{lastNative+I}. 

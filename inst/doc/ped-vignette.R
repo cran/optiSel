@@ -45,7 +45,7 @@ mean(Animal$Inbr[Animal$Indiv %in% keep])
 
 ## ------------------------------------------------------------------------
 pedKIN <- pedIBD(Pedig, keep.only=keep)
-use    <- Pedig$Sex==1 & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
+use    <- Pedig$Sex=="male" & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
 Males  <- Pedig$Indiv[use]
 pedKIN[rownames(pedKIN) %in% Males, "276000812750188", drop=FALSE]
 

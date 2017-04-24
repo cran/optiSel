@@ -1,5 +1,5 @@
 
-"haplofreq"<-function(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1000, unitL="kb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, what=c("freq","match")){
+"haplofreq"<-function(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0, unitL="Mb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, what=c("freq","match"), cores=1){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -33,7 +33,9 @@
   rownames(map) <- map$Name
   checkMap(map, unitL, unitL)
   
-  if(is.logical(keep)){keep<-phen$Indiv[keep]}
+  if(is.logical(keep)){
+    keep <- phen$Indiv[!is.na(keep) & keep]
+    }
   if(!is.null(keep)){
     keep <- setdiff(as.character(keep),c(NA))
     if(!all(keep %in% phen$Indiv)){
@@ -148,40 +150,77 @@
   ##################################################
   symB <- scan(files$hap.thisBreed[1], n=cskip+1, skip=1+skip, what="character", quiet=TRUE)[cskip+1]
   
-  Freq  <- NULL
-  Match <- NULL
-  for(chr in names(files$hap.thisBreed)){
-    cat(paste("Reading chromosome ", chr, "...  "))
-    if(save.frequency){writeLines(paste(c("Name", Candidate), collapse=" "), files$seg.frequency[chr])}
-    if(save.origin){writeLines(paste(c("Name",Candidate), collapse=" "), files$seg.origin[chr])}
-    submap <- map[map$Chr==chr, ]
-    MarkerNames<-str_pad(submap$Name,max(nchar(submap$Name))+1, side="right")
-    M  <- nrow(submap)
-    cM <- submap[, unitL]
-    cM <- (c(0,cM)+c(cM,cM[length(cM)]+cM[1]))/2
-    Haplo <- rcpp_haplofreq(as.character(files$hap.thisBreed[chr]), as.character(files$hap.refBreeds[chr]), as.character(files$seg.frequency[chr]), as.character(files$seg.origin[chr]), as.character(MarkerNames), as.character(BreedSymbol), as.integer(IndexCand-1), IndexRef, as.integer(NFileC), as.integer(NFileR), as.integer(NC), as.integer(NR), as.integer(M), as.integer(minSNP), as.double(minL), as.double(ubFreq), as.double(cM), as.character(symB), as.integer(skip), as.integer(cskip), as.integer("freq" %in% what), as.integer("match" %in% what))
-    if(return.frequency){
-      rownames(Haplo$freq) <- submap$Name
-      Freq <- rbind(Freq, Haplo$freq)
+  Chromosomes <- unique(map$Chr)
+  if(save.frequency){
+    for(chr in Chromosomes){
+      writeLines(paste(c("Name", Candidate), collapse=" "), files$seg.frequency[chr])
     }
-    if(return.origin){
-      rownames(Haplo$match) <- submap$Name
-      Match <- rbind(Match, Haplo$match)
-    }
-    cat(paste("M=", M, ", Reference breeds: ", paste(refBreeds, collapse=" "), "\n",sep=""))
   }
+  if(save.origin){
+    for(chr in Chromosomes){
+      writeLines(paste(c("Name",Candidate), collapse=" "), files$seg.origin[chr])
+    }
+  }
+
+  cMList <- list()
+  MNamesList <- list()
+  for(chr in Chromosomes){
+    submap <- map[map$Chr==chr, ]
+    MNamesList[[chr]] <- str_pad(submap$Name,max(nchar(submap$Name))+1, side="right")
+    cM <- submap[, unitL]
+    cMList[[chr]] <- (c(0,cM)+c(cM,cM[length(cM)]+cM[1]))/2
+  }
+
+  if(is.na(cores)){
+    cores <- detectCores()-1
+    if(is.na(cores)){cores <- 1}
+    cores <- max(cores, 1)
+    cores <- min(cores, length(Chromosomes))
+  }
+  
+  if(cores==1){  
+    Haplo <- list()
+    for(chr in Chromosomes){
+      cat(paste("Reading chromosome ", chr, "...  "))
+      Haplo[[chr]] <- rcpp_haplofreq(as.character(files$hap.thisBreed[chr]), as.character(files$hap.refBreeds[chr]), as.character(files$seg.frequency[chr]), as.character(files$seg.origin[chr]), as.character(MNamesList[[chr]]), as.character(BreedSymbol), as.integer(IndexCand-1), IndexRef, as.integer(NFileC), as.integer(NFileR), as.integer(NC), as.integer(NR), as.integer(minSNP), as.double(minL), as.double(ubFreq), as.double(cMList[[chr]]), as.character(symB), as.integer(skip), as.integer(cskip), as.integer("freq" %in% what), as.integer("match" %in% what))
+      cat(paste("M=", length(cMList[[chr]])-1, ", Reference breeds: ", paste(refBreeds, collapse=" "), "\n",sep=""))
+      }
+  }else{
+    cat(paste0("Using ",cores," cores... "))
+    cl <- makeCluster(cores)
+    registerDoParallel(cl)
+    Haplo <- foreach(chr=Chromosomes, .inorder=TRUE) %dopar% {
+      rcpp_haplofreq(as.character(files$hap.thisBreed[chr]), as.character(files$hap.refBreeds[chr]), as.character(files$seg.frequency[chr]), as.character(files$seg.origin[chr]), as.character(MNamesList[[chr]]), as.character(BreedSymbol), as.integer(IndexCand-1), IndexRef, as.integer(NFileC), as.integer(NFileR), as.integer(NC), as.integer(NR), as.integer(minSNP), as.double(minL), as.double(ubFreq), as.double(cMList[[chr]]), as.character(symB), as.integer(skip), as.integer(cskip), as.integer("freq" %in% what), as.integer("match" %in% what))
+      }
+    names(Haplo) <- Chromosomes
+    stopCluster(cl)
+    cat("finished.\n")
+  }
+  
+
   if(return.result){
     Res <- list()
     if(return.frequency){
+      Freq  <- NULL
+      for(chr in Chromosomes){
+        rownames(Haplo[[chr]]$freq) <- map$Name[map$Chr==chr]
+        Freq <- rbind(Freq, Haplo[[chr]]$freq)
+      }
       colnames(Freq) <- Candidate
       Res$freq <- Freq
+      attributes(Res)$map <- map[rownames(Freq),]
     }
     if(return.origin){
+      Match <- NULL
+      for(chr in Chromosomes){
+        rownames(Haplo[[chr]]$match) <- map$Name[map$Chr==chr]
+        Match <- rbind(Match, Haplo[[chr]]$match)
+      }
       colnames(Match) <- Candidate
       Res$match <- Match
+      attributes(Res)$map <- map[rownames(Match),]
     }
     
-    attributes(Res)$map       <- map[rownames(Freq),]
     attributes(Res)$Indiv     <- Candidate
     attributes(Res)$thisBreed <- thisBreed
     attributes(Res)$refBreeds <- refBreeds

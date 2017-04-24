@@ -21,7 +21,7 @@ The function calculates the optimum numbers of offspring of the selection candid
 \value{
 
 Data frame with column \code{Indiv} containing the individual IDs and  integer column \code{nOff} containing the optimum numbers of offspring. This column 
- is approximately \code{2*N*cand$oc} with \code{sum(noff[cand$Sex==1])=N} and \code{sum(noff[cand$Sex==2])=N}.
+ is approximately \code{2*N*cand$oc} with \code{sum(noff[cand$Sex=="male"])=N} and \code{sum(noff[cand$Sex=="female"])=N}.
 }
 
 
@@ -40,10 +40,10 @@ N <- 150
 cand <- maxBV$parent
 cand$nOff <- noffspring(cand, N)$nOff
 
-sum(cand$nOff[cand$Sex==1])
+sum(cand$nOff[cand$Sex=="male"])
 #[1] 150
 
-sum(cand$nOff[cand$Sex==2])
+sum(cand$nOff[cand$Sex=="female"])
 #[1] 150
 
 round(2*N*cand$oc-cand$nOff, 2)

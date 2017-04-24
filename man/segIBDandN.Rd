@@ -8,8 +8,8 @@ Calculates the \bold{seg}ment based probability of alleles to be \bold{IBD} (ide
  For each pair of individuals the probability is computed that two SNPs taken at random position from randomly chosen haplotypes belong to a shared segment and are native.
 }
 \usage{
-segIBDandN(files, Native, map, minSNP=20, unitP="kb", minL=1000, 
-   unitL="kb", a=0.0, keep=NULL, skip=NA, cskip=NA)
+segIBDandN(files, Native, map, minSNP=20, unitP="Mb", minL=1.0, 
+   unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1)
 }
 
  
@@ -28,18 +28,19 @@ There is one file per chromosome and file names must contain the chromosome name
 
 }
 \item{map}{
-Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in kilo base pairs \code{'kb'}, and the position in centimorgan \code{'cM'}. The markers must be in the same order as in \code{files} and in \code{Native}.
+Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in mega base pairs \code{'Mb'}, and the position in centimorgan \code{'cM'}. The markers must be in the same order as in \code{files} and in \code{Native}.
 }
 \item{minSNP}{Minimum number of marker SNPs included in a segment.}
   \item{unitP}{The unit for measuring the proportion of the genome included in shared segments.
-  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.
+  Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centiMorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.
   }
-\item{minL}{Minimum length of a segment in \code{unitL} (e.g. in cM or kb).}
-\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of kilo base pairs (\code{'kb'}), and the genetic  distances between the first and the last marker in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
+\item{minL}{Minimum length of a segment in \code{unitL} (e.g. in cM or Mb).}
+\item{unitL}{The unit for measuring the length of a segment. Possible units are the number of marker SNPs included in the segment (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the genetic  distances between the first and the last marker in centiMorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
   \item{a}{The Function providing the weighting factor for each segment is w(x)=x*x/(a+x*x). The parameter of the function is the length of the segment in \code{unitL}. The default value \code{a=0.0} implies no weighting, whereas \code{a>0.0} implies that old inbreeding has less influence on the result than new inbreeding.}
   \item{keep}{Vector with IDs of individuals (from this breed) for which the probabilities are to be computed. By default, they will be computed for all individuals included in \code{Native}.}
      \item{skip}{Take line \code{skip+1} of the genotype files as the line with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the genotype files as the first column with genotypes. By default, the number is determined automatically.}
+  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
 }
 \value{
 \code{NxN} matrix with \code{N} being the number of individuals from this breed included in all files (and in parameter \code{keep}).
@@ -55,15 +56,14 @@ data(Cattle)
 dir    <- system.file("extdata", package = "optiSel")
 GTfile <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 Freq   <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", refBreeds="others", minSNP=20)$freq
-fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20)
 
+fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20)
 mean(fIBDN)
 #[1] 0.01032261
 
-# Computing mean kinship at native segments:
-fN <- segN(Freq<0.01, map)
-mean(fIBDN)/mean(fN)
-#[1]  0.06695171
+fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20, cores=NA)
+mean(fIBDN)
+#[1] 0.01032261
 
 
 ## using files:
@@ -72,10 +72,15 @@ wdir   <- file.path(tempdir(),"HaplotypeEval")
 chr    <- unique(map$Chr)
 GTfile <- file.path( dir, paste("Chr", chr, ".phased",     sep=""))
 file   <- haplofreq(GTfile, Cattle, map, thisBreed="Angler", minSNP=20, ubFreq=0.01, w.dir=wdir)
+
 fIBDN  <- segIBDandN(GTfile, file$match, map=map, minSNP=20)
- 
 mean(fIBDN)
 #[1] 0.01032261
+
+fIBDN  <- segIBDandN(GTfile, file$match, map=map, minSNP=20, cores=NA)
+mean(fIBDN)
+#[1] 0.01032261
+
 
 #unlink(wdir, recursive = TRUE)
 }

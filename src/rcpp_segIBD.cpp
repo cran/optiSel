@@ -8,7 +8,7 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int M, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
+Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {
   int m, i, j, rK, r, endoffile, gleich;
   double L;
   char str1[100];
@@ -16,6 +16,7 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   char symB = stdsymB.at(0);
   int N  = N1 + N2;
   int K  = (minSNP<=60)?(minSNP/2):(30);
+  int M  = Armakb.n_elem - 1;
   Rcpp::NumericMatrix ArmasegIBD(N, N);
   
   size_t bufsize = 2*(NFile1+NFile2);  
@@ -172,6 +173,6 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   free(index1);
   free(index2);
   free(Line);
-  
+
   return ArmasegIBD;
 }

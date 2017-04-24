@@ -18,10 +18,10 @@
   for(b in names(Freq)){Freq[[b]]<-Freq[[b]][map$Chr%in%Chr,]}
   map <- map[map$Chr%in%Chr, ]
   
-  x    <- cumsum(tapply(map$kb,map$Chr,max)[as.character(unique(map$Chr))])
+  x    <- cumsum(tapply(map$Mb,map$Chr,max)[as.character(unique(map$Chr))])
   xlab <- (x+c(0,x[-length(x)]))/2
   x    <- setNames(c(0, x[-length(x)]), names(x))
-  map$x<- map$kb+x[as.character(map$Chr)]
+  map$x<- map$Mb+x[as.character(map$Chr)]
 
   if(is.numeric(ID)){
     Nr <- ID

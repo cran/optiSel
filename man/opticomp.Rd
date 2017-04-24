@@ -52,7 +52,7 @@ files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
 #####################################################################
 #   Find the optimum breed composition using segment based kinship  #
 #####################################################################
-IBD <- segIBD(files, minSNP=15, map=map, minL=1000, unitL="kb", unitP="kb")
+IBD <- segIBD(files, minSNP=15, map=map, minL=1.0)
 mb  <- opticomp(IBD, Breed=Cattle$Breed, obj.fun="NGD")
 
 #### Optimum breed composition: ###

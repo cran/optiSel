@@ -24,9 +24,12 @@ con <- list()
 ## ------------------------------------------------------------------------
 con$ub <- c(M=NA, F=-1)
 
+## ---- results='hide', echo=FALSE-----------------------------------------
+mKin<-summary(opticont(K=Kin, phen=phen, con=list(ub=c(M=-1, F=-1))))$sKin
+
 ## ------------------------------------------------------------------------
 Ne <- 100
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
+meanKin     <- 0.0569
 con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 ## ------------------------------------------------------------------------
@@ -46,13 +49,13 @@ head(Candidate[rev(order(Candidate$oc)),])
 
 ## ---- results="hide"-----------------------------------------------------
 Kin  <- kinlist(
-            sKin    = segIBD(GTfiles, map, minSNP=20, minL=1000), 
-            sKinatN = segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1000)
+            sKin    = segIBD(GTfiles, map, minSNP=20, minL=1.0), 
+            sKinatN = segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1.0)
             )
 
 ## ---- results="hide"-----------------------------------------------------
 wdir  <- file.path(tempdir(), "HaplotypeEval")
-wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1000, w.dir=wdir)
+wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1.0, w.dir=wdir)
 Comp  <- segBreedComp(wfile$match, map)
 Cattle[rownames(Comp), "MC"] <- 1 - Comp$native
 
@@ -66,9 +69,21 @@ help.opticont(Kin, phen=Cattle)
 help.opticont4mb(Kin, phen=Cattle)
 
 ## ------------------------------------------------------------------------
-phen        <- Cattle[Cattle$Breed=="Angler",]
+phen <- Cattle[Cattle$Breed=="Angler",]
+
+## ---- results="hide"-----------------------------------------------------
+eqCont     <- summary(opticont(K=Kin, phen=phen, con="equal.cont"))
+meanKin    <- eqCont$sKin
+meanKinatN <- eqCont$sKinatN
+meanMC     <- eqCont$meanMC
+phen$BV    <- phen$BV - eqCont$meanBV
+meanBV     <- 0
+
+## ------------------------------------------------------------------------
+eqCont[,c("sKin", "sKinatN", "meanMC")]
+
+## ------------------------------------------------------------------------
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
 con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
@@ -79,9 +94,8 @@ maxBV.s <- summary(maxBV)
 maxBV.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
 con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- mean(phen$MC)
+con$ub.MC      <- meanMC
 maxBV2         <- opticont(method="max.BV", K=Kin, phen=phen, con=con, solver="slsqp")
 maxBV2.s       <- summary(maxBV2)
 
@@ -90,7 +104,6 @@ Results <- rbind(maxBV.s, maxBV2.s)
 Results[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 
 ## ------------------------------------------------------------------------
-phen <- Cattle[Cattle$Breed=="Angler",]
 con  <- list(ub=c(M=NA, F=-1))
 
 ## ---- results="hide"-----------------------------------------------------
@@ -101,8 +114,7 @@ minKin.s <- summary(minKin)
 minKin.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-con$ub.MC      <- 0.50
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
+con$ub.MC      <- 0.95*meanMC
 con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
 minKin2        <- opticont(method="min.sKin", K=Kin, phen=phen, con=con, solver="slsqp", trace=FALSE)
 minKin2.s      <- summary(minKin2)
@@ -114,18 +126,16 @@ Results[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 ## ---- results="hide"-----------------------------------------------------
 phen           <- Cattle[Cattle$Breed=="Angler",]
 con            <- list(ub=c(M=NA, F=-1))
-meanKin        <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
-meanKinatN     <- mean(Kin$segIBDandN)/mean(Kin$segN)
 con$ub.sKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
 con$ub.sKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="slsqp", trace=FALSE)
+minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="slsqp")
 minMC.s <- summary(minMC)
 
 ## ------------------------------------------------------------------------
 minMC.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-con$lb.BV <- mean(phen$BV)
+con$lb.BV <- 0
 minMC2    <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="cccp", trace=FALSE)
 minMC2.s  <- summary(minMC2)
 
@@ -139,7 +149,6 @@ CoreSet$bc
 
 ## ------------------------------------------------------------------------
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$sKin[phen$Indiv, phen$Indiv])
 con$ub.sKin <- meanKin  + (1-meanKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
@@ -160,7 +169,7 @@ head(Pedig)
 ## ------------------------------------------------------------------------
 data("Phen")
 Summary <- summary(Pedig, keep=Pedig$Indiv %in% Phen$Indiv)
-keep    <- Summary[Summary$equiGen>=5.0, "Indiv"]
+keep    <- Summary[Summary$equiGen>=3.0, "Indiv"]
 table(Pedig[keep, "Sex"])
 
 ## ------------------------------------------------------------------------
@@ -183,9 +192,19 @@ head(Phen)
 ## ------------------------------------------------------------------------
 help.opticont(Kin, Phen)
 
+## ---- results="hide"-----------------------------------------------------
+eqCont     <- summary(opticont(K=Kin, phen=Phen, con="equal.cont"))
+meanKin    <- eqCont$pKin
+meanKinatN <- eqCont$pKinatN
+meanMC     <- eqCont$meanMC
+Phen$BV    <- Phen$BV - eqCont$meanBV
+meanBV     <- 0
+
+## ------------------------------------------------------------------------
+eqCont[,c("pKin", "pKinatN", "meanMC")]
+
 ## ------------------------------------------------------------------------
 con         <- list(ub=c(M=NA, F=-1))
-meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
@@ -196,9 +215,8 @@ maxBV.s <- summary(maxBV)
 maxBV.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- mean(Phen$MC)
+con$ub.MC      <- meanMC
 maxBV2         <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
 maxBV2.s       <- summary(maxBV2)
 
@@ -218,8 +236,7 @@ minKin.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
 con  <- list(ub=c(M=NA, F=-1))
-con$ub.MC   <- 0.45
-meanKin     <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
+con$ub.MC   <- 0.95*meanMC
 con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
 
 minKin2     <- opticont(method="min.pKinatN", K=Kin, phen=Phen, con=con, solver="slsqp")
@@ -231,8 +248,6 @@ Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
 con            <- list(ub=c(M=NA, F=-1))
-meanKin        <- mean(Kin$pKin[Phen$Indiv, Phen$Indiv])
-meanKinatN     <- mean(Kin$pedIBDandN)/mean(Kin$pedN)
 con$ub.pKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
 con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
 minMC   <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
@@ -242,7 +257,7 @@ minMC.s <- summary(minMC)
 minMC.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
 
 ## ---- results="hide"-----------------------------------------------------
-con$lb.BV <- mean(Phen$BV)
+con$lb.BV <- 0
 minMC2    <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
 minMC2.s  <- summary(minMC2)
 
