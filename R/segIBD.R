@@ -99,7 +99,8 @@
   if(is.na(cores)){
     cores <- detectCores()-1
     if(is.na(cores)){cores <- 1}
-    cores <- min(cores, floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(3*N^2))))
+    suppressWarnings(cLim <- floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(3*N^2))))
+    if(!is.na(cLim)){cores <- min(cores, cLim)}
     cores <- max(cores, 1)
     cores <- min(cores, length(Chromosomes))
     }

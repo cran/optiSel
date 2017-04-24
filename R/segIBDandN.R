@@ -85,9 +85,11 @@ globalVariables('thisCore')
     cores <- detectCores()-1
     if(is.na(cores)){cores <- 1}
     if(is.vector(Native)){
-      cores <- min(cores,floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(4*NC^2+1*M*NC))))
+      suppressWarnings(cLim <- floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(4*NC^2+1*M*NC))))
+      if(!is.na(cLim)){cores <- min(cores,cLim)}
     }else{
-      cores <- min(cores,floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(4*NC^2+2*M*NC))))
+      suppressWarnings(cLim <- floor((memory.limit()-memory.size()-2500)*1000*1000/(10*(4*NC^2+2*M*NC))))
+      if(!is.na(cLim)){cores <- min(cores,cLim)}
       }
     cores <- max(cores, 1)
     cores <- min(cores, length(Chromosomes))

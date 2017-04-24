@@ -1,4 +1,4 @@
-13c46c91e35b6c7cb43332f50f6c1e3e *DESCRIPTION
+b8391f1c583ee3e9cd3f034c37c4d4e7 *DESCRIPTION
 51f5accb252cdb76de780f23a4a3a246 *NAMESPACE
 1611acccd8f4e2335ab0a51b2685f674 *R/RcppExports.R
 47948ddac862a20c296d07092d52fa73 *R/completeness.R
@@ -31,17 +31,17 @@ fa7a566f1bc97e2034d9b4b212f0f357 *R/pedplot.R
 36ff1b14f162fcd5b7710e8ea8cfd56c *R/prePed.R
 b0215d6cf961d8cab45e42f758c91e1b *R/read.indiv.R
 343fc1d7aae54f2031c097752fc98723 *R/segBreedComp.R
-b8f45cef45bd2a32dec437da1c115f7a *R/segIBD.R
-f14920f255041aa31e0d7132f6da4815 *R/segIBDandN.R
+3ce7853ccc3f5e019bf56611f5ce49fd *R/segIBD.R
+55d740609aa394e05d211735d2384f96 *R/segIBDandN.R
 0c5fb4aedf7b5e59a04d3a52f879f7c2 *R/segIBDatN.R
 a52ab93b131a51117301d0e2a8b25d94 *R/segInbreeding.R
-bbb5c4b490f025b05aad896551ba12aa *R/segN.R
+7cccbc923868b536209f389b6244904d *R/segN.R
 c4a2a1d4f14ac74d774411bb6062cb69 *R/sim2dis.R
 0ff7879d5b347cadf44e7358f3d6b630 *R/subPed.R
 5ae28ef66444a069538076b31c31250c *R/summary.Pedig.R
 1aa3cab22335a5b40ab37394a1cd9ed2 *R/summary.kinMatrices.R
 03ebd88bc156f4636984b3c27434c871 *R/summary.opticont.R
-ac2e0b8a9078135b39f9face2c5a655a *build/partial.rdb
+31516886566d89d9230ba4714b50b8d3 *build/partial.rdb
 a3ba110dc36b076adbcebb476393f299 *build/vignette.rds
 ffbdc01c3fa05fa57f5109ccefa4ec32 *data/Cattle.rda
 9ab775a1bfeddd429ce93e1ddb56ee0f *data/ExamplePed.rda
