@@ -52,9 +52,9 @@ Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathN
   for(i=0; i<NC;i++){
     indexC[i] = ArmaIndexC.at(i);
     indexN[i] = ArmaIndexN.at(i);
-    fROH[i]   = (double*)calloc(NC,sizeof(double));
-    thisROH[i]= (int*)calloc(NC,sizeof(int));
-    lSEG[i]   = (double*)calloc(NC,sizeof(double));
+    fROH[i]   = (double*)calloc(i+1,sizeof(double));
+    thisROH[i]= (int*)calloc(i+1,sizeof(int));
+    lSEG[i]   = (double*)calloc(i+1,sizeof(double));
     if(fROH[i]   == NULL){error_return("Memory allocation failed.");};
     if(thisROH[i]== NULL){error_return("Memory allocation failed.");};
     if(lSEG[i]   == NULL){error_return("Memory allocation failed.");};
@@ -104,7 +104,7 @@ Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathN
     if(rK==0){break;}
     
     for(i=0; i<NC;i++){
-      for(j=i; j<NC; j++){
+      for(j=0; j<i+1; j++){
         if(currAllelesC[i]==currAllelesC[j]){
           if(prevAllelesC[i]==prevAllelesC[j] && m>0){ /* ROH verlängern */
             thisROH[i][j] += rK;
@@ -151,7 +151,7 @@ Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathN
   
   
   for(i=0; i<NC;i++){
-    for(j=i; j<NC; j++){
+    for(j=0; j<i+1; j++){
       if(thisROH[i][j]>=minSNP){
         L = Pos[M]-Pos[M-thisROH[i][j]];
         if(L>=minL){

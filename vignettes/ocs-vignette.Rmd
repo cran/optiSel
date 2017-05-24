@@ -34,8 +34,7 @@ This vignette is organized as follows:
 
 All evaluations using marker data are demonstrated at the example of cattle data included in the package. This multi-breed data has already been described in the [companion vignette for basic marker-based evaluations](seg-vignette.html).
 
-Data frame `Cattle` includes the phenotypic information and has columns `Indiv` (individual IDs), `Born` (year of birth), `Breed` (breed name), `BV`  (breeding values), and `Sex` (sexes). 
-
+Data frame `Cattle` includes the phenotypic information and has columns `Indiv` (individual IDs), `Born` (year of birth), `Breed` (breed name), `BV`  (breeding values), `Sex` (sexes), and `herd` (herd). 
 
 ```{r}
 library("optiSel")
@@ -142,6 +141,20 @@ The optimum numbers of offspring can be obtained from the optimum contributions 
 ```{r}
 Candidate$nOff <- noffspring(Candidate, N=250)$nOff
 head(Candidate[rev(order(Candidate$oc)),])
+```
+
+Males and females can be allocated for mating with function matings
+such that all breeding animals have the desired number of offspring. In the example below the mean marker-based inbreeding coefficient in the offspring is minimized. Since the default value for parameter `N` is used, it is assumed that females have 2 offspring on average available as selection candidates in the next generation. Parameter `alpha=0.3` means that in each herd at most 30\% of the cows are mated with the same bull. This increases genetic connectedness between herds and enables to estimate more accurate breeding values.
+
+```{r}
+Mating <- matings(maxBV$parent, Kin=segIBD(GTfiles, map),  alpha=0.3)
+head(Mating)
+```
+
+The mean inbreeding in the offspring (which is equal to the mean kinship of the parents) is:
+
+```{r}
+attributes(Mating)$objval
 ```
 
 ## Defining the Objective of a Breeding Program

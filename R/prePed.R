@@ -29,6 +29,7 @@
     rownames(Pedig)<-Pedig$Indiv
     
     if("Sex" %in% colnames(Pedig)){
+      Pedig$Sex <- as.character(Pedig$Sex)
       Pedig$Sex[Pedig$Sex %in% c(""," ")] <- NA
     }else{
       Pedig$Sex<-NA

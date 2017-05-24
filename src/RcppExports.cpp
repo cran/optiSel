@@ -21,17 +21,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_genecont
-Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& numDam, const arma::ivec& numAnc, const Rcpp::CharacterVector rNames, const Rcpp::CharacterVector cNames);
-RcppExport SEXP optiSel_rcpp_genecont(SEXP numSireSEXP, SEXP numDamSEXP, SEXP numAncSEXP, SEXP rNamesSEXP, SEXP cNamesSEXP) {
+Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& numDam, const arma::ivec& numAnc, const arma::ivec& numKeep, const arma::ivec& ainKeep, const Rcpp::CharacterVector rNames, const Rcpp::CharacterVector cNames, const arma::ivec& anOff);
+RcppExport SEXP optiSel_rcpp_genecont(SEXP numSireSEXP, SEXP numDamSEXP, SEXP numAncSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP rNamesSEXP, SEXP cNamesSEXP, SEXP anOffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::ivec& >::type numSire(numSireSEXP);
     Rcpp::traits::input_parameter< const arma::ivec& >::type numDam(numDamSEXP);
     Rcpp::traits::input_parameter< const arma::ivec& >::type numAnc(numAncSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type numKeep(numKeepSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type ainKeep(ainKeepSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type rNames(rNamesSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type cNames(cNamesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_genecont(numSire, numDam, numAnc, rNames, cNames));
+    Rcpp::traits::input_parameter< const arma::ivec& >::type anOff(anOffSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_genecont(numSire, numDam, numAnc, numKeep, ainKeep, rNames, cNames, anOff));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -1,4 +1,4 @@
-
+ 
 #include <RcppArmadillo.h>
 #include <string>
 

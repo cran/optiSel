@@ -1,22 +1,22 @@
 Package: optiSel
 Type: Package
 Title: Optimum Contribution Selection and Population Genetics
-Version: 0.8.1
-Date: 2017-04-24
+Version: 0.9
+Date: 2017-05-24
 Author: Robin Wellmann
 Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
 Depends: R (>= 3.3.2)
-Description: A framework for the optimization of breeding programs via optimum contribution selection. An easy to use set of function for computation of optimum contributions of selection candidates, and of the population genetic parameters to be optimized. These parameters can be estimated using pedigree or genotype information, and include kinships, kinships at native haplotype segments, and breed composition of crossbred individuals. They are suitable for managing genetic diversity, removing introgressed genetic material, and accelerating genetic gain. Additionally, functions are provided for computing genetic contributions from ancestors, inbreeding coefficients, the native effective size, the native genome equivalent, pedigree completeness, and for preparing and plotting pedigrees. 
+Description: A framework for the optimization of breeding programs via optimum contribution selection and mate allocation. An easy to use set of function for computation of optimum contributions of selection candidates, and of the population genetic parameters to be optimized. These parameters can be estimated using pedigree or genotype information, and include kinships, kinships at native haplotype segments, and breed composition of crossbred individuals. They are suitable for managing genetic diversity, removing introgressed genetic material, and accelerating genetic gain. Additionally, functions are provided for computing genetic contributions from ancestors, inbreeding coefficients, the native effective size, the native genome equivalent, pedigree completeness, and for preparing and plotting pedigrees. 
 License: GPL-2
 Imports: Matrix, plyr, Rcsdp, alabama, cccp, kinship2, nadiv, nloptr,
         pedigree, pspline, stringr, MASS, methods, stats, graphics,
         quadprog, data.table, magic, parallel, doParallel, foreach,
-        Rcpp (>= 0.12.4)
+        Rsymphony, Rcpp (>= 0.12.4)
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr, ggplot2, rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-04-24 16:48:17 UTC; Robin
+Packaged: 2017-05-24 07:07:17 UTC; Robin
 Repository: CRAN
-Date/Publication: 2017-04-24 18:42:00 UTC
+Date/Publication: 2017-05-24 10:14:36 UTC

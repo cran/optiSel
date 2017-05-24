@@ -21,7 +21,7 @@ The following functions can be used to compute optimum contributions:
 \link{opticomp}      \tab  Calculates breed composition of a multi-breed population with maximum diversity,\cr 
 }
 
-Function \link{noffspring} can then be used to  compute the optimum numbers of offspring of selection candidates from their optimum contributions. The available constraint settings and objective functions for a particular data set can be determined with the following help functions:
+Function \link{noffspring} can then be used to  compute the optimum numbers of offspring of selection candidates from their optimum contributions, and function \link{matings} can be used for mate allocation. The available constraint settings and objective functions for a particular data set can be determined with the following help functions:
 
 \tabular{ll}{
 \link{help.opticont}   \tab Displays available objective functions and constraints for function \link{opticont},\cr 
@@ -105,7 +105,8 @@ There are some functions for preparing and plotting pedigree data
                     \tab traced  generations, number of maximum generations traced, index of \cr 
                     \tab pedigree completeness, inbreeding coefficients,\cr
 \link{subPed}       \tab Creates a \bold{sub}set of a large \bold{Ped}igree,\cr 
-\link{pedplot}     \tab Plots a pedigree,\cr 
+\link{pedplot}      \tab Plots a pedigree,\cr 
+\link{sampleIndiv}  \tab Sampling Individuals from a pedigree.\cr 
 }
 
 

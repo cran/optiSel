@@ -106,7 +106,7 @@ For all functions reading from genotype files, a marker map must be provided in 
 The order of the markers must be the same as in the genotype files.
 
 ### Example Data Set
-All evaluations are demonstrated at the example of cattle data contained in the package. Breed names, years of birth, simulated breeding values, and simulated sexes are provided in data frame `Cattle`.
+All evaluations are demonstrated at the example of cattle data contained in the package. Breed names, years of birth, simulated breeding values, simulated sexes, and herds are provided in data frame `Cattle`.
 
 ```{r}
 library("optiSel")
@@ -198,7 +198,7 @@ Artificial selection and the substantial genetic drift in populations with small
 For individuals with genetic contributions from several breeds, each marker belongs to a haplotype segment that originates from a specific breed. Gene flow is usually from commercial breeds to the endangered breeds but not vice-versa. Thus, if a sufficiently long segment from an endangered breed can also be found in a commercial breed, then it can be concluded that the segment is not native in the endangered breed. Instead, the segment is assigned to the breed in which it has maximum frequency. This can be done with function [haplofreq][haplofreq].
 
 
-Below, the frequency of each segment from haplotype 2 of Angler 276000101676415 in Rotbunt cattle is plotted with function [plot][plot.HaploFreq] (red area). The grey area is the maximum frequency a segment from an Angler has in Rotbunt cattle.
+Below, the frequency of each segment from haplotype 2 of Angler 276000101676415 in Rotbunt cattle is plotted with function [plot][plot.HaploFreq] (red area). 
 
 ```{r, fig.width = 5, results="hide"}
 Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt",   minSNP=20, minL=1.0)

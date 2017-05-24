@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2017-04-24" />
+<meta name="date" content="2017-05-23" />
 
 <title></title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Optimum Contribution Selection</li>
 </ol></h1>
 <h4 class="author"><em>Robin Wellmann</em></h4>
-<h4 class="date"><em>2017-04-24</em></h4>
+<h4 class="date"><em>2017-05-23</em></h4>
 
 
 
@@ -100,17 +100,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="example-data-set" class="section level2">
 <h2>Example Data Set</h2>
 <p>All evaluations using marker data are demonstrated at the example of cattle data included in the package. This multi-breed data has already been described in the <a href="seg-vignette.html">companion vignette for basic marker-based evaluations</a>.</p>
-<p>Data frame <code>Cattle</code> includes the phenotypic information and has columns <code>Indiv</code> (individual IDs), <code>Born</code> (year of birth), <code>Breed</code> (breed name), <code>BV</code> (breeding values), and <code>Sex</code> (sexes).</p>
+<p>Data frame <code>Cattle</code> includes the phenotypic information and has columns <code>Indiv</code> (individual IDs), <code>Born</code> (year of birth), <code>Breed</code> (breed name), <code>BV</code> (breeding values), <code>Sex</code> (sexes), and <code>herd</code> (herd).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;optiSel&quot;</span>)
 <span class="kw">data</span>(Cattle)
 <span class="kw">head</span>(Cattle)</code></pre></div>
-<pre><code>##                           Indiv Born  Breed         BV    Sex
-## 276000101676415 276000101676415 1991 Angler -1.0706066   male
-## 276000108612636 276000108612636 1994 Angler -0.3362574 female
-## 276000102372349 276000102372349 1986 Angler -2.0735649 female
-## 276000102379430 276000102379430 1987 Angler  1.5968307   male
-## 276000108826036 276000108826036 1994 Angler  1.0023969   male
-## 276000111902076 276000111902076 1998 Angler -0.2426676   male</code></pre>
+<pre><code>##                           Indiv Born  Breed         BV    Sex herd
+## 276000101676415 276000101676415 1991 Angler -1.0706066   male &lt;NA&gt;
+## 276000108612636 276000108612636 1994 Angler -0.3362574 female    2
+## 276000102372349 276000102372349 1986 Angler -2.0735649 female    1
+## 276000102379430 276000102379430 1987 Angler  1.5968307   male &lt;NA&gt;
+## 276000108826036 276000108826036 1994 Angler  1.0023969   male &lt;NA&gt;
+## 276000111902076 276000111902076 1998 Angler -0.2426676   male &lt;NA&gt;</code></pre>
 <p>The data frame contains information on the 4 breeds Angler, Fleckvieh, Holstein, Rotbunt. The “Angler” is an endangered German cattle breed, which had been upgraded with Red Holstein (also called “Rotbunt”). The Rotbunt cattle are a subpopulation of the “Holstein” breed. The “Fleckvieh” or Simmental breed is unrelated to the Angler. The Angler cattle are the selection candidates.</p>
 <p>This small example data set contains only genotypes from the first parts of the first two chromosomes. Vector <code>GTfiles</code> defined below contains the names of the genotype files. There is one file for each chromosome. Data frame <code>map</code> contains the marker map and has columns <code>Name</code> (marker name), <code>Chr</code> (chromosome number), <code>Position</code>, <code>Mb</code> (position in Mega base pairs), and <code>cM</code> (position in centiMorgan):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(map)
@@ -174,9 +174,8 @@ con$ub.sKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<sp
 ##     (Thus, no optimization is done for the females).
 ##   The total genetic contribution of   males to offspring is 0.5.
 ##   The total genetic contribution of females to offspring is 0.5.
-## Computing Cholesky decomposition for  sKin ...finished
 ## 
-## Using solver cccp with parameters: trace=0, abstol=1e-05, feastol=1e-05, stepadj=0.9, maxiters=100, reltol=1e-06, beta=0.5</code></pre>
+## Using solver cccp2 with parameters: trace=0, abstol=1e-05, feastol=1e-05, stepadj=0.9, maxiters=100, reltol=1e-06, beta=0.5</code></pre>
 <p>Check if the results fulfill the constraints and look at the value of the objective function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV.s &lt;-<span class="st"> </span><span class="kw">summary</span>(maxBV)</code></pre></div>
 <pre><code>## Checking constraints:
@@ -188,28 +187,45 @@ con$ub.sKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<sp
 ##   mean sKin &lt;= ub.sKin       : TRUE
 ## </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV.s$obj.fun</code></pre></div>
-<pre><code>## [1] 1.03991</code></pre>
+<pre><code>## [1] 1.039909</code></pre>
 <p>The results look OK. If they are not OK, then try to use another solver. The solver can be specified in parameter <code>solver</code> of function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a>. Available solvers are <code>&quot;alabama&quot;</code>, <code>&quot;cccp&quot;</code>, <code>&quot;cccp2&quot;</code>, <code>&quot;csdp&quot;</code>, and <code>&quot;slsqp&quot;</code>. The default is <code>&quot;cccp&quot;</code>. The solvers are described in the help page of function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a>. Alternatively you may use the same solver but with different tuning parameters. The available paramters are displayed if the function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a> is called (as shown above).</p>
 <p>The optimum contributions of the selection candidates are in component <code>parent</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Candidate &lt;-<span class="st"> </span>maxBV$parent[,  <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;oc&quot;</span>)]
 <span class="kw">head</span>(Candidate[<span class="kw">rev</span>(<span class="kw">order</span>(Candidate$oc)),])</code></pre></div>
 <pre><code>##                           Indiv  Sex         oc
-## 276000121507437 276000121507437 male 0.06642407
-## 276000121243787 276000121243787 male 0.06541830
-## 276000120949468 276000120949468 male 0.06253429
-## 276000120061822 276000120061822 male 0.06052825
-## 276000110948577 276000110948577 male 0.05587340
-## 276000113913566 276000113913566 male 0.04060774</code></pre>
+## 276000121507437 276000121507437 male 0.06642355
+## 276000121243787 276000121243787 male 0.06541582
+## 276000120949468 276000120949468 male 0.06252814
+## 276000120061822 276000120061822 male 0.06052558
+## 276000110948577 276000110948577 male 0.05587209
+## 276000113913566 276000113913566 male 0.04060682</code></pre>
 <p>The optimum numbers of offspring can be obtained from the optimum contributions and the size <code>N</code> of the offspring population with function <a href="https://rdrr.io/cran/optiSel/man/noffspring.html">noffspring</a>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Candidate$nOff &lt;-<span class="st"> </span><span class="kw">noffspring</span>(Candidate, <span class="dt">N=</span><span class="dv">250</span>)$nOff
 <span class="kw">head</span>(Candidate[<span class="kw">rev</span>(<span class="kw">order</span>(Candidate$oc)),])</code></pre></div>
 <pre><code>##                           Indiv  Sex         oc nOff
-## 276000121507437 276000121507437 male 0.06642407   33
-## 276000121243787 276000121243787 male 0.06541830   33
-## 276000120949468 276000120949468 male 0.06253429   31
-## 276000120061822 276000120061822 male 0.06052825   30
-## 276000110948577 276000110948577 male 0.05587340   28
-## 276000113913566 276000113913566 male 0.04060774   20</code></pre>
+## 276000121507437 276000121507437 male 0.06642355   33
+## 276000121243787 276000121243787 male 0.06541582   33
+## 276000120949468 276000120949468 male 0.06252814   31
+## 276000120061822 276000120061822 male 0.06052558   30
+## 276000110948577 276000110948577 male 0.05587209   28
+## 276000113913566 276000113913566 male 0.04060682   20</code></pre>
+<p>Males and females can be allocated for mating with function matings such that all breeding animals have the desired number of offspring. In the example below the mean marker-based inbreeding coefficient in the offspring is minimized. Since the default value for parameter <code>N</code> is used, it is assumed that females have 2 offspring on average available as selection candidates in the next generation. Parameter <code>alpha=0.3</code> means that in each herd at most 30% of the cows are mated with the same bull. This increases genetic connectedness between herds and enables to estimate more accurate breeding values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Mating &lt;-<span class="st"> </span><span class="kw">matings</span>(maxBV$parent, <span class="dt">Kin=</span><span class="kw">segIBD</span>(GTfiles, map),  <span class="dt">alpha=</span><span class="fl">0.3</span>)</code></pre></div>
+<pre><code>## Using  skip = 2 
+## Using cskip = 2 
+## Reading chromosome 1 ...M=400
+## Reading chromosome 2 ...M=400</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Mating)</code></pre></div>
+<pre><code>##              Sire             Dam nOff herd ub.nOff
+## 1 276000113913566 276000108612636    2    2      19
+## 2 276000121243787 276000102372349    2    1      18
+## 3 276000110948577 276000110204007    2    1      18
+## 4 276000120949468 276000111909505    2    2      19
+## 5 276000120949468 276000111901935    2    1      18
+## 6 276000102379430 276000110948587    2    2      19</code></pre>
+<p>The mean inbreeding in the offspring (which is equal to the mean kinship of the parents) is:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">attributes</span>(Mating)$objval</code></pre></div>
+<pre><code>## [1] 0.004837334</code></pre>
 </div>
 <div id="defining-the-objective-of-a-breeding-program" class="section level2">
 <h2>Defining the Objective of a Breeding Program</h2>
@@ -248,13 +264,13 @@ wfile &lt;-<span class="st"> </span><span class="kw">haplofreq</span>(GTfiles, C
 Comp  &lt;-<span class="st"> </span><span class="kw">segBreedComp</span>(wfile$match, map)
 Cattle[<span class="kw">rownames</span>(Comp), <span class="st">&quot;MC&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>Comp$native</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Cattle[,-<span class="dv">1</span>])</code></pre></div>
-<pre><code>##                 Born  Breed         BV    Sex        MC
-## 276000101676415 1991 Angler -1.0706066   male 0.4194310
-## 276000108612636 1994 Angler -0.3362574 female 0.4312843
-## 276000102372349 1986 Angler -2.0735649 female 0.2581902
-## 276000102379430 1987 Angler  1.5968307   male 0.5954559
-## 276000108826036 1994 Angler  1.0023969   male 0.7760017
-## 276000111902076 1998 Angler -0.2426676   male 0.7541481</code></pre>
+<pre><code>##                 Born  Breed         BV    Sex herd        MC
+## 276000101676415 1991 Angler -1.0706066   male &lt;NA&gt; 0.4194310
+## 276000108612636 1994 Angler -0.3362574 female    2 0.4312843
+## 276000102372349 1986 Angler -2.0735649 female    1 0.2581902
+## 276000102379430 1987 Angler  1.5968307   male &lt;NA&gt; 0.5954559
+## 276000108826036 1994 Angler  1.0023969   male &lt;NA&gt; 0.7760017
+## 276000111902076 1998 Angler -0.2426676   male &lt;NA&gt; 0.7541481</code></pre>
 <p>There are two functions that can now be used to perform the optimization, which are <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a> and <a href="https://rdrr.io/cran/optiSel/man/opticont4mb.html">opticont4mb</a>. The latter is used especially if the aim is to decrease the average kinship in a multi-breed population. The parameters that can be constrained or optimized can be viewed with functions <a href="https://rdrr.io/cran/optiSel/man/help.opticont.html">help.opticont</a></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help.opticont</span>(Kin, <span class="dt">phen=</span>Cattle)</code></pre></div>
 <pre><code>## Available objective functions: 
@@ -319,7 +335,7 @@ con$ub.sKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<sp
 maxBV.s &lt;-<span class="st"> </span><span class="kw">summary</span>(maxBV)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;sKin&quot;</span>, <span class="st">&quot;sKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##       valid   meanBV    meanMC       sKin    sKinatN
-## maxBV  TRUE 1.000489 0.6399113 0.06161227 0.08166064</code></pre>
+## maxBV  TRUE 1.000488 0.6399194 0.06161228 0.08165922</code></pre>
 <p>The results are the same as in the introductory example (as expected). This approach may be apppropriate for a population without introgression, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the migrant contributions should be restricted in order not to increase. Otherwise the genetic originality of the breed may get lost in the long term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con$ub.sKinatN &lt;-<span class="st"> </span>meanKinatN +(<span class="dv">1</span>-meanKinatN)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
 con$ub.MC      &lt;-<span class="st"> </span>meanMC
@@ -329,7 +345,7 @@ maxBV2.s       &lt;-<span class="st"> </span><span class="kw">summary</span>(max
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(maxBV.s, maxBV2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;sKin&quot;</span>, <span class="st">&quot;sKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##        valid    meanBV    meanMC       sKin    sKinatN
-## maxBV   TRUE 1.0004894 0.6399113 0.06161227 0.08166064
+## maxBV   TRUE 1.0004880 0.6399194 0.06161228 0.08165922
 ## maxBV2  TRUE 0.8813497 0.6149141 0.05912416 0.07151119</code></pre>
 <p>Since migrant contributions and breeding values are positively correlated, the genetic gain decreases slightly when migrant contributions are constrained not to increase.</p>
 </div>
@@ -508,8 +524,8 @@ con$ub.pKin &lt;-<span class="st"> </span>meanKin +<span class="st"> </span>(<sp
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;max.BV&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
 maxBV.s &lt;-<span class="st"> </span><span class="kw">summary</span>(maxBV)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maxBV.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
-<pre><code>##       valid    meanBV    meanMC       pKin    pKinatN
-## maxBV  TRUE 0.8069901 0.5410158 0.03939701 0.09662858</code></pre>
+<pre><code>##       valid    meanBV    meanMC       pKin   pKinatN
+## maxBV  TRUE 0.8069863 0.5409889 0.03939717 0.0966208</code></pre>
 <p>This approach may be apppropriate for a population without introgression and complete pedigrees, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the migrant contributions should be restricted in order not to increase. Otherwise the genetic originality of the breed may get lost in the long term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con$ub.pKinatN &lt;-<span class="st"> </span>meanKinatN +(<span class="dv">1</span>-meanKinatN)*(<span class="dv">1</span>/(<span class="dv">2</span>*Ne))
 con$ub.MC      &lt;-<span class="st"> </span>meanMC
@@ -519,7 +535,7 @@ maxBV2.s       &lt;-<span class="st"> </span><span class="kw">summary</span>(max
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(maxBV.s, maxBV2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##        valid    meanBV    meanMC       pKin    pKinatN
-## maxBV   TRUE 0.8069901 0.5410158 0.03939701 0.09662858
+## maxBV   TRUE 0.8069863 0.5409889 0.03939717 0.09662080
 ## maxBV2  TRUE 0.6308613 0.4707445 0.03798457 0.08151239</code></pre>
 <p>Thus, genetic gain in Method 2 is only slightly below the genetic gain in Method 1, but the migrant contributions do not increase and the kinship at native alleles increases at a lower rate.</p>
 </div>
@@ -561,7 +577,7 @@ minMC   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span cla
 minMC.s &lt;-<span class="st"> </span><span class="kw">summary</span>(minMC)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minMC.s[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##       valid     meanBV    meanMC       pKin    pKinatN
-## minMC  TRUE -0.2401772 0.4045624 0.03939718 0.07656198</code></pre>
+## minMC  TRUE -0.2395387 0.4045795 0.03939921 0.07657431</code></pre>
 <p>For some breeds, migrant contributions and breeding values are positively correlated, so minimizing migrant contributions results in negative genetic. This can be avoided by adding an additional constraint for the breeding values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con$lb.BV &lt;-<span class="st"> </span><span class="dv">0</span>
 minMC2    &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="dt">method=</span><span class="st">&quot;min.MC&quot;</span>, <span class="dt">K=</span>Kin, <span class="dt">phen=</span>Phen, <span class="dt">con=</span>con, <span class="dt">trace=</span><span class="ot">FALSE</span>)
@@ -570,8 +586,8 @@ minMC2.s  &lt;-<span class="st"> </span><span class="kw">summary</span>(minMC2)<
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Results &lt;-<span class="st"> </span><span class="kw">rbind</span>(minMC.s, minMC2.s)
 Results[,<span class="kw">c</span>(<span class="st">&quot;valid&quot;</span>, <span class="st">&quot;meanBV&quot;</span>, <span class="st">&quot;meanMC&quot;</span>, <span class="st">&quot;pKin&quot;</span>, <span class="st">&quot;pKinatN&quot;</span>)]</code></pre></div>
 <pre><code>##        valid        meanBV    meanMC       pKin    pKinatN
-## minMC   TRUE -2.401772e-01 0.4045624 0.03939718 0.07656198
-## minMC2  TRUE  1.690487e-07 0.4083818 0.03939705 0.07730697</code></pre>
+## minMC   TRUE -2.395387e-01 0.4045795 0.03939921 0.07657431
+## minMC2  TRUE  4.956989e-06 0.4083974 0.03939950 0.07731175</code></pre>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

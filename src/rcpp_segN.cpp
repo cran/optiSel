@@ -34,7 +34,7 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
   
   for(i=0; i<NC;i++){
     indexN[i] = ArmaIndexN.at(i);
-    fsegN[i]  = (double*)calloc(NC, sizeof(double));
+    fsegN[i]  = (double*)calloc(i+1, sizeof(double));
     if(fsegN[i] == NULL){error_return("Memory allocation failed.");};
   }
   
@@ -51,7 +51,7 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
     }
     for(i=0; i<NC;i++){
       if(Nat[i]>0){
-        for(j=i; j<NC; j++){
+        for(j=0; j<i+1; j++){
           if(Nat[j]>0){
             fsegN[i][j] += Nkb[m];
           }
@@ -65,7 +65,7 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
   Rprintf("M=%d\n",m);
   
   for(i=0; i<NC;i++){
-    for(j=i; j<NC; j++){
+    for(j=0; j<i+1; j++){
       ArmasegN.at(j,i) = fsegN[i][j];
       ArmasegN.at(i,j) = fsegN[i][j];
     }

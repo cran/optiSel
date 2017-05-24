@@ -41,7 +41,7 @@
   ##################################################
   cat("Identifying native alleles...\n")
   if(lowMem){
-    wdir <- file.path(getwd(), "tempHapGFFdBvcw")
+    wdir <- file.path(tempdir(), "tempHapGFFdBvcw")
     dir.create(wdir, showWarnings=FALSE)
     Res <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, ubFreq=ubFreq, keep=keep, skip=skip, cskip=cskip, what="match", w.dir=wdir, cores=cores)
     Native <- Res$match
@@ -62,5 +62,5 @@
     file.remove(Native)
     unlink(wdir, recursive=TRUE)
   }
-    Res
+  Res
 }

@@ -1,5 +1,5 @@
 
-"plot.HaploFreq"<-function(x, ID=1, hap=1, refBreed=NULL, Chr=NULL, ...){
+"plot.HaploFreq"<-function(x, ID=1, hap=1, refBreed=NULL, Chr=NULL, show.maxFreq=FALSE, ...){
   Freq <- x
   ismax <- FALSE
   if("freq" %in% names(Freq)){
@@ -34,15 +34,17 @@
   Info    <- paste("of the ", thisBreed, " with ID ",ID," (Indiv No ",Nr,", Hap ", k, ")",sep="")
   maxFreq <- do.call(pmax,Freq)
 
-  plot(map$x, 0*map$x, type="n",ylim=c(0,1), main="Frequency of Segments from a Haplotype", ylab="freq",xlab="Marker Position in bp", xaxt="n", bty="n", ...)
+  plot(map$x, 0*map$x, type="n",ylim=c(0,1), main="Haplotype Frequency in Reference Breeds",xlab="Marker Position in bp", xaxt="n", bty="n", ylab="Frequency", ...)
   y   <- apply(maxFreq,1,max)
   col <- rep(c("grey","darkgrey"),length(Chr))
 
-  for(i in 1:length(Chr)){
-    x <- map$x[map$Chr==Chr[i]]
-    polygon(c(min(x),x,max(x)), c(0, y[map$Chr==Chr[i]],0), col=col[i], border=col[i])
+  if(show.maxFreq){
+    for(i in 1:length(Chr)){
+      x <- map$x[map$Chr==Chr[i]]
+      polygon(c(min(x),x,max(x)), c(0, y[map$Chr==Chr[i]],0), col=col[i], border=col[i])
+    }
   }
-
+  
   for(i in 1:length(Chr)){
     x <- map$x[map$Chr==Chr[i]]
     polygon(c(min(x),x,max(x)), c(0, Freq[[refBreed]][map$Chr==Chr[i],k],0), col="red", border="red")

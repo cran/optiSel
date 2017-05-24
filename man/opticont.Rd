@@ -7,7 +7,7 @@
 Calculates optimum genetic contributions of selection candidates to the next generation. 
 }
 \usage{
-opticont(method, K, phen, con=list(), solver="cccp", quiet=FALSE, 
+opticont(method, K, phen, con=list(), solver="auto", quiet=FALSE, 
     make.definite=solver=="csdp", ...)}
 
 \arguments{
@@ -18,7 +18,7 @@ opticont(method, K, phen, con=list(), solver="cccp", quiet=FALSE,
 \item{con}{List defining the constraints. The compomnents are described in the Details section. If a component is missing, then the respective constraint is not applied. Use \link{help.opticont} to see the available constraints. 
 }
 
-\item{solver}{Name of the algorithm for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"},   and \code{"slsqp"}. The default is \code{"cccp"}. The solvers are described in the Details section.
+\item{solver}{Name of the algorithm for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"},   and \code{"slsqp"}. The default \code{"auto"} means that the solver is chosen automatically. The solvers are described in the Details section.
 }
 
 \item{quiet}{If \code{quiet=FALSE} then detailed information is shown.}
@@ -130,10 +130,10 @@ con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
 con$ub.MC      <- 0.97*meanMC
 
 # Compute the genetic progress achievable
-maxBV   <- opticont("max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
+maxBV   <- opticont("max.BV", K=Kin, phen=Phen, con=con)
 maxBV.s <- summary(maxBV)
 maxBV.s$meanBV 
-# [1] 0.5403463
+# [1] 0.5428925
 
 # Get optimum contributions of sires
 Sire <- maxBV$parent[maxBV$parent$Sex=="male",]
@@ -185,10 +185,10 @@ con$ub.MC      <- 0.97*meanMC
 con$lb.BV      <- meanBV
 
 # Compute the smallest mean kinship achievable
-minKin   <- opticont("min.sKin", K=Kin, phen=Phen, con=con, solver="slsqp")
+minKin   <- opticont("min.sKin", K=Kin, phen=Phen, con=con)
 minKin.s <- summary(minKin)
 minKin.s$sKin
-# [1] 0.03880943
+# [1] 0.03881304
 
 # Get optimum contributions of sires
 Sire <- minKin$parent[minKin$parent$Sex=="male",]

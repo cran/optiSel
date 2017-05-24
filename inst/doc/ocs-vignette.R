@@ -47,6 +47,13 @@ head(Candidate[rev(order(Candidate$oc)),])
 Candidate$nOff <- noffspring(Candidate, N=250)$nOff
 head(Candidate[rev(order(Candidate$oc)),])
 
+## ------------------------------------------------------------------------
+Mating <- matings(maxBV$parent, Kin=segIBD(GTfiles, map),  alpha=0.3)
+head(Mating)
+
+## ------------------------------------------------------------------------
+attributes(Mating)$objval
+
 ## ---- results="hide"-----------------------------------------------------
 Kin  <- kinlist(
             sKin    = segIBD(GTfiles, map, minSNP=20, minL=1.0), 

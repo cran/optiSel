@@ -44,8 +44,8 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   for(i=0;i<N2;i++){index2[i]=ArmaIndex2.at(i);}
   
   for(i=0; i<N;i++){
-    fROH[i]   = (double*)calloc(N,sizeof(double));
-    thisROH[i]= (int*)calloc(N,sizeof(int));
+    fROH[i]   = (double*)calloc(i+1,sizeof(double));
+    thisROH[i]= (int*)calloc(i+1,sizeof(int));
     if(fROH[i]   == NULL){error_return("Memory allocation failed.");};
     if(thisROH[i]== NULL){error_return("Memory allocation failed.");};
   }
@@ -110,7 +110,7 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
     if(rK==0){break;}
     
     for(i=0; i<N;i++){
-      for(j=i; j<N; j++){
+      for(j=0; j<i+1; j++){
         if(thisAllel[i]==thisAllel[j]){
           if(prevAllel[i]==prevAllel[j] && m>0){ /* ROH verlängern */
             thisROH[i][j] += rK;
@@ -150,7 +150,7 @@ Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1
   if(N2>0){fclose(f2);}	
   
   for(i=0; i<N;i++){
-    for(j=i; j<N; j++){
+    for(j=0; j<i+1; j++){
       if(thisROH[i][j]>=minSNP){
         L = cM[M]-cM[M-thisROH[i][j]];
         if(L>=minL){fROH[i][j] += (L*L/(a+L*L))*(kb[M]-kb[M-thisROH[i][j]]);}

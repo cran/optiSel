@@ -139,65 +139,16 @@ help.opticont4mb(Kin, Cattle)
 
 
 ##################################################################
-#  Compute the mean segment based kinship G that would be        #
-#  achieved in the offspring without selection                   #
-##################################################################
-con     <- list(ub=c(M=-1, F=-1))
-noSel   <- opticont4mb("min.G", Kin, Cattle, bc=bc, thisBreed="Angler", con=con)
-noSel.s <- summary(noSel)
-noSel.s[,c("G.acrossBreeds","G", "GN")]
-#      G.acrossBreeds          G         GN
-#noSel     0.02601745 0.04632786 0.04212197
-
-#===============================================================#
-# => Allow the kinship within the breed in the next generation  #
-#    to be slightly larger, e.g. ub.G=0.05                      #
-#===============================================================#
-
-##################################################################
 #   Compute the minimum segment based kinship achievable         #
 #  across breeds while constraining it within the breed          #
 ##################################################################
-\dontrun{
+
 con  <- list(ub.G=0.05, ub=c(M=NA, F=-1))
 minG <- opticont4mb("min.G.acrossBreeds", Kin, Cattle, bc, thisBreed="Angler", con=con, trace=FALSE)
 minG.s <- summary(minG)
 minG.s[,c("G.acrossBreeds")]
 #[1] 0.02289039
-}
-##################################################################
-# Compute the genetic progress achievable while constraining     #
-# only segment based kinship within the breed                    #
-##################################################################
 
-con     <- list(ub.G=0.05, ub=c(M=NA, F=-1))
-maxBV   <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
-maxBV.s <- summary(maxBV)
-maxBV.s$meanBV - noSel.s$meanBV
-# [1]  0.9710311
-
-##################################################################
-# Compute the genetic progress achievable while constraining     #
-# segment based kinship within breed and migrant contributions  #
-##################################################################
-\dontrun{
-con       <- list(ub.G=0.05, ub.MC=0.32,  ub=c(M=NA, F=-1))
-maxBV.MC <- opticont4mb("max.BV", Kin, Cattle, bc=bc, thisBreed="Angler", con=con, trace = FALSE)
-maxBV.MC.s <- summary(maxBV.MC)
-maxBV.MC.s$meanBV - noSel.s$meanBV
-#0.2457528
-
-#Alternatively, function opticont() could have been used,
-#because across breed diversity was not managed in this example:
-
-maxBV.MC2 <- opticont("max.BV", Kin, Cattle[Cattle$Breed=="Angler",], con=con, trace = FALSE)
-maxBV.MC2.s <- summary(maxBV.MC2)
-maxBV.MC2.s$meanBV - noSel.s$meanBV
-#[1] 0.2457515
-
-cor(maxBV.MC$parent$oc,maxBV.MC2$parent$oc)
-#[1] 1
-}
 ##################################################################
 # Compute the genetic progress achievable while constraining     #
 #      segment based kinship  within and across breeds           #
@@ -207,72 +158,40 @@ cor(maxBV.MC$parent$oc,maxBV.MC2$parent$oc)
 con          <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.MC=0.32,  ub=c(M=NA, F=-1))
 maxBV.G.MC   <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, trace=FALSE)
 maxBV.G.MC.s <- summary(maxBV.G.MC)
-maxBV.G.MC.s$meanBV - noSel.s$meanBV
-# [1] 0.2457653
+maxBV.G.MC.s$meanBV 
+# [1] 0.2851194
 
 ##################################################################
 #    Compute the minimum achievable kinship at native alleles    #
 #    while constraining kinship within and across breeds         #
 #    and migrant contributions                                   #
 ##################################################################
-\dontrun{
+
 con   <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.MC=0.32, ub=c(M=NA, F=-1))
 minGN <- opticont4mb("min.GN", Kin, Cattle, bc, thisBreed="Angler", con=con, solver="slsqp")
 minGN.s <- summary(minGN)
 minGN.s$GN
 #[1] 0.04114953
-}
-##################################################################
-# Compute the genetic progress achievable while constraining     #
-#        segment based kinship  within and across breeds         #
-#    and migrant contributions and kinship of native alleles     #
-##################################################################
-\dontrun{
-con           <- list(ub.G=0.05, ub.G.acrossBreeds=0.026, ub.GN=0.05, ub.MC=0.32, ub=c(M=NA, F=-1))
-maxBV.G.MC.GN <- opticont4mb("max.BV", Kin, Cattle, bc, thisBreed="Angler", con=con, solver="slsqp")
-maxBV.G.MC.GN.s <- summary(maxBV.G.MC.GN)
-maxBV.G.MC.GN.s$meanBV - noSel.s$meanBV
-#[1] -0.01790695
-}
+
+
 ##################################################################
 # Summary statistics from different optimizations                #
 # can be combined in a data frame. The most important parameters #
 # are printed for comparison:                                    #
 ##################################################################
-\dontrun{
-Res<-rbind(noSel.s, maxBV.s, maxBV.G.MC.s,maxBV.G.MC.GN.s)
+Res <- rbind(minG.s, maxBV.G.MC.s, minGN.s)
 format(Res[,c("valid","meanBV", "meanMC", "G.acrossBreeds", "G", "GN")],digits=4)
-#              valid  meanBV meanMC G.acrossBreeds       G      GN
-#noSel          TRUE 0.03935 0.4484        0.02602 0.04633 0.04212
-#maxBV          TRUE 1.01039 0.4755        0.02674 0.05000 0.05216
-#maxBV.G.MC     TRUE 0.28512 0.3200        0.02475 0.05000 0.06830
-#maxBV.G.MC.GN  TRUE 0.02145 0.3200        0.02362 0.04087 0.05000
-}
-#================================================================#
-# => Genetic progress could be reduced considerably when migrant #
-#    contributions and diversity across breeds are taken into    #
-#    account in optimum contribution selection.                  #
-# => Genetic progress could even become negative if migrant      #
-#    contributions and breeding values are correlated.           #
-# ** Note that column G.acrossBreeds refers to a multi-breed     #
-#    population to which the population of interest has a        #
-#    contribution of only 0.378 and only male contributions were #
-#    optimized, so only a small decrease of the average kinship  #
-#    could be achieved in one generation.                        #
-#================================================================#
 
-##################################################################
-# Compare the optimum contributions with and without controlling #
-# global diversity and migrant contributions using different     #
-# constraints:                                                   #
-##################################################################
-\dontrun{
-cor(cbind(maxBV.G.MC.GN$parent$oc, maxBV.G.MC$parent$oc, maxBV$parent$oc))
-#           [,1]      [,2]       [,3]
-#[1,] 1.00000000 0.8705023 0.07074633
-#[2,] 0.87050233 1.0000000 0.14724942
-#[3,] 0.07074633 0.1472494 1.00000000
-}
+#           valid  meanBV meanMC G.acrossBreeds       G      GN
+#minG        TRUE -0.4329 0.3379        0.02289 0.03451 0.03986
+#maxBV.G.MC  TRUE  0.2851 0.3200        0.02475 0.05000 0.06830
+#minGN       TRUE -0.5321 0.3200        0.02312 0.03600 0.04115
+
+cor(cbind(minG$parent$oc, maxBV.G.MC$parent$oc, minGN$parent$oc))
+#          [,1]      [,2]      [,3]
+#[1,] 1.0000000 0.2741736 0.8540842
+#[2,] 0.2741736 1.0000000 0.3608900
+#[3,] 0.8540842 0.3608900 1.0000000
 }
 
 \references{

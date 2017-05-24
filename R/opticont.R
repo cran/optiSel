@@ -26,7 +26,7 @@
 }
 
 
-"opticont"<-function(method=NULL, K, phen, con=list(), solver="cccp", quiet=FALSE, make.definite=solver=="csdp", ...){
+"opticont"<-function(method=NULL, K, phen, con=list(), solver="auto", quiet=FALSE, make.definite=solver=="csdp", ...){
   if(is.null(method)){
     if("condProb" %in% names(attributes(K))){
       method <- paste0("min.", names(attributes(K)$condProb)[1])
@@ -71,6 +71,13 @@
   min.cKin   <- (method %in% paste("min.",names(cKin), sep=""))
   min.Trait  <- (method %in% paste("min.",Traits,      sep=""))
   max.Trait  <- (method %in% paste("max.",Traits,      sep=""))
+  
+  if(solver=="auto"){
+    if(min.Kin){solver <- "cccp"}
+    if(min.cKin){solver <- "slsqp"}
+    if(min.Trait||max.Trait){solver <- "cccp2"}
+  }
+  
   const   <- getconst(con, Traits)
   quadcon <- getconst(con,c(names(K),names(cKin)))
   quadcon <- setNames(quadcon$val[quadcon$con=="ub"],quadcon$var[quadcon$con=="ub"])
