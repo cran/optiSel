@@ -1,6 +1,6 @@
 
 
-"matings" <- function(cand, Kin, N=2*sum(cand$Sex=="female"), alpha=1, ub.nOff=NA, max=FALSE){
+"matings" <- function(cand, Kin, N=2*sum(cand$Sex=="female"), alpha=1, ub.nOff=NA, max=FALSE, ...){
   if(!("Indiv" %in% colnames(cand))){stop("Column 'Indiv' is missing in cand.")}
   if(!("Sex"   %in% colnames(cand))){stop("Column 'Sex' is missing in cand.")}
   if(!("oc"    %in% colnames(cand))){stop("Column 'oc' is missing in cand.")}
@@ -50,10 +50,6 @@
     ConF <- rbind(ConF, c(Con))
   }
 
-  Mat <- rbind(ConF, ConM)
-  Rhs <- c(rhsF, rhsM)
-  Dir <- rep("==", length(rhsF)+length(rhsM))
-  
   if(alpha<1){
     herds   <- setdiff(unique(cand$herd), NA)
     rhsH    <- rep(ub.herd[herds], each=length(Sire))
@@ -65,20 +61,37 @@
         ConH <- rbind(ConH, c(Con))
       }
     }
-    Mat <- rbind(Mat, ConH)
-    Rhs <- c(Rhs, rhsH)
-    Dir <- c(Dir, rep("<=", length(rhsH)))
   }
   
-  if(is.na(ub.nOff)){
-    bounds <- NULL
-  }else{
-    bounds <- list(upper=list(ind=1:(length(Sire)*length(Dam)), val=rep(ub.nOff, length(Sire)*length(Dam))))
+  nVar <- nrow(Kin)*ncol(Kin)
+
+  G <- -diag(nVar)
+  h <- rep(0, nVar)
+  
+  if(!is.na(ub.nOff)){
+    G <- rbind(G, diag(nVar))
+    h <- c(h, rep(ub.nOff, nVar))
   }
   
-  res <- Rsymphony_solve_LP(obj=c(Kin), mat=Mat, dir=Dir, rhs=Rhs, types="I", bounds=bounds, max=max)
+  if(alpha<1){
+    G <- rbind(G,  ConH)
+    h <- c(h, rhsH)
+  }
   
-  Mating <- matrix(res$solution, nrow=nrow(Zeros), ncol=ncol(Zeros))
+  opt <- list(...)
+  if("maxit"        %in% names(opt)){opt$maxit        <- as.integer(opt$maxit)}
+  if("verbose"      %in% names(opt)){opt$verbose      <- as.integer(opt$verbose)}
+  if("mi_max_iters" %in% names(opt)){opt$mi_max_iters <- as.integer(opt$mi_max_iters)}
+  opt <- do.call(ecos.control, opt)
+    
+  dims <- list(l=length(h), q=NULL, e=0L)
+  A <- Matrix(rbind(ConF, ConM), sparse=TRUE)
+  G <- Matrix(G, sparse=TRUE)
+  sig <- ifelse(max,-1,1)
+  res <- ECOS_csolve(c=sig*c(Kin), G=G, h=h, dims=dims, A=A, b=c(rhsF, rhsM), int_vars=as.integer(1:nVar), control=opt)
+  res$x <- round(res$x, 0)
+
+  Mating <- matrix(res$x, nrow=nrow(Zeros), ncol=ncol(Zeros))
   Mating <- as.data.table(Mating)
   colnames(Mating) <- Dam
   Mating$Sire <- Sire
@@ -90,8 +103,9 @@
     herds <- cand$herd
     names(herds) <- cand$Indiv
     Matings$herd <- herds[Matings$Dam]
-    #Matings$ub.herd <- floor(c(ub.herd[Matings$herd]))
     }
-  attributes(Matings)$objval <- res$objval/sum(res$solution)
+  attributes(Matings)$objval <- sum(c(Kin)*res$x)/sum(res$x)
+  attributes(Matings)$info <- res$infostring
+  cat(paste(res$infostring,"\n"))
   Matings
 }

@@ -1,5 +1,5 @@
-e286b2247eb001e61f68b99500dad7a0 *DESCRIPTION
-29aca9571530cdcb03343ea105b2546a *NAMESPACE
+91a5cd149554ff2f5801d9f44aac90db *DESCRIPTION
+ae857376acb740151284d7bb923255b6 *NAMESPACE
 fbe3530a0a3391f1fe91a22084e9e345 *R/RcppExports.R
 47948ddac862a20c296d07092d52fa73 *R/completeness.R
 0e823e5814ff033fb8b5844f3b4cbdbb *R/conttac.R
@@ -15,7 +15,7 @@ adcf6116f1b140c7f7b840ea5fee2df1 *R/help.opticont.R
 e48c7582d741eec28047ecc90b0db906 *R/kinlist.R
 6010e8140b5f975a6ab75f086a149348 *R/kinwac.R
 337833fa16126bd9cc4a121a14d8a009 *R/makeA.R
-985b268215926889c101072573c2ce92 *R/matings.R
+4fdc24f730479a9210f23b0d31cbfb17 *R/matings.R
 09f0684aef18d837d139e06079efba08 *R/noffspring.R
 fa5e5c6a4edf95ace6ea3e021329217d *R/onAttach.R
 d2c8bc8838a98a99210658c34ac358c3 *R/opticomp.R
@@ -43,7 +43,7 @@ c4a2a1d4f14ac74d774411bb6062cb69 *R/sim2dis.R
 5ae28ef66444a069538076b31c31250c *R/summary.Pedig.R
 1aa3cab22335a5b40ab37394a1cd9ed2 *R/summary.kinMatrices.R
 03ebd88bc156f4636984b3c27434c871 *R/summary.opticont.R
-a43e1267e5948737dd165a8593f8ea05 *build/partial.rdb
+86a0c50e6fb34c433c71fa139ce17618 *build/partial.rdb
 a3ba110dc36b076adbcebb476393f299 *build/vignette.rds
 a4d5a3f8eac0ad0b060bb83b5580415e *data/Cattle.rda
 9ab775a1bfeddd429ce93e1ddb56ee0f *data/ExamplePed.rda
@@ -82,7 +82,7 @@ dd1f5a87789bdb67fda6470f5d229a77 *man/help.opticont.Rd
 0c580d9440b721c5b15cc2fdeefb80d0 *man/kinwac.Rd
 847e17fe77e417ff25c4774b69b8078e *man/makeA.Rd
 708b70f7515e6be9b87876b2f827f356 *man/map.Rd
-5222e49b31ce932f0578ae1b12e3b5db *man/matings.Rd
+a5fc955052ee24cc1f5e0090edcb9515 *man/matings.Rd
 5c7c45d2f1dc3af5581f2b2f8c7456d8 *man/noffspring.Rd
 8daccccb07c2ce8892c370bdb8946531 *man/optiSel-package.Rd
 21b467ab10521530b4a9000fe39352bb *man/opticomp.Rd
