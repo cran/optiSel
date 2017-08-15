@@ -1,423 +1,171 @@
 
-"asDefinite"<-function(K, quiet=FALSE){
-  isdsCMatrix<- class(K)=="dsCMatrix"
-  K <- as(K, "matrix")
-  K <- 0.5*(K + t(K))
-  #cat(dim(K),"\n")
-  x<-base::eigen(K,only.values=TRUE, EISPACK=TRUE)$values
-  if(min(x)<0.0001){
-    if(!quiet){cat("Matrix has negative or zero eigenvalues. Looking for approximate solution...\n")}
-    x<-base::eigen(K,only.values=FALSE, EISPACK=TRUE)
-    v<-x$values
-    v[v<0.0001]<-0.0001
-    K<-x$vectors%*%diag(v)%*%t(x$vectors)
-  }
-  if(isdsCMatrix)K<-as(K,"dsCMatrix")
-  K
-}
 
-"getconst"<-function(con, Traits){
-  x<-names(con)[gsub("([ul]b\\.)|(eq\\.)", "", names(con)) %in% Traits]
-  const<-data.frame(var=gsub("([ul]b\\.)|(eq\\.)", "", x), con=str_extract(substr(x,1,2),"[ul]b"), val=as.numeric(unlist(con[x])),stringsAsFactors = FALSE)
-  rownames(const)<-x
-  const$con[is.na(const$con)]<-"eq"
-  const<-const[!is.na(const$val),]
-  const
-}
+"opticont"<-function(method, cand, con, bc=NA,  solver="default", quiet=FALSE, make.definite=solver=="csdp", ...){
+  
+  ### Check parameters #############################
+  if(class(cand)!="candes"){
+    stop("Parameter 'cand' must be created with function candes.")
+  }
+  
+  #if(!("Breed" %in% colnames(cand$phen))){stop("Column 'Breed' is missing in data frame cand$phen.\n")}
+  
+  namesK   <- setdiff(names(cand), c("phen", "current", "mean", "bc"))
+  Traits   <- gettraits(cand$phen)
+  validCon <- c(paste0(c("lb.","ub."),  rep(Traits,each=length(Traits))), paste0("ub.",  namesK), "ub", "lb", "uniform")
+  validMet <- c(paste0(c("min.","max."),rep(Traits,each=length(Traits))), paste0("min.", namesK))
+  
+  if(!(method %in% validMet)){
+    stop(paste0("The method must be one of ", paste(validMet, collapse=", "), "\n."))
+  }
+  if(!all(names(con) %in% validCon)){
+    stop(paste0("The following constraints do not have valid names: ", paste(setdiff(names(con), validCon), collapse=", "), "\n."))
+  }
 
+  ### Find optimum breed composition ###  
+  if(any(is.na(bc))){bc <- cand$bc}
+  bc <- checkbc(cand$phen$Breed, bc)
+  if(any(is.na(bc))){stop("Argument 'bc' is not defined.\n")}
 
-"opticont"<-function(method=NULL, K, phen, con=list(), solver="auto", quiet=FALSE, make.definite=solver=="csdp", ...){
-  if(is.null(method)){
-    if("condProb" %in% names(attributes(K))){
-      method <- paste0("min.", names(attributes(K)$condProb)[1])
-    }else{
-      method <- paste0("min.", names(K)[1])
-    }
-  }
-  if(identical(con, "equal.cont")){
-    con <- list(ub=c(M=-1, F=-1))
-  }
-  gc()
-  phenAsDataTable <- "data.table" %in% class(phen)
-  phen <- as.data.frame(phen)
-  if(phenAsDataTable){setDF(phen)}
+  ### Convert constraints to data frame #######
   
-  if(!("ub" %in% names(con))){con$ub<-c(M=NA, F=NA)}
-  if(!("lb" %in% names(con))){con$lb<-c(M=0,  F=0)}
-  cKin  <- attr(K,"condProb")
+  condf <- con2df(con, Traits)
   
-  rownames(phen)<-phen[,1]
-  for(i in 1:length(K)){
-    if(!all(rownames(phen) %in% rownames(K[[i]]))){
-       cat("Indivdiuals without kinship information are disregarded as selection candidates.\n")
-       phen <- phen[rownames(phen) %in% rownames(K[[i]]), ]
-    }
+  #####################################
+  ### Define prelim. cop including  ###
+  ### - objective function,         ###
+  ### - quadratic constraints,      ###
+  ### - rational constraints,       ###
+  ### - max                         ###
+  #####################################
+  
+  mycop     <- qcrc4cand(cand, condf, namesK, bc)
+  mycop$f   <- f4cand(cand, method, Traits, bc)
+  mycop$max <- str_sub(method, 1, 3)=="max"
+  
+  ####################################################
+  ### Determine for which breeds the contributions ###
+  ###    of males and females should be equal.     ###
+  ####################################################
+  
+  Breeds    <- unique(cand$phen$Breed)
+  eqConSexes <- setNames(rep(NA, length(Breeds)), Breeds)
+  
+  for(b in Breeds){
+    eqConSexes[b] <- all(!is.na(cand$phen$Sex[cand$phen$Breed==b]))
   }
-  phen2 <- phen
-  phen  <- phen[,-1]
-  for(i in 1:length(K)){K[[i]]<-K[[i]][rownames(phen), rownames(phen)]}
-  Traits  <- colnames(phen)[-1]
-  x<-NULL;for(i in 2:ncol(phen)){x<-c(x,is.numeric(phen[,i]))}
-  Traits  <- setdiff(Traits[x], c("lb", "ub","oc"))
+  if((!all(eqConSexes)) && (!quiet)){
+    cat("Assuming: Sexes do not have equal contributions for \n")
+    cat(paste0("          ", paste0(Breeds[!eqConSexes], collapse=", "), ", because some sexes are NA:\n"))
+  }
 
-  condProbMat <- c()
-  for( i in names(attributes(K)$condProb)){
-    condProbMat<-c(condProbMat, attributes(K)$condProb[[i]]["f1"], attributes(K)$condProb[[i]]["f2"])
-  }
+  #####################################
+  ### Define upper and lower bounds ###
+  #####################################
   
-  #cat(x,"\n")
-  #cat(Traits,"\n")
-  min.Kin    <- (method %in% paste("min.",names(K),    sep=""))
-  min.cKin   <- (method %in% paste("min.",names(cKin), sep=""))
-  min.Trait  <- (method %in% paste("min.",Traits,      sep=""))
-  max.Trait  <- (method %in% paste("max.",Traits,      sep=""))
+  bound <- bounds4cand(cand$phen, con[["uniform"]], con[["lb"]], con[["ub"]], eqConSexes,quiet=quiet)
   
-  if(solver=="auto"){
-    if(min.Kin){solver <- "cccp"}
-    if(min.cKin){solver <- "slsqp"}
-    if(min.Trait||max.Trait){solver <- "cccp2"}
-  }
-  
-  const   <- getconst(con, Traits)
-  quadcon <- getconst(con,c(names(K),names(cKin)))
-  quadcon <- setNames(quadcon$val[quadcon$con=="ub"],quadcon$var[quadcon$con=="ub"])
+  mycop$lb <- lbcon(val=bound$lower*bc[cand$phen$Breed], id=cand$phen$Indiv)
+  mycop$ub <- ubcon(val=bound$upper*bc[cand$phen$Breed], id=cand$phen$Indiv)
 
-  if(!(solver %in% c("cccp","cccp2","slsqp","alabama","csdp"))){cat("Solver not available.\n"); return(NULL)}
-  if(solver=="csdp" & min.cKin){cat("Solver not suitable\n"); return(NULL)}
+  #####################################
+  ### Define linear constraints     ###
+  #####################################
   
-  opt<-list(...)
-  if(solver %in% c("cccp", "cccp2")){
-    if(!("abstol"  %in% names(opt))){opt$abstol  = (1e-06)*(10^length(quadcon)) }
-    if(!("feastol" %in% names(opt))){opt$feastol = 1e-05}
-    if(!("trace"   %in% names(opt))){opt$trace   = TRUE}
-    if(!("stepadj" %in% names(opt))){if(min.cKin){opt$stepadj = 0.40}else{opt$stepadj = 0.90}}
-  }
-  
-  lb     <- con$lb
-  ub     <- con$ub
-  if("Sex" %in% colnames(phen)){
-    sex    <- as.integer(mapvalues(phen[,"Sex"], from=c("male","female"), to=c(1,2)))
-  }else{
-    sex    <- as.integer(mapvalues(phen[,1], from=c("male","female"), to=c(1,2)))
-  }
-  Res     <- list(parent=phen, con=con, method=method, solver=solver, quadcon=quadcon, lincon=const, cKin=cKin)
-  relax   <- FALSE#length(quadcon)==0
+  mycop$lc <- lc4cand(cand$phen, bc, condf, Traits, eqConSexes)
   
   
-  for(i in intersect(names(quadcon), names(cKin))){
-    ad <- 0
-    bd <- 0
-    if("a" %in% names(cKin[[i]])){ad <- as.numeric(cKin[[i]]["a"])}
-    if("b" %in% names(cKin[[i]])){bd <- as.numeric(cKin[[i]]["b"])}
-    #cat("a=",ad,"\n")
-    #cat("b=",bd,"\n")
-    K[[i]] <- (1-quadcon[i])*(K[[cKin[[i]][2]]]-bd) + K[[cKin[[i]][1]]]
-    quadcon[i] <- 1+ad
-  }
+  ######################################
+  ### Solve the optimization problem ###
+  ######################################
   
-  if(!(min.Kin | min.cKin | min.Trait | max.Trait)){cat("Method not implemented.\n");return(NULL)}
-  obj.var <- substr(method,5,nchar(method))
-  fun.sig <- ifelse(substr(method,1,3)=="max",-1,1)
-  if(min.Kin){
-    if(!quiet)cat("Objective: minimizing mean kinship ", obj.var, " in the offspring.\n",sep="")
-  }else{
-    if(min.cKin){
-      if(!quiet)cat("Objective: minimizing conditional kinship ", obj.var, " in the offspring.\n",sep="")
-    }else{
-      if(!quiet)cat("Objective: ",substr(method,1,3),"imizing mean ", obj.var, " of the offspring.\n",sep="")
-    }
-  }
- 
-  if(!quiet)cat("Constraints:\n")
-  for(i in rownames(const)){
-    if(const[i,"con"]=="ub" & !quiet)cat("  Mean ",const[i,"var"]," in the offspring is not exceeding ", i,".\n",sep="")
-    if(const[i,"con"]=="lb" & !quiet)cat("  Mean ",const[i,"var"]," in the offspring is at least ", i,".\n",sep="")
-    if(const[i,"con"]=="eq" & !quiet)cat("  Mean ",const[i,"var"]," in the offspring is equal to ", i,".\n",sep="")
-  }
-  for(i in setdiff(names(Res$quadcon), names(cKin))){
-    if(!quiet)cat("  Mean kinship ", i, " in the offspring is not exceeding ub.", i,".\n",sep="")
-  }
-  for(i in intersect(names(Res$quadcon), names(cKin))){
-    if(!quiet)cat("  Conditional kinship ", i, " in the offspring is not exceeding ub.", i,".\n",sep="")
-  }
+  mycop  <- do.call(cop, mycop)
+  res    <- solvecop(mycop, solver=solver, make.definite=make.definite, quiet=quiet, ...)
+  sy     <- validate(mycop, res, quiet=TRUE)
+  res$summary <- sy$summary
+  res$info    <- sy$info
+  bound$upper[is.na(bound$upper)] <- 0.5
+  res$parent  <- data.frame(cand$phen, lb=bound$lower, oc=res$x, ub=bound$upper)
   
-  if(length(lb)==2 & !is.null(names(lb))){
-    if(!quiet)cat("  Minimum contribution of males to offspring is defined.\n",sep="")                
-    if(!quiet)cat("  Minimum contribution of females to offspring is defined\n",sep="")
-    lb<-lb[sex]
-  } else{
-    if(!quiet)cat("  Minimum contributions of animals to the offspring were defined\n",sep="")
-  }
+  ####### Add breed name to summary ######## 
+  
+  BreedforVar <- setNames(cand$current$Breed, cand$current$Var)
+  res$summary$Breed <- BreedforVar[res$summary$Var]
+  Breeds <- unique(cand$phen$Breed)
+  x <- str_extract(res$summary$Var, paste(Breeds, collapse="|"))
+  res$summary$Breed[!is.na(x)] <- x[!is.na(x)]
+  res$summary$Breed[is.na(res$summary$Breed)] <- "" 
+  
+  res$summary$Name <- str_replace(res$summary$Var, "bc.", "breed contribution.")
+  res$summary$Name <- str_replace(res$summary$Name,"scd.", "sex contrib. diff..")
+  res$summary$Name <- str_replace(res$summary$Name, paste(paste0("\\.",Breeds), collapse="|"),"")
+  
+  ####### Add original threshold values to summary ######## 
+  
+  cnames <- res$summary$Var[res$summary$Var %in% condf$var]
+  res$summary[res$summary$Var %in% condf$var, "Bound"] <- condf[cnames, "val"]
+
+  
+  ####### Compute costraint values for summary ######## 
+  
+  for(i in 1:nrow(res$summary)){
+    var <- res$summary$Var[i]
+    brd <- res$summary$Breed[i]
     
-  if(length(ub)==2 & !is.null(names(ub))){
-    if(is.na(ub[1])){
-      if(!quiet)cat("  Number of offspring of males is not limited.\n")              
-      if(!quiet)cat("    (Thus, the maximum contribution per male to the offspring is 0.5).\n")              
-    }else{
-      if(ub[1]==-1){
-        if(!quiet)cat("  All males have equal contributions to the offspring.\n")
-        if(!quiet)cat("    (Thus, no optimization is done for the males).\n")                      
-      }else{
-        if(!quiet)cat("  Maximum contribution of males to offspring is provided.\n",sep="")                
+    if(!(var %in% colnames(cand$phen))){
+      redvar <- str_replace(var, paste(paste0(".",Breeds), collapse="|"),"")
+      if(redvar %in% colnames(cand$phen)){
+        var <- redvar
       }
     }
-    if(is.na(ub[2])){
-      if(!quiet)cat("  Number of offspring of femmales is not limited.\n")              
-      if(!quiet)cat("    (Thus, the maximum contribution per female to the offspring is 0.5).\n")              
-    }else{
-      if(ub[2]==-1){
-        if(!quiet)cat("  All females have equal contributions to the offspring.\n")
-        if(!quiet)cat("    (Thus, no optimization is done for the females).\n")                      
-      }else{
-        if(!quiet)cat("  Maximum contribution of females to offspring is provided.\n",sep="")
-      }
-    }
-    ub<-ub[sex]
-    equalMaleCont   <- sum(is.na(ub[sex==1]))==0 & (all(ub[sex==1]==-1))
-    equalFemaleCont <- sum(is.na(ub[sex==2]))==0 & (all(ub[sex==2]==-1))
-  }else{
-    equalMaleCont   <- sum(is.na(ub[sex==1]))==0 & (all(ub[sex==1]==-1))
-    equalFemaleCont <- sum(is.na(ub[sex==2]))==0 & (all(ub[sex==2]==-1))
-    if(equalMaleCont){
-      if(!quiet)cat("  All males have equal contributions to the offspring.\n")
-      if(!quiet)cat("    (Thus, no optimization is done for the males).\n")                      
-    }else{
-      if(!quiet)cat("  Maximum contributions of males to the offspring were provided.\n",sep="")
-    } 
-    if(equalFemaleCont){
-      if(!quiet)cat("  All females have equal contributions to the offspring.\n")
-      if(!quiet)cat("    (Thus, no optimization is done for the females).\n")                      
-    }else{
-      if(!quiet)cat("  Maximum contributions of females to the offspring were provided.\n",sep="")
-    }
-  }
-  if(!quiet)cat("  The total genetic contribution of   males to offspring is 0.5.\n")
-  if(!quiet)cat("  The total genetic contribution of females to offspring is 0.5.\n")
-  
-  lb[is.na(lb)]<-0.0
-  ub[is.na(ub)]<-0.5
-
-  for(v in unique(const$var)){
-    m <- mean(phen[,v])
-    s <- sd(phen[,v])
-    phen[,v] <- (phen[,v]-m)/s
-    const[const$var==v,"val"]<-(const[const$var==v,"val"]-m)/s
-  }
-  
-  useChol <- (length(quadcon)>0) & solver == "cccp"
-  
-  if(equalMaleCont){
-    ub[sex==1] <- rep(1/(2*sum(sex==1)),sum(sex==1))
-    lb[sex==1] <- ub[sex==1]
-    }
-  if(equalFemaleCont){
-    ub[sex==2] <- rep(1/(2*sum(sex==2)),sum(sex==2))
-    lb[sex==2] <- ub[sex==2]
-  }
-  Res$parent$lb <- lb
-  Res$parent$oc <- lb
-  Res$parent$ub <- ub
-  isC <- lb==ub
-  isV <- lb!=ub
-  nV  <- sum(isV)
-  nC  <- sum(isC)
-  if(nV==0){
-    Res$parent$oc  <- lb
-    kinNames <- setdiff(names(K),union(names(cKin),condProbMat))
-    Res$meanKin <- setNames(rep(NA,length(kinNames)), kinNames)
-    for(i in kinNames){
-      Res$meanKin[i]<-c(as(t(Res$parent$oc)%*%K[[i]]%*%Res$parent$oc,"matrix"))
-    }
-    if(!is.null(cKin)){
-      for(i in names(cKin)){
-        f1 <- cKin[[i]]["f1"]
-        f2 <- cKin[[i]]["f2"]
-        Res$meanKin[i]<- c(as(1-(1-t(Res$parent$oc)%*%(K[[f1]])%*%(Res$parent$oc))/(t(Res$parent$oc)%*%(K[[f2]])%*%(Res$parent$oc)),"matrix"))
-      }
-    }
-    class(Res)<-"opticont"
-    Res$parent <- data.frame(Indiv=rownames(Res$parent), Res$parent, stringsAsFactors = FALSE)
-    if(phenAsDataTable){setDT(Res$parent)}
-    return(Res)
-  }
-  b  <- matrix(c(0.5-sum(lb[isC & sex==1]), 0.5 - sum(lb[isC & sex==2])), ncol=1)
-  cC <- lb[isC]
-  X  <- ub
-  X[sex==1 & isV] <- b[1,1]/(sum(sex==1 & isV)) 
-  X[sex==2 & isV] <- b[2,1]/(sum(sex==2 & isV))
-  X <- X[isV]
-  if(length(table(sex[isV]))==1){
-    A  <- matrix(1, nrow=1, ncol=nV)
-    b  <- b[b[,1]>0.0000001,, drop=FALSE]
-  }else{
-    A  <- t(model.matrix(~as.factor(sex[isV])-1))
-  }
-  
-  P <- NULL
-  q <- NULL
-  if(min.Kin){
-    P <- as(K[[obj.var]][isV, isV], "matrix")
-    if(make.definite){P <- asDefinite(P, quiet=quiet)}
-    q <- rep(0,nV)
-    if(nC>0){q <-c(as(K[[obj.var]][isV, isC],"matrix")%*%cC)}
-  }
-
-  f0 <- NULL
-  g0 <- NULL
-  h0 <- NULL
-  if(min.cKin){
-    f1 <- cKin[[obj.var]][1]
-    f2 <- cKin[[obj.var]][2]
-    ad <- 0
-    bd <- 0
-    if("a" %in% names(cKin[[obj.var]])){ad <- as.numeric(cKin[[obj.var]]["a"])}
-    if("b" %in% names(cKin[[obj.var]])){bd <- as.numeric(cKin[[obj.var]]["b"])}
     
-  #fU <- cKin[[obj.var]][3]
-    AB <- as((K[[f1]][isV, isV]),"matrix")#asDefinite
-    AN <- as((K[[f2]][isV, isV]),"matrix")#asDefinite
- #   if(make.definite){
-#      AB <- asDefinite(AB)
-#      AN <- asDefinite(AN)
-#    }
-    uB <- rep(0,nV)
-    uN <- rep(0,nV)
-    CB <- 0 - ad
-    CN <- 0 - bd
-    if(nC!=0){
-      uB <- 2*as(K[[f1]][isV, isC],"matrix")%*%cC
-      uN <- 2*as(K[[f2]][isV, isC],"matrix")%*%cC
-      CB <- t(cC)%*%as(K[[f1]][isC, isC],"matrix")%*%cC - ad
-      CN <- t(cC)%*%as(K[[f2]][isC, isC],"matrix")%*%cC - bd
-    }
-    f0 <- function(x){c(1+(t(x)%*%AB%*%x+t(uB)%*%x+CB-1)/(t(x)%*%AN%*%x+t(uN)%*%x+CN))}
-    g0 <- function(x){
-      hx <- c(t(x)%*%AN%*%x+t(uN)%*%x+CN)
-      gx <- c(t(x)%*%AB%*%x+t(uB)%*%x+CB)
-      ax <- 1/hx
-      bx <- (1-gx)/(hx^2)
-      c(ax*(2*AB%*%x+uB) + bx*(2*AN%*%x+uN))
-    }
-    h0 <- function(x){
-      hx <- c(t(x)%*%AN%*%x+t(uN)%*%x+CN)
-      gx <- c(t(x)%*%AB%*%x+t(uB)%*%x+CB)
-      ax <- 1/hx
-      bx <- (1-gx)/(hx^2)
-      dax <- - (2*AN%*%x+uN)/hx^2
-      dbx <- - (2*AB%*%x+uB)/hx^2 - 2*(1-gx)*(2*AN%*%x+uN)/hx^3
-      ax*(2*AB)+dax%*%t(2*AB%*%x+uB)+bx*(2*AN)+dbx%*%t(2*AN%*%x+uN)
-    }
-    con2<-Res$con
-    names(con2)[names(con2)=="ub.MC"]<-"lb.MC"
-    for(i in intersect(names(con2), paste("ub.", names(K), sep="")))con2[[i]]<-con2[[i]]-0.001
-    
-    con2$lb <- Res$parent$lb
-    con2$ub <- Res$parent$ub
-    x  <- 1-diag(as(K[[f2]],"matrix"))
-    sm <- sum(sex==1 & con2$lb < con2$ub)
-    sf <- sum(sex==2 & con2$lb < con2$ub)
-    gm <- min(150, sm%/%2)
-    gf <- min(150, sf%/%2)
-    xm <- sort(x[sex==1 & con2$lb < con2$ub])[gm]
-    xf <- sort(x[sex==2 & con2$lb < con2$ub])[gf]
-    weg <- rep(FALSE, length(sex))
-    if(sm>5){weg <- weg | (sex==1 & con2$lb < con2$ub & x>xm)}
-    if(sf>5){weg <- weg | (sex==2 & con2$lb < con2$ub & x>xf)}
-    con2$lb[weg]<-0
-    con2$ub[weg]<-0
-    #X <- opticont(paste("min.", f1, sep=""), K=K, phen=Res$parent, con=con2, solver=Res$solver, abstol=abstol, feastol = feastol, quiet=TRUE, make.definite=TRUE, ...)$parent$oc[isV]
-    X <-  opticont(paste("min.", f1, sep=""), K=K, phen=phen2, con=con2, solver=Res$solver, quiet=TRUE, make.definite=TRUE, ...)$parent$oc[isV]
-    b <- A%*%X
-    }
-  
-  
-  g <- setNames(vector("list", length(quadcon)), names(quadcon))
-  F <- setNames(vector("list", length(quadcon)), names(quadcon)) 
-  for(i in names(quadcon)){
-    if(useChol){
-      cat("Computing Cholesky decomposition for ",i,"...")
-      F[[i]] <- K[[i]][isV, isV]
-      F[[i]] <- asDefinite(F[[i]], quiet=quiet)
-      F[[i]] <- chol(F[[i]])
-      F[[i]] <- as(F[[i]],"matrix")
-      cat("finished\n")
-      g[[i]] <- rep(0,nV)
-      if(nC>0){
-        g[[i]]     <- as(solve(t(F[[i]]))%*%(K[[i]][isV,isC])%*%cC,"matrix")
-        quadcon[i] <- quadcon[i] - c(t(cC)%*%as(K[[i]][isC, isC],"matrix")%*%cC)+t(g[[i]])%*%g[[i]]
-      }
+    if(var %in% colnames(cand$phen)){
+      TraitVal <- cand$phen[[var]]
+      if(brd!="across breeds"){
+        TraitVal[cand$phen$Breed != brd] <- NA
+        }
+      thisbc <- sum((!is.na(TraitVal))*res$x)
+      res$summary[i,"Val"] <- sum(TraitVal*res$x, na.rm=TRUE)/thisbc
     }else{
-      F[[i]] <- as(K[[i]][isV, isV],"matrix")
-      if(make.definite){F[[i]] <- asDefinite(F[[i]], quiet=quiet)}
-      g[[i]] <- rep(0,nV)
-      if(nC>0){
-        g[[i]]     <- as(K[[i]][isV, isC],"matrix")%*%cC
-        quadcon[i] <- quadcon[i] - c(t(cC)%*%as(K[[i]][isC, isC],"matrix")%*%cC)
+      if((var %in% namesK) && (class(cand[[var]])=="quadFun")){
+        nameB <- cand[[var]]$breed
+        if(nameB == "across breeds"){
+          thisbc <- 1
+        }else{
+          thisbc <- bc[nameB]
+        }
+        res$summary[i,"Val"] <- c(t(res$x)%*%(cand[[var]]$Q)%*%(res$x)/(thisbc^2)+ cand[[var]]$d)
       }
     }
   }
- 
-  lb <- lb[isV]
-  ub <- ub[isV]
   
-  G <- NULL
-  h <- NULL
-  for(i in rownames(const)){
-    if(nC>0){const[i,"val"] <- (const[i,"val"]-cC%*%phen[isC, const[i,"var"]])/sum(b)}
-    if(const[i,"con"]=="lb"){
-      G <- rbind(G,-(phen[isV, const[i,"var"]]-const[i,"val"]))
-      h <- c(h, 0)    
-    }
-    if(const[i,"con"]=="ub"){
-      G <- rbind(G, phen[isV, const[i,"var"]]-const[i,"val"])
-      h <- c(h, 0)    
-    }
+  
+  if(!quiet){
+    Sy     <- res$summary
+    if(identical(Breeds, "missing")){Sy$Breed[Sy$Breed=="missing"] <- ""}
+    Sy$Var <- paste0(str_pad(Sy$Name, max(nchar(Sy$Name))+1, "right"), Sy$Breed)
+    Sy <- list(summary=Sy, info=res$info)
+    class(Sy)<- "copValidation"
+    print.copValidation(Sy)
   }
   
-  if(relax){
-    G <- rbind(G,-A)
-    h <- c(h,-b)
-    A <- NULL
-    b <- NULL
+  res$x <- NULL  
+  Selection <- (!(res$summary$Var %in% c("lower bounds", "upper bounds"))) 
+  Selection <- Selection & (!(str_detect(res$summary$Var,"scd.")))
+  Selection <- Selection & (!(str_detect(res$summary$Var,"bc.")))
+  Selection[1] <- FALSE
+  res$mean  <- setNames(res$summary$Val[Selection],res$summary$Var[Selection])
+  res$mean  <- as.data.frame(as.list(res$mean), stringsAsFactors = FALSE)
+  res$bc    <- as.data.frame(as.list(bc), stringsAsFactors = FALSE)
+  res$solver <- NULL
+  res$status <- NULL
+  res$obj.fun <- setNames(res$summary$Val[1], res$summary$Var[1])
+  if(length(Breeds)==1){res$mean<-res$mean[,colnames(res$mean)!=paste0("bc.",Breeds)]}
+  for(b in Breeds){
+    use <- res$parent$Breed==b
+    res$parent$oc[use] <- res$parent$oc[use]/bc[b]
   }
+   
   
-  for(i in rownames(const)[const$con=="eq"]){
-    A <- rbind(A, phen[isV, const[i,"var"]]-const[i,"val"])
-    b <- c(b, 0)    
-  }
-
-  if(min.Kin){
-    res <- opticontx(X=X, P=as(P,"matrix"), q=q,                lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
-  }else{
-    if(min.cKin){
-      res <- opticontx(X=X, f0=f0, g0=g0,  h0=h0,               lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
-    }else{
-      res <- opticontx(X=X, P=NULL, q=fun.sig*phen[isV,obj.var],lb=lb, ub=ub, A=A, b=b, G=G, h=h,  F=F, g=g, d=NULL, quadcon=quadcon, isChol=useChol, solver=solver, quiet=quiet, opt=opt)
-    }
-  }
+  return(res)
   
-  if(is.matrix(res)){
-    res <- c(res)
-    }
-  if((!is.vector(res))||(is.vector(res)&&(length(res)!=sum(isV)))){
-    cat("The optimization problem seems to have no solution.\n")
-    res <- rep(NA, sum(isV))
-    }
-  Res$parent$oc[isV] <- res
-  kinNames<-setdiff(names(K),union(names(cKin),condProbMat))
-  Res$meanKin<-setNames(rep(NA,length(kinNames)),kinNames)
-  for(i in kinNames){
-    Res$meanKin[i]<-c(as(t(Res$parent$oc)%*%K[[i]]%*%Res$parent$oc,"matrix"))
-  }
-  if(!is.null(cKin)){
-    for(i in names(cKin)){
-      f1 <- cKin[[i]]["f1"]
-      f2 <- cKin[[i]]["f2"]
-      Res$meanKin[i]<- c(as(1-(1-t(Res$parent$oc)%*%(K[[f1]])%*%(Res$parent$oc))/(t(Res$parent$oc)%*%(K[[f2]])%*%(Res$parent$oc)),"matrix"))
-    }
-  }
-  Res$parent <- data.frame(Indiv=rownames(Res$parent), Res$parent, stringsAsFactors = FALSE)
-  if(phenAsDataTable){setDT(Res$parent)}
-  class(Res)<-"opticont"
-  Res
 }

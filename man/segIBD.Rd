@@ -35,7 +35,7 @@ File names must contain the chromosome name as specified in the \code{map} in th
  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
 }
 \value{
-\code{NxN} matrix with \code{N} being the number of individuals.
+\code{NxN} segment-based kinship matrix with \code{N} being the number of individuals.
 }
 \details{
   For each pair of individuals the probability is computed that two SNPs taken at random position from randomly chosen haplotypes belong to a shared segment.

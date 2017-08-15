@@ -9,7 +9,7 @@ Plots a pedigree
 pedplot(Pedig, affected=NULL, status=NULL, label="Indiv", ...)}
 
 \arguments{
-\item{Pedig}{Data frame containing the pedigree where the first 3 columns correspond to: Individual ID,  Sire, and Dam. Use \link{subPed} to ensure that the pedigree is in the correct format.}
+\item{Pedig}{Data frame containing the pedigree with columns \code{Indiv} (indivdual ID), \code{Sire}, \code{Dam}, and \code{Sex}. Use \link{subPed} to ensure that the pedigree is in the correct format.}
 \item{affected}{
 Logical vector indicating for each individual if its symbol should be plotted in colour. The default \code{NULL} means that the individuals in column \code{keep} of data frame \code{Pedig} are plotted in colour (if present).
 }

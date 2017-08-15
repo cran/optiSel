@@ -1,210 +1,275 @@
 \name{opticont}
 \Rdversion{1.1}
 \alias{opticont}
-\title{Calculates Optimum Contributions of Selection Candidates
-}
+\title{Optimum Contributions of Selection Candidates}
+
 \description{
-Calculates optimum genetic contributions of selection candidates to the next generation. 
+The optimum contributions of selection candidates to the offspring are calculated. The optimization procedure can take into account conflicting breeding goals, which are to achieve genetic gain, to reduce the rate of inbreeding, and to recover the original genetic background of a breed. 
+
+Optimization can be done for several breeds simultaneously, which is adviseable if the aim is to increase diversity or genetic distance between breeds.
 }
 \usage{
-opticont(method, K, phen, con=list(), solver="auto", quiet=FALSE, 
-    make.definite=solver=="csdp", ...)}
+opticont(method, cand, con, bc=NA,  solver="default", quiet=FALSE, 
+         make.definite=solver=="csdp", ...)
+}
 
 \arguments{
-\item{method}{Possible values are \code{"min.VAR"}, and \code{"max.VAR"}, where \code{VAR} is the name of a column in data frame \code{phen}, or \code{"min.KIN"}, where \code{KIN} is the name of a kinship as defined by function \link{kinlist}. Use \link{help.opticont} to see the available objective functions.
-}
-\item{K}{List created by function \link{kinlist}, containing e.g. kinship matrices of the selection candidates.}
-\item{phen}{Data frame with IDs of selection candidates in column 1, and sex in column 2. The other columns may contain breeding values or migrant contributions. The sex is coded as \code{'male'} and \code{'female'}.}
-\item{con}{List defining the constraints. The compomnents are described in the Details section. If a component is missing, then the respective constraint is not applied. Use \link{help.opticont} to see the available constraints. 
-}
+\item{method}{Character string \code{"min.VAR"}, or \code{"max.VAR"}, whereby \code{VAR} is the name of the variable to be minimized or maximized. Available methods are reported by function \link{candes}.}
 
-\item{solver}{Name of the algorithm for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"},   and \code{"slsqp"}. The default \code{"auto"} means that the solver is chosen automatically. The solvers are described in the Details section.
-}
+\item{cand}{An R-Object containing all information describing the individuals (phenotypes and kinships), which are the selection candidates, and possibly random samples of individuals from other breeds. It can be created with function \link{candes}. If column \code{Sex} of data frame \code{cand$phen} contains \code{NA} for one breed, then the constraint stating that contributions of both sexes must be equal is not applied.}
+
+\item{con}{List defining threshold values for constraints. The components are described in the Details section. If one is missing, then the respective constraint is not applied. Permitted constraint names are reported by function \link{candes}.}
+
+\item{bc}{Named numeric vector with breed contributions, which is only needed if \code{cand$phen} contains individuals from different breeds. It contains the proportion of each breed in a hypothetical multi-breed population for which the diversity across breeds should be managed. The names of the components are the breed names. }
+
+\item{solver}{Name of the solver used for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"}, and \code{"slsqp"}. By default, the solver is chosen automatically. The solvers are the same as for function \link[optiSolve]{solvecop} from package \code{optiSolve}.}
 
 \item{quiet}{If \code{quiet=FALSE} then detailed information is shown.}
-\item{make.definite}{If \code{make.definite=TRUE} then all non-definite matrices are approximated by positive definite matrices before optimization.
-This is the default setting for the solver \code{csdp}.
-}
-\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values. An overview is given in the Details section. 
-}
+\item{make.definite}{Logical variable indicating whether non-positive-semidefinite matrices should be approximated by positive-definite matrices. This is always done for solvers that are known not to convergue otherwise.}
+
+\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values. Definitions of the tuning parameters can be found for \code{alabama}  in \link[alabama]{auglag} and \link[stats]{optim}, for \code{cccp} and \code{cccp2} in \link[cccp]{ctrl}, for \code{csdp} in \url{https://projects.coin-or.org/Csdp/export/49/trunk/doc/csdpuser.pdf}, and for \code{slsqp}  in \link[nloptr]{nl.opts}.}
+
 }
 \details{
-Computation of optimum genetic contributions of selection candidates. 
+
+The optimum contributions of selection candidates to the offspring are calculated. The proportion of offspring that should have a particular selection candidate as parent is twice its optimum contribution.
 
 \bold{Constraints}
 
-Constraints are defined in argument \code{con}, which is a list whose components may have the following names:
+Argument \code{con} is a list defining the constraints. Permitted names for the components are displayed by  function \link{candes}. Their meaning is as follows:
 
-\bold{ub.KIN}: Upper bound for the mean kinship  in the offspring, where \code{KIN} must be replaced by the name of a kinship as defined by function \link{kinlist}. Upper bounds for an arbitrary number of different kinships may be provided. 
+\bold{uniform}: Character vector specifying the breeds or sexes for which the contributions are not to be optimized. Within each of these groups it is assumed that all individuals have equal (uniform) contributions. Character string \code{"BREED.female"} means that all females from breed \code{BREED} have equal contributions and thus equal numbers of offspring.
 
-\bold{lb}: Either a named vecor of the form \code{c(M=a, F=b)} containing lower bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the minimum permissible contribution of each selection candidate. The default is \code{c(M=0, F=0)}.
+\bold{lb}: Named numeric vector containing lower bounds for the contributions of the individuals. The component names are their IDs. By default the lower bound is 0 for all individuals.
 
-\bold{ub}: Either a named vecor of the form \code{c(M=a, F=b)} containing upper bounds for the contributions of males (\code{a}) and females (\code{b}), or a N-vector containing  the maximum permissible contribution of each selection candidate. For \code{M=-1} (\code{F=-1}) it is assumed that all males (females) have equal contributions to the offspring.  If a number is \code{NA} then the number of offspring for that sex/individual is not bounded. The default is \code{c(M=NA, F=NA)}.
+\bold{ub}: Named numeric vector containing upper bounds for the contributions of the individuals. Their component names are the IDs. By default no upper bound is specified.
 
-\bold{lb.VAR}: Lower bound for the expected mean value of variable \code{VAR} from data frame \code{phen} in the offspring. For example \code{lb.BV=a} defines a lower bound for the mean breeding value in the offspring to be \code{a} if data frame \code{phen} has column \code{BV} with breeding values of the parents. Lower bounds for an arbitrary number of variables can be defined.
+\bold{ub.VAR}: Upper bound for the expected mean value of kinship or trait \bold{VAR} in the offspring. Upper bounds for an arbitrary number of different kinships and traits may be provided. If data frame \code{cand$phen} contains individuals from several breeds, the bound refers to the mean value of the kinship or trait in the multi-breed offspring population.
 
-\bold{ub.VAR}:   Upper bound for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring.
-For example \code{ub.MC=a} defines the upper bound for the genetic contributions from migrant breeds in the offspring to be \code{a} if data frame \code{phen} has column \code{MC} with migrant contributions for the parents. Upper bounds for an arbitrary number of variables can be defined.
+\bold{ub.VAR.BREED}: Upper bound for the expected mean value of kinship or trait \bold{VAR} in the offspring from breed \bold{BREED}. Upper bounds for an arbitrary number of different kinships and traits may be provided. 
 
-\bold{eq.VAR}: Equality constraint for the mean value of variable \code{VAR} from data frame \code{phen} in the offspring. Equality constraints for an arbitrary number of variables can be defined.
-
-
-\bold{Solver}
+Note that \bold{VAR} must be replaced by the name of the variable and \bold{BREED} by the name of the breed. For traits, lower bounds can be defined as \bold{lb.VAR} or \bold{lb.VAR.BREED}. Equality constraints can be defined as  \bold{eq.VAR} or \bold{eq.VAR.BREED}.
 
 
- \code{"alabama"}: The augmented lagrangian minimization algorithm \link[alabama]{auglag} from package \code{alabama}.
- The method combines the objective function and a penalty for each constraint  into a single function. This modified objective function is then passed to another optimization algorithm with no constraints. If the constraints are violated by the solution of this sub-problem, then the size of the penalties is increased and the process is repeated. The default methods for the uncontrained optimization in the inner loop is the quasi-Newton method called \code{BFGS}.
-The available parameters used for the outer loop are described in the details section of the help page of function \link[alabama]{auglag}. The available parameters used for the inner loop are described in the details section of the help page of function \link[stats]{optim}.
- 
-\code{"cccp", "cccp2"}: Function  \link[cccp]{cccp} from package \code{cccp} for solving cone constrained convex programs. For \code{cccp} quadratic constraints are defined as second order cone constraints, whereas for \code{cccp2} quadratic constraints are defined by functions. The implemented algorithms are partially ported from CVXOPT. The parameters are those from function \link[cccp]{ctrl}. They are among others the maximum count of iterations as an integer value (\code{maxiters}), the feasible level of convergence to be achieved (\code{feastol}) and whether the solver's progress during the iterations is shown (\code{trace}). If numerical problems are encountered increase the optimization parameter \code{feastol} or reduce parameter \code{stepadj}.
+\bold{Application to multi-breed data}
 
- \code{"csdp"}: The problem is reformulated as a semidefinite programming problem and solved with the CSDP library.
- Non-definite matrices are approximated by positive definite matrices. This solver is not suitable when the objective is to minimize kinship at native alleles.
- Available parameters are described in the CSDP User's Guide: \code{https://projects.coin-or.org/Csdp/export/49/trunk/doc/csdpuser.pdf}.
- 
- \code{"slsqp"}: The sequential (least-squares) quadratic programming (SQP) algorithm \link[nloptr]{slsqp} for  gradient-based optimization from package \code{nloptr}. The algorithm optimizes successive second-order (quadratic/least-squares) approximations of the objective function, with first-order (affine) approximations of the constraints.  Available parameters are described in \link[nloptr]{nl.opts}
+Optimization can be done for several breeds simultaneously, which is adviseable if the aim is to increase genetic diversity in a multi-breed population, or to increase the genetic distance between the breed of interest and other breeds. However, for computing the kinship of individuals from different breeds, marker data is needed. 
+
+The multi-breed population referred above is a hypothetical subdivided population consisting of purebred animals from the breeds included in column \code{Breed} of \code{cand$phen}. The proportion of individuals from a given breed in this population is its breed contribution specified in argument \code{bc}. It is not the proportion of individuals of this breed in data frame \code{cand$phen}.
+
+The aim is to minimize or to constrain the average genomic kinship in this multi-breed population. This causes the genetic distance between the breed of interest and other breeds to increase, and thus may increase the conservation value of the breed.
 
 
 \bold{Remark}
 
-If the function does not provide a valid result due to numerical problems then try the following modifications:
-
-\tabular{ll}{
-\code{*} \tab modify the optimization parameters,\cr
-\code{*} \tab use another \code{solver},\cr
-\code{*} \tab change the order of the kinship constraints if more than one kinship is constrained,\cr
-\code{*} \tab define upper or lower bounds instead of equality constraints.\cr
-\code{*} \tab increase the upper bounds for the kinships.\cr
-}
-Validity of the result can be checked with function \link{summary.opticont}. Use
-\link{help.opticont} to see available objective functions and constraints.
+If the function does not provide a valid result due to numerical problems then try to use another solver, use other optimization parameters, define upper or lower bounds instead of equality constraints, or relax the constraints to ensure that the optimization problem is solvable. 
 }
 
 \value{
-A list with class \code{"opticont"}
- which has component \code{parent}.  This is the data frame \code{phen} with the additional column \code{oc} containing the optimum genetic contribution of each selection candidate to the next generation, \code{lb} containing the lower bounds, and \code{ub} containing the upper bounds.
+A list with the following components
 
-
-%Note: In windows R3.2.4, if there are a lot / large objects in memory, eigen or chol, which are called from this function, may return NULL and subsequently no result is obtained. This is a bug in R.
+\item{parent}{Data frame \code{cand$phen} with some appended columns. Column \code{oc} contains the optimum contributions of the selection candidates, column \code{lb} the lower bounds, and \code{ub} the upper bounds for the contributions.}
+\item{info}{Data frame with component \code{valid} indicating if all constraints are fulfilled, component \code{solver} containing the name of the solver used for optimization, and component \code{status} describing the solution as reported by the solver.}
+\item{mean}{Data frame containing the expected mean value of each kinship and trait in the offspring population.}
+\item{bc}{Data frame with breed contributions in the hypothetical multi-breed population used for computing the average kinship across breeds.}
+\item{obj.fun}{Named numeric value with value and name of the objective function.}
+\item{summary}{Data frame containing one row for each constraint with the value of the constraint in column \code{Val}, and the bound for the constraint in column \code{Bound}. Column \code{OK} states if the constraint is fulfilled, and column \code{Breed} contains the name of the breed to which the constraint applies.  The value of the objective function is shown in the first row.  Additional rows contain the values of traits and kinships in the offspring which are not constrained.}
 }
 
 
 \examples{
-#################################################
-# Example 1: Advanced OCS using pedigree data   #
-# Objective: maximize genetic gain              #
-# Constraints:                                  #
-#   - mean kinship                              #
-#   - mean kinship at native alleles            #
-#   - genetic contributions from other breeds   #
-#################################################
+######################################################
+# Example 1: Advanced OCS using pedigree data        #
+######################################################
+
+### Prepare pedigree data
 data(PedigWithErrors)
 data(Phen)
 
-keep  <- Phen$Indiv
-Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
-Pedig$MC <- 1-pedBreedComp(Pedig, thisBreed="Hinterwaelder")$native
-Phen  <- merge(Pedig, Phen[,c("Indiv", "BV")], by="Indiv")
-Kin   <- kinlist(pKin    = pedIBD(Pedig, keep.only=keep), 
-                 pKinatN = pedIBDatN(Pedig, thisBreed="Hinterwaelder",  keep.only=keep))
+Pedig    <- prePed(PedigWithErrors, keep=Phen$Indiv, 
+                   thisBreed="Hinterwaelder", lastNative=1970)
+Pedig$NC <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")$native
+Phen     <- merge(Pedig, Phen[,c("Indiv", "BV")], by="Indiv")
+pKin     <- pedIBD(Pedig, keep.only=Phen$Indiv)
+pKinatN  <- pedIBDatN(Pedig, thisBreed="Hinterwaelder",  keep.only=Phen$Indiv)
+cand     <- candes(phen=Phen, pKin=pKin, pKinatN=pKinatN)
+head(cand$phen)
 
-head(Phen)
-cor(Phen$MC, Phen$BV)
-help.opticont(Kin, Phen)
+######################################################
+# Objective: Maximize genetic gain in Angler cattle  #
+# Constraints:                                       #
+#   - mean kinship                                   #
+#   - mean kinship at native alleles                 #
+#   - genetic contributions from other breeds        #
+######################################################
 
-# Compute offspring parameters for unselected population
-noSel      <- opticont(method="min.pKin", K=Kin, phen=Phen, con=list(ub=c(M=-1, F=-1)))
-noSel.s    <- summary(noSel)
-round(noSel.s[,c("pKin","pKinatN", "meanMC", "meanBV")],4)
-meanMC     <- noSel.s$meanMC
-meanKin    <- noSel.s$pKin
-meanKinatN <- noSel.s$pKinatN
-meanBV     <- noSel.s$meanBV
-
-# Define Constraints
-Ne <- 100
-
-con            <- list(ub=c(M=NA, F=-1))
-con$ub.pKin    <- meanKin    + (1-meanKin   )*(1/(2*Ne))
-con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- 0.97*meanMC
+# Define constraints for the next generation
+Ne             <- 100
+con            <- list(uniform="female")
+con$ub.pKin    <- cand$mean$pKin    + (1-cand$mean$pKin   )*(1/(2*Ne))
+con$ub.pKinatN <- cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne))
+con$lb.NC      <- 1.03*cand$mean$NC
 
 # Compute the genetic progress achievable
-maxBV   <- opticont("max.BV", K=Kin, phen=Phen, con=con)
-maxBV.s <- summary(maxBV)
-maxBV.s$meanBV 
-# [1] 0.5428925
+Offspring  <- opticont("max.BV", cand, con, trace=FALSE)
 
-# Get optimum contributions of sires
-Sire <- maxBV$parent[maxBV$parent$Sex=="male",]
-ord  <- order(Sire$oc, decreasing=TRUE)
-head(Sire[ord,])
+# Check if the optimization problem is solved 
+Offspring$info           
+#  valid solver  status
+#1  TRUE  cccp2 optimal
 
-#################################################
-# Example 2: Advanced OCS using genotype data   #
-# Objective: minimize inbreeding                #
-# Constraints:                                  #
-#   - breeding values                           #
-#   - mean kinship at native alleles            #
-#   - genetic contributions from other breeds   #
-#################################################
+# Average values of traits and kinships 
+Offspring$mean   
+#         NC        BV       pKin    pKinatN
+#1 0.4362558 0.5140699 0.02573526 0.07993624
 
-data(map)
+Offspring$mean$BV
+
+# Value of the objective function 
+Offspring$obj.fun
+#       BV 
+#0.5140699 
+
+# Data frame with optimum contributions
+head(Offspring$parent)   
+
+# See how much the values deviate from the constraints
+Offspring$summary        
+
+######################################################
+# Further Examples: Advanced OCS using genotype data #
+######################################################
+\dontrun{
+### Prepare genotype data
+
+library("optiSel")
+data(map) 
 data(Cattle)
-dir   <- system.file("extdata", package = "optiSel")
-files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
-Kin   <- kinlist(sKin    = segIBD(files, map, minSNP=20, minL=2.0), 
-                 sKinatN = segIBDatN(files, Cattle, map, thisBreed="Angler", 
-                                     ubFreq=0.01, minSNP=20, minL=2.0))
-Haplo <- haplofreq(files, Cattle, map, thisBreed="Angler", 
-                   minSNP=20, minL=2.0, ubFreq=0.01, what="match")
-Comp  <- segBreedComp(Haplo$match, map)
-Comp$MC <- 1-Comp$native
-Phen  <- merge(Cattle, Comp[,c("Indiv", "MC")], by="Indiv", all=FALSE)
+dir  <- system.file("extdata", package = "optiSel")
+files<- file.path(dir, paste("Chr", 1:2, ".phased", sep=""))
 
-help.opticont(Kin, Phen)
+### Compute genomic kinship and genomic kinship at native segments
+G  <- segIBD(files, map, minL=2.0)
+GN <- segIBDatN(files, Cattle, map, thisBreed="Angler", refBreeds="others", minL=2.0)
 
-cor(Phen$MC, Phen$BV,use="complete.obs")
-#[1] 0.5033714
+### Compute migrant contributions of selection candidates 
+Haplo<- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="others",
+                  minL=2.0, what="match")
+Comp <- segBreedComp(Haplo$match, map)
+Cattle$NC <- NA
+Cattle[rownames(Comp), "NC"] <- Comp$native
+apply(Comp[,-1],2,mean)
+#    native          F          H          R 
+#0.43798759 0.02997242 0.24603493 0.28600506 
 
-# Compute offspring parameters for unselected population
-noSel      <- opticont(method="min.sKin", K=Kin, phen=Phen, con=list(ub=c(M=-1, F=-1)))
-noSel.s    <- summary(noSel)
-round(noSel.s[,c("sKin","sKinatN", "meanMC", "meanBV")],4)
-meanMC     <- noSel.s$meanMC
-meanKin    <- noSel.s$sKin
-meanKinatN <- noSel.s$sKinatN
-meanBV     <- noSel.s$meanBV
+######################################################
+# Objective: Minimize inbreeding in Angler cattle    #
+# Constraints:                                       #
+#   - breeding values                                #
+#   - mean kinship at native alleles                 #
+#   - genetic contributions from other breeds        #
+######################################################
 
-# Define Constraints
+cand <- candes(phen=Cattle[Cattle$Breed=="Angler",], sKin=G, sKinatN=GN)
+
+# Define Constraints for the next generation
 Ne <- 100
+con            <- list(uniform="female")
+con$ub.sKinatN <- cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne))
+con$lb.NC      <- 1.03*cand$mean$NC
+con$lb.BV      <- cand$mean$BV
 
-con            <- list(ub=c(M=NA, F=-1))
-con$ub.sKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- 0.97*meanMC
-con$lb.BV      <- meanBV
+# Compute optimum contributions; the objective is to minimize mean kinship 
+Offspring   <- opticont("min.sKin", cand, con=con)
 
-# Compute the smallest mean kinship achievable
-minKin   <- opticont("min.sKin", K=Kin, phen=Phen, con=con)
-minKin.s <- summary(minKin)
-minKin.s$sKin
-# [1] 0.03881304
+# Check if the optimization problem is solved 
+Offspring$info           
 
-# Get optimum contributions of sires
-Sire <- minKin$parent[minKin$parent$Sex=="male",]
-ord  <- order(Sire$oc, decreasing=TRUE)
-head(Sire[ord,])
+# Average values of traits and kinships 
+Offspring$mean           
+
+# Value of the objective function 
+Offspring$obj.fun
+#      sKin 
+#0.03977612 
+
+
+######################################################
+# Objective: Maximize breeding value in Angler       #
+# Constraints:                                       #
+#   - kinship at native alleles                      #
+#   - kinship across breeds                          #
+######################################################
+
+cand <- candes(phen=Cattle, sKin=G, sKinatN.Angler=GN)
+
+Unif      <- c("Angler.female", "Fleckvieh", "Holstein", "Rotbunt")
+con       <- list(uniform=Unif, ub.sKin=0.027, ub.sKinatN.Angler=0.06)
+Offspring <- opticont("max.BV", cand, con, trace=FALSE)
+
+Offspring$mean
+
+Offspring$obj.fun
+#       BV 
+#0.4986473 
+
+######################################################
+# Objective: Minimize kinship across breeds          #
+# Constraints:                                       #
+#   - native contributions                           #
+#   - breeding values                                #
+# by optimizing contributions of Angler males        #
+######################################################
+
+Unif      <- c("Angler.female", "Fleckvieh", "Holstein", "Rotbunt")
+con       <- list(uniform=Unif, ub.sKinatN.Angler=0.06, lb.NC=0.7, lb.BV=0.5)
+Offspring <- opticont("min.sKin", cand, con, trace=FALSE)
+
+Offspring$mean
+
+Offspring$obj.fun
+#      sKin 
+#0.02953495 
+
+######################################################
+# Objective:  Maximize breeding values in all breeds #
+# Constraints:                                       #
+#   - average kinships within each breed             #
+#   - average kinships across breeds                 #
+#   - average native kinship of Angler               #
+#   - average native contribution in Angler          #
+# by optimizing contributions of males from all breeds#
+######################################################
+
+set.seed(1)
+Phen <- Cattle
+Phen[Phen$Breed!="Angler","BV"] <- rnorm(sum(Phen$Breed!="Angler")) #simulate BV
+cand <- candes(phen=Phen, sKin=G, sKinatN.Angler=GN)
+
+Unif <- paste0(c("Angler", "Fleckvieh", "Holstein", "Rotbunt"), ".female")
+con  <- list(uniform          = Unif, 
+             ub.sKin          = cand$mean$sKin - 0.002,
+             ub.sKin.Angler   = cand$mean$sKin.Angler   + 0.005,
+             ub.sKin.Holstein = cand$mean$sKin.Holstein + 0.005,
+             ub.sKin.Rotbunt  = cand$mean$sKin.Rotbunt  + 0.005,
+             ub.sKin.Fleckvieh= cand$mean$sKin.Fleckvieh+ 0.005,
+             ub.sKinatN.Angler= cand$mean$sKinatN.Angler+ 0.005, 
+             lb.NC            = cand$mean$NC + 0.05)
+            
+Offspring <- opticont("max.BV", cand, con, trace=FALSE)
+
+Offspring$mean
+
+Offspring$obj.fun
+#       BV 
+#0.6440849  
+}
+
 }
 
 \references{
-Borchers, B. (1999). CSDP, A C Library for Semidefinite Programming Optimization Methods and Software 11(1):613-623
-\code{http://euler.nmt.edu/~brian/csdppaper.pdf}
-
-Kraft, D. (1988). A software package for sequential quadratic programming, Technical Report DFVLR-FB 88-28, Institut fuer Dynamik der Flugsysteme, Oberpfaffenhofen, July 1988.
-
-Lange K, Optimization, 2004, Springer.
-
-Madsen K, Nielsen HB, Tingleff O, Optimization With Constraints, 2004, IMM, Technical University of Denmark.
+Wellmann, R. (2017). Optimum Contribution Selection and Mate
+Allocation for Breeding: The R Package optiSel. submitted
 }
 
 

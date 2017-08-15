@@ -4,14 +4,14 @@
 \title{Calculates the Pedigree-based Kinship Matrix 
 }
 \description{                                                 
-Calculates the \bold{ped}igree based probability of alleles to be \bold{IBD}. This
-pedigree based kinship matrix is also called coancestry matrix and is half the additive relationship matrix.
+Calculates the \bold{ped}igree based probability of alleles to be \bold{IBD}. This pedigree based kinship matrix is also called coancestry matrix and is half the additive relationship matrix.
 }
 \usage{
 pedIBD(Pedig, keep.only=NULL, keep=keep.only, kinFounder=NULL)}
 
 \arguments{
-\item{Pedig}{Data frame containing the Pedigree. The data frame has columns (1) Individual, (2) Sire, (3) Dam. Missing parents are coded as NA. Both parents must either be missing or present. If this is not the case use \link{prePed}.}
+\item{Pedig}{Data frame containing the pedigree with \code{Indiv} (individual ID), \code{Sire}, and \code{Dam} in the first 3 columns.
+Missing parents are coded as NA. Both parents must either be missing or present. If this is not the case use function \link{prePed} to prepare the pedigree.}
 \item{keep}{If \code{keep} is provided then kinships are computed only for these animals and their ancestors.}
 \item{keep.only}{If \code{keep.only} is provided then kinships are computed only for these animals.}
 \item{kinFounder}{Kinship matrix for the founders. The row names are the ids of the founders. By default, founders are assumed to be unrelated. Founders not included in this matrix are also assumed to be unrelated.}

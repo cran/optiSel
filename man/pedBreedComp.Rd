@@ -10,8 +10,8 @@ Computes for every individual the genetic contribution from native founders and 
 pedBreedComp(Pedig, thisBreed)}
 
 \arguments{
-\item{Pedig}{Data frame containing the pedigree where the first 3 columns correspond to: Individual ID, Sire, and Dam. Additional columns include column Breed with breed names. Missing parents are coded as \code{NA}. All animals have no parent or both parents missing. If this is not the case use \link{prePed}.}
-\item{thisBreed}{Name of this breed as denoted in column (5) of the pedigree.}
+\item{Pedig}{Data frame containing the pedigree with the first 3 columns being \code{Indiv} (individual ID), \code{Sire}, and \code{Dam}. Additional columns include column \code{Breed} with breed names. Missing parents are coded as \code{NA}. All animals have no parent or both parents missing. It is usually created with function \link{prePed}.}
+\item{thisBreed}{Name of the breed of interest as denoted in column \code{Breed} of the pedigree.}
 }
 
 \details{
@@ -30,7 +30,6 @@ Data frame with one row for each individual and the following columns
 data(ExamplePed)
 Pedig    <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
 cont     <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
-Pedig$MC <- 1-cont$native
 cont[1000:1010,2:5]
 
 contByYear <- conttac(cont, Pedig$Born, use=Pedig$Breed=="Hinterwaelder", mincont=0.04, long=FALSE)

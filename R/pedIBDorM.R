@@ -1,12 +1,4 @@
 
-# -----------------------------------------------------------
-# --  The following objective functions can be used:       --
-# --  fA  1-P(X_N != Y_N)                                  -- (use function pedIBD)
-# --  fB  1-P(X_N != Y_N AND (X_N %in% F AND Y_N %in% F))  -- (use this function)
-# --  fC  1-P(X_N != Y_N AND (X_N %in% F OR  Y_N %in% F))  -- (use this function)
-# --  fD  1-P(X_N != Y_N | X_N %in% F AND Y_N %in% F)      -- (use function pedIBDofN)
-# ----------------------------------------------------------- 
-
 "pedIBDorM"<-function(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only){
   PedigAsDataTable <- "data.table" %in% class(Pedig)
   Pedig <- as.data.frame(Pedig)

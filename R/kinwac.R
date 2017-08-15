@@ -1,21 +1,15 @@
 
-"kinwac"<-function(K, Pedig){
-  PedigAsDataTable <- "data.table" %in% class(Pedig)
-  Pedig <- as.data.frame(Pedig)
-  if(PedigAsDataTable){setDF(Pedig)}
-  rownames(Pedig) <- Pedig$Indiv
-  cohort <- Pedig[rownames(K[[1]]),"Born"]
- 
-  Indiv<-1; Sire<-2; Dam<-3;
-  for(i in c(Indiv, Sire, Dam)){Pedig[,i]<-as.character(Pedig[,i])}
-   
-  x <- cbind(Pedig[Pedig[Pedig[,Sire],Dam],  "Born"],
-             Pedig[Pedig[Pedig[,Sire],Sire], "Born"],
-             Pedig[Pedig[Pedig[,Dam],Dam],   "Born"],
-             Pedig[Pedig[Pedig[,Dam],Sire],  "Born"])
-  Pedig$I <- (Pedig$Born - apply(x,1,mean,na.rm=TRUE))/2
+"kinwac"<-function(cand){
+  if(class(cand)!="candes"){stop("Argument cand must be created with function candes.\n")}
+  if(!("Born" %in% colnames(cand$phen))){stop("Column 'Born' with Year-of-Birth is missing.\n")}
+  if(!is.numeric(cand$phen$Born)){       stop("Column 'Born' is not numeric.\n")}  
+  if(all(is.na(cand$phen$Born))){        stop("Column 'Born' contains only NA.\n")}  
+
+
+  ### Define Indicator Matrix A with ########################
+  ### A[i,j]=1 if i and j are from the same birth cohort. ###
   
-  if(!is.list(K)){K<-list(K=K)}
+  cohort <- cand$phen$Born
   cohort[is.na(cohort)]<- -123456789
   Years <- unique(cohort)
   i<-NULL
@@ -26,23 +20,36 @@
     j<-c(j, rep(which(cohort==k), each=sum(cohort==k)))
     }
   }
-  A<-sparseMatrix(i=i[i!=j],j=j[i!=j],dims=c(length(cohort),length(cohort)))
+  A <- sparseMatrix(i=i[i!=j],j=j[i!=j],dims=c(length(cohort),length(cohort)))
   A <- as(A, "dgCMatrix")
   cohort[cohort==-123456789]<- NA
+
+  ### Compute mean kinship of individuals with all ##########
+  ### individuals from the same birth cohort. ###############
   
-  kinWithPop <- matrix(NA, nrow=nrow(K[[1]]), ncol=length(K)+2)
-  colnames(kinWithPop)<-c("cohort", "I", names(K))
-  rownames(kinWithPop)<-rownames(K[[1]])
-  N<-apply(A,2,sum)
+  N <- apply(A, 2, sum)
   
-  kinWithPop[,1]<-cohort
-  kinWithPop[,2]<-Pedig[rownames(K[[1]]),"I"]
-  for(k in 1:length(K)){
-    kinWithPop[,k+2]<-apply(K[[k]]*A,2,sum)/N
+  for(i in seq_along(cand)){
+    if(class(cand[[i]])%in% c("quadFun","ratioFun")){
+      cand$phen[[cand[[i]]$name]] <- NA
+    }
   }
-  kinWithPop <- data.frame(Indiv=rownames(K[[1]]), kinWithPop)
-  if(PedigAsDataTable){setDT(kinWithPop)}
-  class(kinWithPop)<-c("kinwac", class(kinWithPop))
-  attributes(kinWithPop)$condProb <- attributes(K)$condProb 
-  kinWithPop
+  
+  
+  for(i in seq_along(cand)){
+    if(class(cand[[i]])=="quadFun"){
+      name <- cand[[i]]$name
+      cand$phen[[name]] <- apply((cand[[i]]$Q)*A, 2, sum)/N
+      cand$phen[is.na(cohort), name] <- NA
+    }
+    if(class(cand[[i]])=="ratioFun"){
+      name  <- cand[[i]]$name
+      val1 <- apply((cand[[i]]$Q1)*A, 2, sum)/N
+      val2 <- apply((cand[[i]]$Q2)*A, 2, sum)/N
+      cand$phen[[name]]  <- val1/val2
+      cand$phen[is.na(cohort), name]  <- NA
+    }
+  }
+  
+  return(cand$phen)
 }

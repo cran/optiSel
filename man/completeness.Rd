@@ -24,9 +24,9 @@ The function computes the completeness of the pedigree for the specified individ
 
 Data frame with the following columns
 
-\item{Indiv (or 'by')}{Level of the grouping factor,}
+\item{Indiv (or 'by')}{ID of the individual or level of the grouping factor,}
 \item{Generation}{Generation number,}
-\item{Completeness}{Completeness of the pedigree.}
+\item{Completeness}{Completeness of the pedigree in the respective generation.}
 }
 
 \seealso{

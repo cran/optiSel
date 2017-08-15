@@ -6,5 +6,5 @@
   This data set gives a small subset of the pedigree of Hinterwald cattle suitable for demonstration purposes.
 }
 \usage{ExamplePed}
-\format{A data frame with columns for individual ID, sire ID, dam ID, sex, breed, year of birth, and a simulated breeding value}
+\format{Data frame with columns \code{Indiv} (individual ID), \code{Sire}, \code{Dam}, \code{Sex}, \code{Breed}, \code{Born} with year of birth, and simulated breeding value \code{BV}.}
 \keyword{datasets}

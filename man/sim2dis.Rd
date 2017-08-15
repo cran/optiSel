@@ -33,7 +33,7 @@ whereas for Method 2, the dissimilarity is computed as
 
 \code{Dij = sqrt((fii+fjj)/2-fij)^a}.
 
-Although Method 2 may provide lower stress values in some cases, Method 1 has the advantage that the area reflects the diversity of a population.
+Although Method 2 may provide lower stress values in some cases, Method 1 has the advantage that the area reflects the diversity of a population more reasonable.
 }
 \examples{
 data(map)

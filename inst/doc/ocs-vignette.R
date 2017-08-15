@@ -9,38 +9,43 @@ dir     <- system.file("extdata", package="optiSel")
 GTfiles <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 head(map)
 
-## ---- results="hide"-----------------------------------------------------
-Kin  <- kinlist(sKin=segIBD(GTfiles, map))
-
 ## ------------------------------------------------------------------------
 phen <- Cattle[Cattle$Breed=="Angler",]
 
 ## ------------------------------------------------------------------------
-help.opticont(Kin, phen)
+sKin <- segIBD(GTfiles, map)
+
+## ------------------------------------------------------------------------
+cand  <- candes(phen=phen, sKin=sKin)
 
 ## ------------------------------------------------------------------------
 con <- list()
 
 ## ------------------------------------------------------------------------
-con$ub <- c(M=NA, F=-1)
+con$uniform <- "female"
 
-## ---- results='hide', echo=FALSE-----------------------------------------
-mKin<-summary(opticont(K=Kin, phen=phen, con=list(ub=c(M=-1, F=-1))))$sKin
+## ------------------------------------------------------------------------
+cand$mean
 
 ## ------------------------------------------------------------------------
 Ne <- 100
-meanKin     <- 0.0569
-con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
+
+con$ub.sKin <- cand$mean$sKin + (1-cand$mean$sKin)*(1/(2*Ne))
 
 ## ------------------------------------------------------------------------
-maxBV <- opticont(method="max.BV", K=Kin, phen=phen, con=con, trace=FALSE)
+Offspring <- opticont("max.BV", cand, con, trace=FALSE)
 
 ## ------------------------------------------------------------------------
-maxBV.s <- summary(maxBV)
-maxBV.s$obj.fun
+Offspring$info
 
 ## ------------------------------------------------------------------------
-Candidate <- maxBV$parent[,  c("Indiv", "Sex", "oc")]
+Offspring$obj.fun
+
+## ------------------------------------------------------------------------
+Offspring$mean
+
+## ------------------------------------------------------------------------
+Candidate <- Offspring$parent[,  c("Indiv", "Sex", "oc")]
 head(Candidate[rev(order(Candidate$oc)),])
 
 ## ------------------------------------------------------------------------
@@ -48,227 +53,191 @@ Candidate$nOff <- noffspring(Candidate, N=250)$nOff
 head(Candidate[rev(order(Candidate$oc)),])
 
 ## ------------------------------------------------------------------------
-Mating <- matings(maxBV$parent, Kin=segIBD(GTfiles, map),  alpha=0.3)
+Mating <- matings(Candidate, Kin=sKin)
 head(Mating)
 
 ## ------------------------------------------------------------------------
 attributes(Mating)$objval
 
 ## ---- results="hide"-----------------------------------------------------
-Kin  <- kinlist(
-            sKin    = segIBD(GTfiles, map, minSNP=20, minL=1.0), 
-            sKinatN = segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", ubFreq=0.01, minL=1.0)
-            )
-
-## ---- results="hide"-----------------------------------------------------
 wdir  <- file.path(tempdir(), "HaplotypeEval")
-wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, minL=1.0, w.dir=wdir)
+wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minL=1.0, w.dir=wdir)
 Comp  <- segBreedComp(wfile$match, map)
-Cattle[rownames(Comp), "MC"] <- 1 - Comp$native
+Cattle[rownames(Comp), "NC"] <- Comp$native
 
 ## ------------------------------------------------------------------------
 head(Cattle[,-1])
 
-## ------------------------------------------------------------------------
-help.opticont(Kin, phen=Cattle)
+## ---- results="hide"-----------------------------------------------------
+phen    <- Cattle[Cattle$Breed=="Angler",]
+sKin    <- segIBD(GTfiles, map, minL=1.0)
+sKinatN <- segIBDatN(GTfiles, Cattle, map, thisBreed="Angler", minL=1.0)
 
 ## ------------------------------------------------------------------------
-help.opticont4mb(Kin, phen=Cattle)
+cand  <- candes(phen=phen, sKin=sKin, sKinatN=sKinatN)
 
 ## ------------------------------------------------------------------------
-phen <- Cattle[Cattle$Breed=="Angler",]
+cand$mean
+
+## ------------------------------------------------------------------------
+con         <- list(uniform="female")
+con$ub.sKin <- cand$mean$sKin + (1-cand$mean$sKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
-eqCont     <- summary(opticont(K=Kin, phen=phen, con="equal.cont"))
-meanKin    <- eqCont$sKin
-meanKinatN <- eqCont$sKinatN
-meanMC     <- eqCont$meanMC
-phen$BV    <- phen$BV - eqCont$meanBV
-meanBV     <- 0
+Offspring   <- opticont("max.BV", cand, con, trace=FALSE)
 
 ## ------------------------------------------------------------------------
-eqCont[,c("sKin", "sKinatN", "meanMC")]
+Offspring$info
 
 ## ------------------------------------------------------------------------
-con         <- list(ub=c(M=NA, F=-1))
-con$ub.sKin <- meanKin + (1-meanKin)*(1/(2*Ne))
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-maxBV   <- opticont(method="max.BV", K=Kin, phen=phen, con=con, trace=FALSE)
-maxBV.s <- summary(maxBV)
+con$ub.sKinatN <- cand$mean$sKinatN +(1-cand$mean$sKinatN)*(1/(2*Ne))
+con$lb.NC      <- cand$mean$NC
+Offspring2     <- opticont("max.BV", cand, con)
 
 ## ------------------------------------------------------------------------
-maxBV.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
+rbind(Ref=cand$mean, maxBV=Offspring$mean, maxBV2=Offspring2$mean)
+
+## ------------------------------------------------------------------------
+con  <- list(uniform="female")
 
 ## ---- results="hide"-----------------------------------------------------
-con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- meanMC
-maxBV2         <- opticont(method="max.BV", K=Kin, phen=phen, con=con, solver="slsqp")
-maxBV2.s       <- summary(maxBV2)
+Offspring   <- opticont("min.sKin", cand, con)
 
 ## ------------------------------------------------------------------------
-Results <- rbind(maxBV.s, maxBV2.s)
-Results[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
-
-## ------------------------------------------------------------------------
-con  <- list(ub=c(M=NA, F=-1))
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-minKin   <- opticont(method="min.sKin", K=Kin, phen=phen, con=con, trace=FALSE)
-minKin.s <- summary(minKin)
+con$lb.NC      <- 0.50
+con$ub.sKinatN <- cand$mean$sKinatN +(1-cand$mean$sKinatN)*(1/(2*Ne))
+Offspring2     <- opticont("min.sKin", cand, con)
 
 ## ------------------------------------------------------------------------
-minKin.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
+rbind(Ref=cand$mean, minKin=Offspring$mean, minKin2=Offspring2$mean)
 
 ## ---- results="hide"-----------------------------------------------------
-con$ub.MC      <- 0.95*meanMC
-con$ub.sKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-minKin2        <- opticont(method="min.sKin", K=Kin, phen=phen, con=con, solver="slsqp", trace=FALSE)
-minKin2.s      <- summary(minKin2)
+con            <- list(uniform="female")
+con$ub.sKin    <- cand$mean$sKin    + (1-cand$mean$sKin   )*(1/(2*Ne))
+con$ub.sKinatN <- cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne))
+Offspring <- opticont("max.NC", cand, con)
 
 ## ------------------------------------------------------------------------
-Results <- rbind(minKin.s, minKin2.s)
-Results[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
+Offspring$info
+
+## ------------------------------------------------------------------------
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-phen           <- Cattle[Cattle$Breed=="Angler",]
-con            <- list(ub=c(M=NA, F=-1))
-con$ub.sKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
-con$ub.sKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-minMC   <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="slsqp")
-minMC.s <- summary(minMC)
+con$lb.BV   <- cand$mean$BV
+Offspring2  <- opticont("max.NC", cand, con)
 
 ## ------------------------------------------------------------------------
-minMC.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
-
-## ---- results="hide"-----------------------------------------------------
-con$lb.BV <- 0
-minMC2    <- opticont(method="min.MC", K=Kin, phen=phen, con=con, solver="cccp", trace=FALSE)
-minMC2.s  <- summary(minMC2)
+rbind(Ref=cand$mean, maxNC=Offspring$mean, maxNC2=Offspring2$mean)
 
 ## ------------------------------------------------------------------------
-Results <- rbind(minMC.s, minMC2.s)
-Results[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN")]
+cand <- candes(phen=Cattle, sKin=sKin, sKinatN.Angler=sKinatN, bc="sKin")
+Unif <- c("Angler.female", "Fleckvieh", "Holstein", "Rotbunt")
+mKin <- cand$mean$sKinatN.Angler
+con  <- list(uniform = Unif, ub.sKinatN.Angler = mKin + (1-mKin)*(1/(2*Ne)))
 
 ## ------------------------------------------------------------------------
-CoreSet <- opticomp(Kin$sKin, Cattle$Breed, lb=c(Angler=0.1))
-CoreSet$bc
+Offspring <- opticont("min.sKin", cand, con, trace=FALSE)
 
 ## ------------------------------------------------------------------------
-con         <- list(ub=c(M=NA, F=-1))
-con$ub.sKin <- meanKin  + (1-meanKin)*(1/(2*Ne))
-
-## ---- results="hide"-----------------------------------------------------
-minKin4mb <- opticont4mb("min.sKin.acrossBreeds", Kin, phen=Cattle, CoreSet$bc, 
-                       thisBreed="Angler", con=con, trace=FALSE)
-minKin4mb.s <- summary(minKin4mb)
+Offspring$info
 
 ## ------------------------------------------------------------------------
-minKin4mb.s[,c("valid", "meanBV", "meanMC", "sKin", "sKinatN", "sKin.acrossBreeds")]
+Offspring$mean
+
+## ------------------------------------------------------------------------
+head(Offspring$parent[,c("Breed","lb","oc","ub")])
 
 ## ---- results="hide"-----------------------------------------------------
 data("PedigWithErrors")
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 
 ## ------------------------------------------------------------------------
-head(Pedig)
+head(Pedig[,-1])
+
+## ------------------------------------------------------------------------
+cont     <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
+Pedig$NC <- cont$native
+tail(cont[, 2:5])
 
 ## ------------------------------------------------------------------------
 data("Phen")
 Summary <- summary(Pedig, keep=Pedig$Indiv %in% Phen$Indiv)
-keep    <- Summary[Summary$equiGen>=3.0, "Indiv"]
+keep    <- Summary$Indiv[Summary$equiGen>=3.0]
 table(Pedig[keep, "Sex"])
 
 ## ------------------------------------------------------------------------
-Kin <- kinlist(
-    pKin    = pedIBD(Pedig, keep.only=keep),
-    pKinatN = pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
-)
-
-## ------------------------------------------------------------------------
-cont     <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
-Pedig$MC <- 1-cont$native
-head(cont[keep, 2:6])
-
-## ------------------------------------------------------------------------
 Phen <- merge(Pedig, Phen[,c("Indiv", "BV")], by="Indiv")
-Phen <- Phen[Phen$Indiv %in% keep, c("Indiv", "Sex","Breed", "Born", "BV", "MC")]
-Phen$BV <- Phen$BV - mean(Phen$BV)
+Phen <- Phen[Phen$Indiv %in% keep, c("Indiv", "Sex","Breed", "Born", "BV", "NC")]
 head(Phen)
 
+## ---- results="hide"-----------------------------------------------------
+phen    <- Phen[Phen$Indiv %in% keep, ]
+pKin    <- pedIBD(Pedig, keep.only=keep)
+pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
+
 ## ------------------------------------------------------------------------
-help.opticont(Kin, Phen)
+cand <- candes(phen = phen, pKin = pKin, pKinatN = pKinatN)
+
+## ------------------------------------------------------------------------
+cand$mean
+
+## ------------------------------------------------------------------------
+con         <- list(uniform="female")
+con$ub.pKin <- cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne))
 
 ## ---- results="hide"-----------------------------------------------------
-eqCont     <- summary(opticont(K=Kin, phen=Phen, con="equal.cont"))
-meanKin    <- eqCont$pKin
-meanKinatN <- eqCont$pKinatN
-meanMC     <- eqCont$meanMC
-Phen$BV    <- Phen$BV - eqCont$meanBV
-meanBV     <- 0
+Offspring <- opticont("max.BV", cand, con)
 
 ## ------------------------------------------------------------------------
-eqCont[,c("pKin", "pKinatN", "meanMC")]
-
-## ------------------------------------------------------------------------
-con         <- list(ub=c(M=NA, F=-1))
-con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-maxBV   <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, trace=FALSE)
-maxBV.s <- summary(maxBV)
+con$ub.pKinatN <- cand$mean$pKinatN +(1-cand$mean$pKinatN)*(1/(2*Ne))
+con$lb.NC      <- cand$mean$NC
+Offspring2     <- opticont("max.BV", cand, con)
 
 ## ------------------------------------------------------------------------
-maxBV.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
+rbind(Ref=cand$mean, maxBV=Offspring$mean, maxBV2=Offspring2$mean)
+
+## ------------------------------------------------------------------------
+con  <- list(uniform="female")
 
 ## ---- results="hide"-----------------------------------------------------
-con$ub.pKinatN <- meanKinatN +(1-meanKinatN)*(1/(2*Ne))
-con$ub.MC      <- meanMC
-maxBV2         <- opticont(method="max.BV", K=Kin, phen=Phen, con=con, solver="slsqp")
-maxBV2.s       <- summary(maxBV2)
+Offspring <- opticont("min.pKin", cand, con)
 
 ## ------------------------------------------------------------------------
-Results <- rbind(maxBV.s, maxBV2.s)
-Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
-
-## ------------------------------------------------------------------------
-con  <- list(ub=c(M=NA, F=-1))
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-minKin   <- opticont(method="min.pKin", K=Kin, phen=Phen, con=con, trace=FALSE)
-minKin.s <- summary(minKin)
+con  <- list(uniform="female")
+con$lb.NC   <- 1.05*cand$mean$NC
+con$ub.pKin <- cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne))
+
+Offspring2  <- opticont("min.pKinatN", cand, con)
 
 ## ------------------------------------------------------------------------
-minKin.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
+rbind(Ref=cand$mean, minKin=Offspring$mean, minKin2=Offspring2$mean)
 
 ## ---- results="hide"-----------------------------------------------------
-con  <- list(ub=c(M=NA, F=-1))
-con$ub.MC   <- 0.95*meanMC
-con$ub.pKin <- meanKin + (1-meanKin)*(1/(2*Ne))
-
-minKin2     <- opticont(method="min.pKinatN", K=Kin, phen=Phen, con=con, solver="slsqp")
-minKin2.s   <- summary(minKin2)
+con            <- list(uniform="female")
+con$ub.pKin    <- cand$mean$pKin    + (1-cand$mean$pKin   )*(1/(2*Ne))
+con$ub.pKinatN <- cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne))
+Offspring <- opticont("max.NC", cand, con)
 
 ## ------------------------------------------------------------------------
-Results <- rbind(minKin.s, minKin2.s)
-Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
+Offspring$mean
 
 ## ---- results="hide"-----------------------------------------------------
-con            <- list(ub=c(M=NA, F=-1))
-con$ub.pKin    <- meanKin    + (1-meanKin)*(1/(2*Ne))
-con$ub.pKinatN <- meanKinatN + (1-meanKinatN)*(1/(2*Ne))
-minMC   <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
-minMC.s <- summary(minMC)
+con$lb.BV  <- cand$mean$BV
+Offspring2 <- opticont("max.NC", cand, con)
 
 ## ------------------------------------------------------------------------
-minMC.s[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
-
-## ---- results="hide"-----------------------------------------------------
-con$lb.BV <- 0
-minMC2    <- opticont(method="min.MC", K=Kin, phen=Phen, con=con, trace=FALSE)
-minMC2.s  <- summary(minMC2)
-
-## ------------------------------------------------------------------------
-Results <- rbind(minMC.s, minMC2.s)
-Results[,c("valid", "meanBV", "meanMC", "pKin", "pKinatN")]
+rbind(Ref=cand$mean, maxNC=Offspring$mean, maxNC2=Offspring2$mean)
 

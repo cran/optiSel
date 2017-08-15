@@ -30,7 +30,6 @@ A list with the following components:
 
 \item{pedIBDorMM}{Matrix containing for  individuals i and j the probability that two alleles chosen from the individuals are IBD or both are migrant alleles (only computed if 2 is in \code{method})}
 
-The list has class attribute \code{"kinMatrices"}. 
 }
 
 \examples{

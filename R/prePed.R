@@ -1,6 +1,6 @@
 
 
-"prePed" <- function(Pedig, keep=NULL, thisBreed=NA, lastNative=NA, addNum=FALSE, I=0){
+"prePed" <- function(Pedig, keep=NULL, thisBreed=NA, lastNative=NA, addNum=FALSE){
     PedigAsDataTable <- "data.table" %in% class(Pedig)
     Pedig <- as.data.frame(Pedig)
     if(PedigAsDataTable){setDF(Pedig)}
@@ -157,12 +157,22 @@
       names(notNative)<-Pedig$Indiv
       ID  <- Pedig$Indiv[is.na(notNative)]
       Tab <- Pedig[Pedig$Sire%in% ID | Pedig$Dam %in% ID & !is.na(Pedig$Born), c("Sire", "Dam", "Born")] 
-      geb <- tapply(c(Tab$Born, Tab$Born), list(c(Tab$Sire, Tab$Dam)), min) - I
+      geb <- tapply(c(Tab$Born, Tab$Born), list(c(Tab$Sire, Tab$Dam)), min) - 0
       notNative[ID] <- geb[ID]>lastNative
       Pedig[is.na(notNative) | notNative, "Breed"] <- "unknown"
     }
     
+    if(withBorn){
+      ### Add generation intervall ##############################
+      numSire <- match(Pedig$Sire, Pedig$Indiv)
+      numDam  <- match(Pedig$Dam,  Pedig$Indiv)
+      PBorn   <- cbind(Pedig$Born[numSire], Pedig$Born[numDam])
+      PBorn   <- rowMeans(PBorn,  na.rm=TRUE)
+      Pedig$I <- (Pedig$Born - PBorn)
+      Pedig$I[Pedig$I<0] <- NA
+    }
     
+    Pedig$Offspring <- (Pedig$Indiv %in% Pedig$Sire)|(Pedig$Indiv %in% Pedig$Dam)
 
     ######    Add numeric IDs    #######
     if(addNum){
@@ -175,7 +185,7 @@
     
     cols <- c("Indiv", "Sire", "Dam", "Sex")
     if(withBreed){cols <- c(cols, "Breed")}
-    if(withBorn){cols <- c(cols, "Born")}
+    if(withBorn){cols <- c(cols, "Born","I")}
     if(addNum){cols <- c(cols, c("numIndiv", "numSire", "numDam"))}
     cols  <- c(cols, setdiff(colnames(Pedig),  cols))
     Pedig <- Pedig[, cols]

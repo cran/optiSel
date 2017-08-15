@@ -34,7 +34,7 @@ File names must contain the chromosome name as specified in the \code{map} in th
  \item{cskip}{Take column \code{cskip+1} of the files as the first column with genotypes. By default, the number is determined automatically.}
 }
 \value{
-A data frame or data table with column \code{Indiv} containing the individual IDs and column \code{Inbr} containing the inbreeding coefficients.
+A data frame with column \code{Indiv} containing the individual IDs and column \code{Inbr} containing the inbreeding coefficients.
 }
 \details{
   For each pair of individuals the probability is computed that two SNPs taken at random position from randomly chosen haplotypes belong to a shared segment.

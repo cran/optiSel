@@ -21,7 +21,7 @@ This function creates a subset of a large pedigree that includes only individual
 }
 
 \value{
-A data frame containing the pedigree. A column \code{keep} is appended indicating which individuals were included in parameter \code{keep}.
+A data frame containing the reduced pedigree. A column \code{keep} is appended indicating which individuals were included in parameter \code{keep}.
 }
 
 

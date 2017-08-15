@@ -10,16 +10,16 @@ Calculates Pedigree Based Inbreeding
 pedInbreeding(Pedig)}
 
 \arguments{
-\item{Pedig}{Data frame containing the Pedigree. The data frame has columns (1) Individual, (2) Sire, (3) Dam. Missing parents are coded as NA. Consider preparing the pedigree with function \link{prePed} before.}
+\item{Pedig}{Data frame containing the Pedigree with the first 3 columns being \code{Indiv} (individual ID), \code{Sire}, and \code{Dam}, which is usually obtained with function \link{prePed}. Missing parents are coded as NA.}
 }
 
 \details{
 Computation of pedigree based inbreeding.
-This function is a wrapper function for \code{\link[pedigree:calcInbreeding]{pedigree}} from package  \code{\link[pedigree:pedigree-package]{pedigree}} and is compatible with the data.table package. 
+This function is a wrapper function for \code{\link[pedigree:calcInbreeding]{pedigree}} from package  \code{\link[pedigree:pedigree-package]{pedigree}}. 
 }
 
 \value{
-A data frame or data table with column \code{Indiv} containing the individual IDs and column \code{Inbr} containing the inbreeding coefficients.
+A data frame with column \code{Indiv} containing the individual IDs and column \code{Inbr} containing the inbreeding coefficients.
 }
 
 

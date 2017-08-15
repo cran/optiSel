@@ -1,8 +1,8 @@
 ## ------------------------------------------------------------------------
 Pedigree <- data.frame(
-  ID   = c("Iffes",     "Peter",    "Anna-Lena", "Kevin",    "Horst"),
-  dad  = c("Kevin",     "Kevin",     NA,          0,         "Horst"),
-  mom  = c("Chantalle", "Angelika", "Chantalle", "",           NA),
+  Indiv= c("Iffes",     "Peter",    "Anna-Lena", "Kevin",    "Horst"),
+  Sire = c("Kevin",     "Kevin",     NA,          0,         "Horst"),
+  Dam  = c("Chantalle", "Angelika", "Chantalle", "",           NA),
   Breed= c("Angler",    "Angler",   "Angler",    "Holstein", "Angler"),
   Born = c(2015,        2016,       2011,       2010,        2015)
   )
@@ -13,7 +13,7 @@ library("optiSel")
 Pedig <- prePed(Pedigree)
 
 ## ------------------------------------------------------------------------
-Pedig
+Pedig[,-1]
 
 ## ---- warning=FALSE------------------------------------------------------
 sPed <- subPed(Pedig, keep = c("Chantalle","Angelika"), prevGen = 2, succGen = 1)
@@ -22,7 +22,6 @@ pedplot(sPed, label = c("Indiv", "Born", "Breed"), cex = 0.55)
 ## ---- results="hide"-----------------------------------------------------
 data("PedigWithErrors")
 data("Phen")
-PedigWithErrors <- merge(PedigWithErrors, Phen[,c("Indiv", "BV")], by="Indiv", all="TRUE")
 Pedig <- prePed(PedigWithErrors)
 
 ## ------------------------------------------------------------------------
@@ -35,86 +34,85 @@ library("ggplot2")
 ggplot(compl, aes(x=Generation, y=Completeness, col=Sex)) + geom_line()
 
 ## ------------------------------------------------------------------------
-keep <- Phen$Indiv
-Summary <- summary(Pedig, keep.only=keep)
+Summary <- summary(Pedig, keep.only=Phen$Indiv)
 head(Summary[Summary$equiGen>3.0, -1])
 
 ## ------------------------------------------------------------------------
 Animal <- pedInbreeding(Pedig)
-mean(Animal$Inbr[Animal$Indiv %in% keep])
+mean(Animal$Inbr[Animal$Indiv %in% Phen$Indiv])
 
 ## ------------------------------------------------------------------------
-pedKIN <- pedIBD(Pedig, keep.only=keep)
-use    <- Pedig$Sex=="male" & Pedig$Indiv %in% keep & summary(Pedig)$equiGen>5 & Pedig$BV>1.0
-Males  <- Pedig$Indiv[use]
-pedKIN[rownames(pedKIN) %in% Males, "276000812750188", drop=FALSE]
+pKin   <- pedIBD(Pedig, keep.only=Phen$Indiv)
+isMale <- Pedig$Sex=="male" & (Pedig$Indiv %in% Phen$Indiv[Phen$BV>1.0])
+males  <- Pedig$Indiv[isMale & summary(Pedig)$equiGen>5]
+pKin[males, "276000812750188", drop=FALSE]
 
 ## ---- results="hide"-----------------------------------------------------
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 
 ## ------------------------------------------------------------------------
 cont  <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
-Pedig$MC <- 1-cont$native
-head(cont[rev(keep), 2:6])
+Pedig$NC <- cont$native
+head(cont[rev(Phen$Indiv), 2:6])
 
 ## ---- results="hide"-----------------------------------------------------
-fD  <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep)
+pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=Phen$Indiv)
 
 ## ------------------------------------------------------------------------
-pedKINatN <- fD$pedIBDandN/fD$pedN
-use <- rownames(fD$pedN)[diag(fD$pedN)>0.2]
-mean(pedKINatN[use,use])
+pKinatN$of <- pKinatN$Q1/pKinatN$Q2
+pKinatN$of["276000891862786","276000812497659"]
 
 ## ------------------------------------------------------------------------
-sK    <- pedKIN[use, use]
-sKatN <- pedKINatN[use, use]
-cor(sK[upper.tri(sK)], sKatN[upper.tri(sKatN)], use="complete.obs")
+Pedig[c("276000891862786", "276000812497659"),c("Born","NC")]
 
 ## ------------------------------------------------------------------------
-use   <- rownames(fD$pedN)[diag(fD$pedN)>0.01]
-sK    <- pedKIN[use, use]
-sKatN <- pedKINatN[use, use]
-cor(sK[upper.tri(sK)], sKatN[upper.tri(sKatN)], use="complete.obs")
+pKinatN$mean
 
 ## ------------------------------------------------------------------------
-1-mean(pedKIN[keep, keep])
+subKin    <- pKin[Phen$Indiv, Phen$Indiv]
+subNatKin <- pKinatN$of[Phen$Indiv, Phen$Indiv]
+diag(subKin)    <- NA
+diag(subNatKin) <- NA
+cor(c(subKin), c(subNatKin), use="complete.obs")
 
 ## ------------------------------------------------------------------------
-mean(fD$pedIBDandN)/mean(fD$pedN)
+1 - mean(pKin[Phen$Indiv, Phen$Indiv])
 
 ## ------------------------------------------------------------------------
-1- mean(fD$pedIBDandN)/mean(fD$pedN)
+pKinatN$mean
 
 ## ------------------------------------------------------------------------
-fD  <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep, nGen=6)
+1 - pKinatN$mean
 
 ## ------------------------------------------------------------------------
-attributes(fD)$nativeNe
+pKinatN  <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=Phen$Indiv, nGen=6)
 
 ## ------------------------------------------------------------------------
-id     <- Summary$Indiv[Summary$equiGen>=4 & Summary$Indiv %in% keep]
+attributes(pKinatN)$nativeNe
+
+## ------------------------------------------------------------------------
+id     <- Summary$Indiv[Summary$equiGen>=4 & Summary$Indiv %in% Phen$Indiv]
 g      <- Summary[id, "equiGen"]
 N      <- length(g)
 n      <- (matrix(g, N, N, byrow=TRUE) + matrix(g, N, N, byrow=FALSE))/2
-deltaC <- 1 - (1-pedKIN[id,id])^(1/n)
+deltaC <- 1 - (1-pKin[id,id])^(1/n)
 Ne     <- 1/(2*mean(deltaC))
 Ne
 
 ## ---- results="hide"-----------------------------------------------------
 data("PedigWithErrors")
-set.seed(1)
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
-use   <- Pedig$Breed=="Hinterwaelder" & Pedig$Born %in% (1970:2000)
-IDs   <- split(Pedig$Indiv[use], Pedig$Born[use])
-keep  <- unlist(mapply(sample, x=IDs, size=pmin(lapply(IDs,length), 50), SIMPLIFY=FALSE))
-
-Kinships <- kinlist(pedIBD   = pedIBD(Pedig, keep.only=keep), 
-                    pedIBDatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep))
+set.seed(0)
+keep <- sampleIndiv(Pedig[Pedig$Breed=="Hinterwaelder",], from="Born", each=50)
+cand <- candes(phen   = Pedig[keep,],
+               pKin   = pedIBD(Pedig, keep.only=keep), 
+               pKinatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep), 
+               quiet=TRUE)
 
 ## ---- fig.show='hold'----------------------------------------------------
-sy <- summary(Kinships, Pedig, tlim=c(1970, 2000), histNe=150, base=1800, df=4)
-ggplot(sy, aes(x=cohort, y=Ne)) + geom_line() + ylim(c(0,100))
-ggplot(sy, aes(x=cohort, y=NGE)) + geom_line() + ylim(c(0,7))
+sy <- summary(cand, tlim=c(1970, 2000), histNe=150, base=1800, df=4)
+ggplot(sy, aes(x=t, y=Ne)) + geom_line() + ylim(c(0,100))
+ggplot(sy, aes(x=t, y=NGE)) + geom_line() + ylim(c(0,7))
 
 ## ---- fig.width = 5, fig.height = 3--------------------------------------
 use  <- Pedig$Breed=="Hinterwaelder" & Pedig$Born %in% (1950:1995)

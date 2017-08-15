@@ -24,7 +24,7 @@ This function calculates genetic contributions of specified ancestors to each in
 }
 
 \value{
-Lower triangular matrix with genetic contributions for each pair of individuals. Column i contains the genetic contribution of ancestor i to all individuals 
+Lower triangular matrix with genetic contributions for each pair of individuals. Column i contains the genetic contribution of ancestor i to all individuals.
 }
 
 

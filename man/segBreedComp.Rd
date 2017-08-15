@@ -2,12 +2,12 @@
 \alias{segBreedComp}
 
 \title{
-Calculates the Segment Based Breed Composition of Individuals
+Calculates the Segment-Based Breed Composition of Individuals
 }
 
 \description{
 Calculates the \bold{seg}ment based \bold{Breed} \bold{Comp}osition: 
-For every individual from this breed the breed composition is estimated, including the genetic contribution from native ancestors.
+For every individual the breed composition is estimated, including the genetic contribution from native ancestors.
 }
 \usage{
 segBreedComp(Native, map, unitP="Mb")
@@ -26,7 +26,7 @@ or
 
 or
 
-(3)  Vector with file names. The files contain for every SNP and for each haplotype from this breed 1 if the segment containing the SNP is considered native. Otherwise it is the first letter of the name of the breed in which the segment has maximum frequency. These files are typically created by function \link{haplofreq}.
+(3)  Vector with file names. The files contain for every SNP and for each haplotype 1 if the segment containing the SNP is considered native. Otherwise it is the first letter of the name of the breed in which the segment has maximum frequency. These files are typically created by function \link{haplofreq}.
 There is one file per chromosome and file names must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.nat"}.
 }
 \item{map}{
@@ -36,15 +36,15 @@ Data frame providing the marker map with columns including marker name \code{'Na
   Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
 }
 \value{
-Data frame with the number of rows being the number of individuals from this breed. The columns are
+Data frame with the number of rows being the number of individuals. The columns are
 \item{Indiv}{IDs of the individuals,}
 \item{native}{Genetic contributions from native ancestors,}
 \item{...}{Contributions from other breeds.}
 }
 \details{
-For every individual from this breed the breed composition is computed, including the genetic contribution from native ancestors (native contribution). The native contribution is the proportion of the genome belonging to segments whose frequency is smaller than a predefined value in all other breeds. 
+For every individual the breed composition is computed, including the genetic contribution from native ancestors (native contribution). The native contribution is the proportion of the genome belonging to segments whose frequency is smaller than a predefined value in all other breeds. 
 
-Additionally, for each breed,
+Additionally, for each introgressed breed,
 the proportion of the genome of each individual is computed that is non-native and has maximum frequency in the respective breed (not if option (1) is used).
 }
 \examples{

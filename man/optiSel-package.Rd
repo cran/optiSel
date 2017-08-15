@@ -12,28 +12,18 @@
 
 \bold{Optimum Contribution Selection}
 
-The following functions can be used to compute optimum contributions:
+After kinships, breeding values and/or native contributions of the selection candidates have been computed, function \link{candes} can be used to create an R-object containing all this information.
+The current average kinships and trait values are estimated by this function, and the available objective functions and constraints for optimum contribution selection are reported.
+The following function can then be used to compute optimum contributions:
 
 \tabular{ll}{
-\link{opticont}      \tab  Calculates optimum genetic contributions of selection candidates to the next generation,\cr 
-\link{opticont4mb}   \tab  Calculates optimum genetic contributions of selection candidates to  the next generation\cr
-                     \tab   using multi-breed genotype data, \cr 
-\link{opticomp}      \tab  Calculates breed composition of a multi-breed population with maximum diversity,\cr 
+\link{opticont}      \tab  Calculates optimum genetic contributions of selection candidates to the next generation, \cr
+\tab and checks if all constraints are fulfilled.\cr 
 }
 
-Function \link{noffspring} can then be used to  compute the optimum numbers of offspring of selection candidates from their optimum contributions, and function \link{matings} can be used for mate allocation. The available constraint settings and objective functions for a particular data set can be determined with the following help functions:
+Function \link{noffspring} can be used to  compute the optimum numbers of offspring of selection candidates from their optimum contributions. Function \link{matings} can be used for mate allocation. 
 
-\tabular{ll}{
-\link{help.opticont}   \tab Displays available objective functions and constraints for function \link{opticont},\cr 
-\link{help.opticont4mb}   \tab  Displays available objective functions and constraints for function  \link{opticont4mb}.\cr 
-}
 
-For checking the results use
-
-\tabular{ll}{
-\link{summary.opticont}   \tab Calculates genetic parameters of the offspring population, and \cr
-                          \tab checks for validity of optimum genetic contributions.\cr 
-}
 
 \bold{Kinships}
 
@@ -50,8 +40,12 @@ For pairs of individuals the following kinships can be computed:
 \link{makeA} \tab Calculates the pedigree-based additive relationship matrix. \cr
 }
 
-Results from these functions can be combined with function \link{kinlist} into a single R object, which can then be used as an argument
-to function \link{opticont} or \link{opticont4mb}.  Function \link{sim2dis} can be used to convert a similarity matrix (e.g. a kinship matrix) into a dissimilarity matrix which is suitable for multidimensional scaling. 
+Phenotypes and results from these functions can be combined with function \link{candes} into a single R object, which can then be used as an argument
+to function \link{opticont}.
+
+The segment based kinship can be used to calculate the optimum contributions of different breeds to a hypothetical multi-breed population with maximum genetic diversity by using function \link{opticomp}.
+
+Function \link{sim2dis} can be used to convert a similarity matrix (e.g. a kinship matrix) into a dissimilarity matrix which is suitable for multidimensional scaling. 
 
 \bold{Breed Composition}
 
@@ -66,7 +60,7 @@ The breed composition of crossbred individuals can be accessed with
                     \tab other breeds.\cr
 }
 
-The native contributions obtained by the above functions can be contrained or maximized with functions \link{opticont} or \link{opticont4mb} to remove introgressed genetic material, or alternatively, they can be considered a quantitative trait and included in a selection index.
+The native contributions obtained by the above functions can be constrained or maximized with function \link{opticont}  to remove introgressed genetic material, or alternatively, the segment-based native contribution can be considered a quantitative trait and included in a selection index.
 
 \bold{Haplotype frequencies} 
 
@@ -106,7 +100,7 @@ There are some functions for preparing and plotting pedigree data
                     \tab pedigree completeness, inbreeding coefficients,\cr
 \link{subPed}       \tab Creates a \bold{sub}set of a large \bold{Ped}igree,\cr 
 \link{pedplot}      \tab Plots a pedigree,\cr 
-\link{sampleIndiv}  \tab Sampling Individuals from a pedigree.\cr 
+\link{sampleIndiv}  \tab Samples individuals from a pedigree.\cr 
 }
 
 
@@ -119,8 +113,8 @@ Finally, there are some functions for estimating population parameters:
 \link{conttac}   \tab Calculates genetic \bold{cont}ributions of breeds \bold{t}o  \bold{a}ge \bold{c}ohorts,\cr
 \link{kinwac}         \tab Calculates for every individual it's mean \bold{kin}ship \bold{w}ith the \bold{a}ge \bold{c}ohort to which \cr
     \tab it belongs,\cr
-\link{summary.kinMatrices} \tab Calculates for every age cohort several genetic parameters. These may \cr
-                      \tab include average kinships, genetic diversities, gene diversity at native loci,\cr
+\link{summary.candes} \tab Calculates for every age cohort several genetic parameters. These may \cr
+                      \tab include average kinships, kinships at native loci,\cr
                       \tab the native effective size, and the native genome equivalent.\cr
 }
 
@@ -128,9 +122,9 @@ Finally, there are some functions for estimating population parameters:
 
 \bold{Genotype File Format}
 
-All functions reading phased genotype data assume that the files are in the following format:
+All functions reading genotype data assume that the files are in the following format:
 
-Each file has a header and no row names. Cells are separated by blank spaces. The number of rows is equal to the number of markers from the respective chromosome and the markers are in the same order as in the \code{map}. There can be some extra columns on the left hand side containing no genotype data. The remaining columns contain genotypes of individuals written as two alleles separated by a character, e.g. A/B, 0/1, A|B, A B, or 0 1. The same two symbols must be used for all markers. Column names are the IDs of the individuals. If the blank space is used as separator then the ID of each individual should be repeated in the header to get a regular delimited file. The columns to be skipped and the individual IDs must have no white spaces.
+Genotypes are phased and missing genotypes have been imputed. Each file has a header and no row names. Cells are separated by blank spaces. The number of rows is equal to the number of markers from the respective chromosome and the markers are in the same order as in the \code{map}. There can be some extra columns on the left hand side containing no genotype data. The remaining columns contain genotypes of individuals written as two alleles separated by a character, e.g. A/B, 0/1, A|B, A B, or 0 1. The same two symbols must be used for all markers. Column names are the IDs of the individuals. If the blank space is used as separator then the ID of each individual should be repeated in the header to get a regular delimited file. The columns to be skipped and the individual IDs must have no white spaces. 
 
 Use function \link{read.indiv} to extract the IDs of the individuals from a genotype file. 
 
@@ -154,6 +148,9 @@ Wellmann, R., and Bennewitz, J. (2011). Identification and characterization of h
 Wellmann, R., Hartwig, S., Bennewitz, J. (2012). Optimum contribution selection for conserved populations with historic migration; with application to rare cattle breeds. {Genetics Selection Evolution}. 44: 34
 
 Wellmann, R., Bennewitz, J., Meuwissen, T.H.E. (2014) A unified approach to characterize and conserve adaptive and neutral genetic diversity in subdivided populations. {Genet Res (Camb)}. 69: e16
+
+Wellmann, R. (2017). Optimum Contribution Selection and Mate
+Allocation for Breeding: The R Package optiSel. submitted
 }
 
 \keyword{ package }
@@ -161,13 +158,11 @@ Wellmann, R., Bennewitz, J., Meuwissen, T.H.E. (2014) A unified approach to char
 \examples{
 
 #See ?opticont for optimum contribution selection 
-#See ?opticont4mb for multi-breed optimum contribution selection 
 #These examples demonstrate computation of some population genetic parameters.
 
 data(ExamplePed)
 Pedig <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
 head(Pedig)
-
 
 ############################################
 # Evaluation of                            #
@@ -177,24 +172,24 @@ head(Pedig)
 #    - native genome equivalent            #
 ############################################
 
-Kinships <- kinlist(pedIBD=pedIBD(Pedig), pedIBDatN=pedIBDatN(Pedig, thisBreed="Hinterwaelder"))
-Param  <- summary(Kinships, Pedig, tlim=c(1970,2005), histNe=150, base=1800, df=4)
+phen    <- Pedig[Pedig$Breed=="Hinterwaelder",]
+pKin    <- pedIBD(Pedig)
+pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder")
+pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE, N=Inf)
+Param   <- summary(pop, tlim=c(1970,2005), histNe=150, base=1800, df=4)
 
-plot(Param$cohort, Param$Ne, type="l", ylim=c(0,150), 
+
+plot(Param$t, Param$Ne, type="l", ylim=c(0,150), 
      main="Native Effective Size", ylab="Ne", xlab="")
 
-matplot(Param$cohort, Param[,c("pedIBD", "pedIBDatN")], 
+matplot(Param$t, Param[,c("pKin", "pKinatN")], 
         type="l",ylim=c(0,1),main="Kinships", xlab="Year", ylab="mean Kinship")
 abline(0,0)
-legend("topleft", legend = c("pedIBD", "pedIBDatN"), lty=1:2, col=1:2, cex=0.6)
+legend("topleft", legend = c("pKin", "pKinatN"), lty=1:2, col=1:2, cex=0.6)
 
 info <- paste("Base Year =", attributes(Param)$base, "  historic Ne =", attributes(Param)$histNe)
 
-plot(Param$cohort, Param$condGD, type="l", ylim=c(0,1), 
-     main="Diversity at native alleles",ylab="condGD",xlab="")
-mtext(info, cex=0.7)
-
-plot(Param$cohort,Param$NGE,type="l",main="Native Genome Equivalents", 
+plot(Param$t,Param$NGE,type="l",main="Native Genome Equivalents", 
      ylab="NGE",xlab="",ylim=c(0,7))
 mtext(info, cex=0.7)
 

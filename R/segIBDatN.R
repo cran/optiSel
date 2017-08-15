@@ -17,6 +17,11 @@
   if(!("Breed" %in% colnames(phen))){stop("Column 'Breed' is missing in phen.")}
   if(!("Name"  %in% colnames(map))){ stop("Column 'Name' is missing in map.")}
   if(!("Chr"   %in% colnames(map))){ stop("Column 'Chr'  is missing in map.")}
+  if(("Sex" %in% colnames(phen)) && all(!is.na(phen$Sex))){
+    if(all(phen$Sex=="male")){stop("Females are missing. Sexes can be ignored by removing column 'Sex'.\n")}
+    if(all(phen$Sex=="female")){stop("Males are missing. Sexes can be ignored by removing column 'Sex'.\n")}
+    if(!all(phen$Sex %in% c("female","male"))){stop("Sexes are not coded as 'female' and 'male'. They can be ignored by removing column 'Sex'.\n")}
+  }
   phen$Indiv <- as.character(phen$Indiv)
   phen$Breed <- as.character(phen$Breed)
   if(is.logical(keep)){keep <- phen[keep,"Indiv"]}
@@ -27,6 +32,8 @@
   }
   phen <- phen[!duplicated(phen$Indiv),]
   phen[is.na(phen$Breed),"Breed"] <- "notSpecified"
+  rownames(phen)<- phen$Indiv
+  
   map$Name      <- as.character(map$Name)
   map$Chr       <- as.character(map$Chr)
   rownames(map) <- map$Name
@@ -40,27 +47,50 @@
   #       Main part                                #
   ##################################################
   cat("Identifying native alleles...\n")
-  if(lowMem){
-    wdir <- file.path(tempdir(), "tempHapGFFdBvcw")
-    dir.create(wdir, showWarnings=FALSE)
-    Res <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, ubFreq=ubFreq, keep=keep, skip=skip, cskip=cskip, what="match", w.dir=wdir, cores=cores)
-    Native <- Res$match
+  if("match" %in% names(files)){
+    Native <- files$match
   }else{
-    Native <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, keep=keep, skip=skip, cskip=cskip, what="freq", cores=cores)$freq < ubFreq
+    if(lowMem){
+      wdir <- file.path(tempdir(), "tempHapGFFdBvcw")
+      dir.create(wdir, showWarnings=FALSE)
+      Res <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, ubFreq=ubFreq, keep=keep, skip=skip, cskip=cskip, what="match", w.dir=wdir, cores=cores)
+      Native <- Res$match
+    }else{
+      Native <- haplofreq(files=files, phen=phen, map=map, thisBreed=thisBreed, refBreeds=refBreeds, minSNP=minSNP, minL=minL, unitL=unitL, keep=keep, skip=skip, cskip=cskip, what="freq", cores=cores)$freq < ubFreq
+    }
   }
-  Res  <- list()
+  
   cat("Computing probabilities for segments to be shared and native...\n")
-  Res$segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip, cores=cores)
+  segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip, cores=cores)
   cat("Computing probabilities for segments to be native...\n")
-  Res$segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores)
-  Res$segZ       <- 1+Res$segIBDandN-Res$segN
-  attributes(Res)$condProb <- list(segIBDatN=c(f1="segZ", f2="segN"))
-  class(Res)     <- "kinMatrices"
-  attributes(Res)$meanIBDatN <- mean(Res$segIBDandN)/mean(Res$segN)
-  cat("Mean kinship at native segments:", round(attributes(Res)$meanIBDatN,4), "\n")
-  if(lowMem){
+  segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores)
+  segN[segN==0] <- 1e-14
+  
+  NC  <- segBreedComp(Native, map, unitP=unitP)$native
+  if(("Sex" %in% colnames(phen)) && all(!is.na(phen$Sex))){
+    sex <- phen[rownames(segIBDandN),"Sex"]
+    u   <- ifelse(sex=="female", 1/(2*sum(sex=="female")), 1/(2*sum(sex=="male")))
+  }else{
+    u   <- rep(1/nrow(segIBDandN), nrow(segIBDandN))
+  }
+  
+  d1  <- t(u)%*%(NC-diag(segIBDandN))/(2*nrow(segIBDandN))
+  d2  <- t(u)%*%(NC-diag(segN))/(2*nrow(segN))
+  
+  
+  
+  Res <- optiSolve::ratiofun(Q1=segIBDandN, d1=d1, Q2=segN, d2=d2, id=rownames(segIBDandN))
+  
+  Res$mean <- mean(segIBDandN)/mean(segN)
+  
+  attributes(Res)$NC <- mean(NC)
+  
+  cat("Kinship at native alleles:", round(Res$mean,    4), "\n")
+  cat("Native Contribution:      ", round(attributes(Res)$NC, 4), "\n")
+  
+  if(lowMem & !("match" %in% names(files))){
     file.remove(Native)
     unlink(wdir, recursive=TRUE)
   }
-  Res
+  return(Res)
 }

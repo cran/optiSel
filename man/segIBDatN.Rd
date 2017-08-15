@@ -1,10 +1,11 @@
 \name{segIBDatN}
 \alias{segIBDatN}
 
-\title{Calculates Segment Based Kinship at Native Alleles.}
+\title{Segment-Based Kinship at Native Alleles.}
 
 \description{
-\bold{Seg}ment based probability of alleles to be \bold{IBD at N}ative haplotype segments ("kinship at native segments").}
+Calculates the kinship at native alleles, which is the segment based probability of native alleles to be IBD.}
+
 \usage{
 segIBDatN(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20,
   unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, 
@@ -14,16 +15,18 @@ segIBDatN(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=2
 \arguments{
 
  \item{files}{This can be a character vector with names of the phased marker files, one file for each chromosome. 
- Alternatively \code{files} can be a list with the following two components:
+ Alternatively \code{files} can be a list with the following components:
 
 a) \code{hap.thisBreed}: A character vector with names of the phased marker files for the individuals from \code{thisBreed}, one file for each chromosome.
  
 b) \code{hap.refBreeds}: A character vector with names of the phased marker files for the individuals from the reference breeds (\code{refBreeds}), one file for each chromosome. If this component is missing, then it is assumed that the haplotypes of these animals are also included in \code{hap.thisBreed}.
 
+c) \code{match}: If present, a character vector with file names containing the origin of the marker alleles. The files are typically created with function \code{haplofreq}. If this vector is missing, then the default method is used to estimate the origins. 
+
 File names must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.phased"}. The required format of the marker files is described under \code{Details}.
 }
 
-\item{phen}{Data frame containing the ID (column \code{"Indiv"}) and the breed name (column \code{"Breed"}) of each individual.}
+\item{phen}{Data frame containing the ID (column \code{"Indiv"}),  breed name (column \code{"Breed"}), and sex (column \code{Sex}) of each individual.}
 \item{map}{Data frame providing the marker map with columns including marker name \code{'Name'}, chromosome number \code{'Chr'}, and possibly the position on the chromosome in Mega base pairs \code{'Mb'}, and the position in centimorgan \code{'cM'}. (The position in base pairs could result in an integer overflow). The order of the markers must bethe same as in the files.}
 \item{thisBreed}{Breed name: Results will be computed for individuals from \code{thisBreed}.}
 \item{refBreeds}{Vector containing names of genotyped breeds. A segment is considered native if its frequency is smaller than \code{ubFreq}  in all \code{refBreeds}. The default \code{"others"} means that all genotyped breeds except \code{thisBreed} are considered.}
@@ -42,42 +45,57 @@ File names must contain the chromosome name as specified in the \code{map} in th
   \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
 }
 \value{
-A list containing matrices needed for computing the segment based pobability of alleles to be IBD at native segments. The list has components
-\item{segN}{This matrix contains for each pair of individuals the probability   that two SNPs taken at random position from randomly chosen haplotypes both belong to native segments.}
-\item{segIBDandN}{This matrix contains for each pair of individuals the probability   that two SNPs taken at random position from randomly chosen haplotypes belong to a shared native segment.}
-\item{segZ}{1+segIBDandN-segN.}
-The list has attribute \code{meanIBDatN} providing the probability of randomly chosen alleles to be IBD at native haplotype segments. Note that \code{1-meanIBDatN} is the genetic diversity at native segments within the genotyped individuals from \code{thisBreed}.
+A list of class \code{ratioFun} including components:
+\item{Q1}{matrix with \code{Q1[i,j]}  = Probability that two alleles chosen from individuals i and j are IBD and are native.}
+\item{Q2}{matrix with \code{Q2[i,j]} = Probability that two alleles chosen from individuals i and j are both native.}
+\item{d1}{The value by which the probability that two alleles chosen from the offspring are IBD and native increases due to genetic drift.}
+\item{d2}{The value by which the probability that two alleles chosen from the offspring are native increases due to genetic drift.}
+\item{id}{IDs of the individuals for which the probabilites have been computed.}
+\item{mean}{Mean kinship at native alleles of the specified individuals. Note that \code{1-mean} is the genetic diversity at native segments of the specified individuals from \code{thisBreed}}
+
+The kinship at native alleles between individuals i and j is \code{Q1[i,j]/Q2[i,j]}.
+
+The mean kinship at native alleles in the offspring is \code{(x'Q1x+d1)/(x'Q2x+d2)}, where \code{x} is the vector with genetic contributions of the selection candidates.
+
+
+The mean native contribution \code{NC} of the individuals is also computed.
 }
+
 \details{
-Computation of the segment based probability of alleles to be IBD at native haplotype segments. 
+Calculates a list containing matrices needed to compute segment based kinships at native alleles, defined as the conditional probability that two randomly chosen alleles are IBD, given that both originate from native ancestors. An allele is considered to originate from a native ancesor if the segment containing the allele has low frequency in all reference breeds.
 
 \bold{Genotype file format}: Each file containing phased genotypes has a header and no row names. Cells are separated by blank spaces. The number of rows is equal to the number of markers from the respective chromosome and the markers are in the same order as in the \code{map}. The first \code{cskip} columns are ignored. The remaining columns contain genotypes of individuals written as two alleles separated by a character, e.g. A/B, 0/1, A|B, A B, or 0 1. The same two symbols must be used for all markers. Column names are the IDs of the individuals. If the blank space is used as separator then the ID of each individual should repeated in the header to get a regular delimited file. The columns to be skipped and the individual IDs must have no white spaces. The name of each file must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.phased"}.
 }
 \examples{
 data(map)
 data(Cattle)
-dir   <- system.file("extdata", package = "optiSel")
-files <- paste(dir, "/Chr", 1:2, ".phased", sep="")
-Res   <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01, 
-                   minL=1.0, lowMem=FALSE)
+dir     <- system.file("extdata", package = "optiSel")
+files   <- paste(dir, "/Chr", 1:2, ".phased", sep="")
+sKinatN <- segIBDatN(files, Cattle, map, thisBreed="Angler", 
+                   ubFreq=0.01, minL=1.0, lowMem=FALSE)
                
 ## Mean kinship at native segments:
-attributes(Res)$meanIBDatN
+sKinatN$mean
 #[1] 0.06695171
 
+## Note that this can not be computed as mean(sKinatN$of).
+
+
 ## Results for individuals:
-kin <-Res$segIBDandN/Res$segN
-use <-upper.tri(kin) & Res$segN>0.2
-boxplot(kin[use], ylim=c(0,1))
+sKinatN$of <- sKinatN$Q1/sKinatN$Q2
+sKinatN$of["276000101676415","276000108826036"]
+#[1] 0.4394066
 
 ## Use temporary files to reduce working memory:
 
-Res <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01,  minL=1.0)
+sKinatN <- segIBDatN(files, Cattle, map, thisBreed="Angler", ubFreq=0.01,  minL=1.0)
                
 ## Mean kinship at native segments:
-attributes(Res)$meanIBDatN
+sKinatN$mean
 #[1] 0.06695171
 
+
 }
+
 \author{Robin Wellmann}
 

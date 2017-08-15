@@ -20,8 +20,9 @@ The function calculates the optimum numbers of offspring of the selection candid
 
 \value{
 
-Data frame with column \code{Indiv} containing the individual IDs and  integer column \code{nOff} containing the optimum numbers of offspring. This column 
- is approximately \code{2*N*cand$oc} with \code{sum(noff[cand$Sex=="male"])=N} and \code{sum(noff[cand$Sex=="female"])=N}.
+Data frame with column \code{Indiv} containing the individual IDs and column \code{nOff} containing the optimum numbers of offspring. 
+
+Column \code{nOff} is approximately \code{2*N*cand$oc} with \code{sum(noff[cand$Sex=="male"])=N} and \code{sum(noff[cand$Sex=="female"])=N}.
 }
 
 
@@ -31,22 +32,22 @@ data(Phen)
 
 keep  <- Phen$Indiv
 Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
-Kin   <- kinlist(fA=pedIBD(Pedig, keep.only=keep))
-con   <- list(ub.fA=0.03, ub=c(M=NA, F=-1))
-maxBV <- opticont("max.BV", K=Kin, phen=Phen, con=con, trace = FALSE)
-summary(maxBV)
+cand   <- candes(phen=Phen, fA=pedIBD(Pedig, keep.only=keep))
+con   <- list(ub.fA=0.03, uniform="female")
+Offspring <- opticont("max.BV", cand, con, trace = FALSE)
+
 
 N <- 150
-cand <- maxBV$parent
-cand$nOff <- noffspring(cand, N)$nOff
+Candidate <- Offspring$parent
+Candidate$nOff <- noffspring(Candidate, N)$nOff
 
-sum(cand$nOff[cand$Sex=="male"])
+sum(Candidate$nOff[Candidate$Sex=="male"])
 #[1] 150
 
-sum(cand$nOff[cand$Sex=="female"])
+sum(Candidate$nOff[Candidate$Sex=="female"])
 #[1] 150
 
-round(2*N*cand$oc-cand$nOff, 2)
+round(2*N*Candidate$oc-Candidate$nOff, 2)
 }
 
 \author{Robin Wellmann}

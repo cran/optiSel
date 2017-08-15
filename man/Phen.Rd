@@ -7,5 +7,5 @@
  with offspring born in 2006 or 2007.
 }
 \usage{Phen}
-\format{ A data frame with columns for individual ID (Indiv), sex, and breeding values (BV).}
+\format{ A data frame with individual IDs (\code{Indiv}), sexes (\code{Sex}), breeding values (\code{BV}), and native contribution (\code{NC}).}
 \keyword{datasets}

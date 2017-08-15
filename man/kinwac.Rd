@@ -7,11 +7,10 @@
 Calculates for every individual it's mean kinship with the age cohort to which it belongs (excluding the kinship with itself). 
 }
 \usage{
-kinwac(K, Pedig)}
+kinwac(cand)}
 
 \arguments{
-\item{K}{Named list containing kinship matrices of the individuals to be used for computing mean kinships. Typically only individuals from the breed of interest are included.}
-\item{Pedig}{Data frame containing the Pedigree. The data frame has columns (1) Individual, (2) Sire, (3) Dam, and column \code{Born} containing for every individual the age cohort to which it belongs (typically year of birth).}
+\item{cand}{R-Object created with function candes containing phenotypes and kinship information on the individuals. Data frame \code{cand$phen} must include additional column \code{Born} with Year-of-Birth.}
 }
 
 \details{
@@ -19,18 +18,17 @@ The function computes for every individual it's mean kinship with the age cohort
 }
 
 \value{
-A data frame with column names \code{c("cohort",  "I", names(K))} containing for every individual and every matrix provided in \code{K} the average value of the individual with the birth cohort to which it belongs.
-
-
-The data frame has class attribute "kinwac".
+The data frame \code{cand$phen} with an additional column for each kinship and each native kinship, containig the average kinship of the individual with individuals from the same age-cohort.
 }
-
 
 \examples{
 data(ExamplePed)
-Pedig    <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
-Kinships <- kinlist(pedIBD=pedIBD(Pedig), pedIBDatN=pedIBDatN(Pedig, thisBreed="Hinterwaelder"))
-Kin      <- kinwac(Kinships, Pedig=Pedig)
+Pedig   <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
+phen    <- Pedig[Pedig$Breed=="Hinterwaelder",]
+pKin    <- pedIBD(Pedig)
+pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder")
+pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE, N=Inf)
+Kin     <- kinwac(pop)
 Kin[1001:1010,]
 }
 
