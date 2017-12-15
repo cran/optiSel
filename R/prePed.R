@@ -77,7 +77,9 @@
     }
 
     #### Add lines for ancestors, sort pedigree ####
-    Pedig <- nadiv::prepPed(Pedig)  
+    if(!all(is.na(Pedig$Dam) & is.na(Pedig$Sire))){
+      Pedig <- nadiv::prepPed(Pedig)
+    }
     Pedig$Indiv <- as.character(Pedig$Indiv)
     rownames(Pedig)<- Pedig$Indiv
     
@@ -92,15 +94,17 @@
       if(length(sexes)>2){
         cat("Warning: The sex has more than 2 levels. Please correct it.\n")
       }
-      if(length(sexes)==1){sexes<-c(sexes, "dummysex")}
-      Mval <- Mode(Pedig$Sex[Pedig$Indiv %in% Pedig$Sire])
-      Fval <- Mode(Pedig$Sex[Pedig$Indiv %in% Pedig$Dam])
-      if(is.na(Mval)){Mval <- setdiff(sexes, Fval)}
-      if(is.na(Fval)){Fval <- setdiff(sexes, Mval)}
-      if(!is.na(Mval)&!is.na(Fval)&(Mval!=Fval)){
-        Pedig$Sex <- mapvalues(Pedig$Sex, from=c(Mval, Fval), to=c("male","female"))
-      }else{
-      cat("Meaning of sex labels cannot be determined from pedigree structure.\n")
+      if(!all(sexes %in% c("male","female", NA))){
+        if(length(sexes)==1){sexes<-c(sexes, "dummysex")}
+        Mval <- Mode(Pedig$Sex[Pedig$Indiv %in% Pedig$Sire])
+        Fval <- Mode(Pedig$Sex[Pedig$Indiv %in% Pedig$Dam])
+        if(is.na(Mval)){Mval <- setdiff(sexes, Fval)}
+        if(is.na(Fval)){Fval <- setdiff(sexes, Mval)}
+        if(!is.na(Mval)&!is.na(Fval)&(Mval!=Fval)){
+          Pedig$Sex <- mapvalues(Pedig$Sex, from=c(Mval, Fval), to=c("male","female"))
+        }else{
+        cat("Meaning of sex labels cannot be determined from pedigree structure.\n")
+        }
       }
     }
 

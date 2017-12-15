@@ -326,7 +326,7 @@ keep <- sampleIndiv(Pedig[Pedig$Breed=="Hinterwaelder",], from="Born", each=50)
 cand <- candes(phen   = Pedig[keep,],
                pKin   = pedIBD(Pedig, keep.only=keep), 
                pKinatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep), 
-               quiet=TRUE)
+               quiet=TRUE, reduce.data=FALSE)
 ```
 
 ```{r, fig.show='hold'}

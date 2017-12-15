@@ -3,8 +3,8 @@
 \alias{PedigWithErrors}
 \title{Pedigree of Hinterwald cattle}
 \description{
-  This data set gives the pedigree of Hinterwald cattle with some artificially introduced errors.
+  This data set gives the pedigree of Hinterwald cattle with some artificially introduced errors and simulated breeding values.
 }
 \usage{PedigWithErrors}
-\format{A data frame with columns \code{Indiv} (individual ID), \code{Sire}, \code{Dam}, \code{Sex}, \code{Breed}, and column \code{Born} with year of birth.}
+\format{A data frame with columns \code{Indiv} (individual ID), \code{Sire}, \code{Dam}, \code{Sex}, \code{Breed}, \code{Born} with year of birth, and column \code{BV} with simulated breeding values.}
 \keyword{datasets}

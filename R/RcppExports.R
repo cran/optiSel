@@ -2,50 +2,50 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rcpp_completeness <- function(Indiv, ArmanumSire, ArmanumDam, maxd) {
-    .Call('optiSel_rcpp_completeness', PACKAGE = 'optiSel', Indiv, ArmanumSire, ArmanumDam, maxd)
+    .Call(`_optiSel_rcpp_completeness`, Indiv, ArmanumSire, ArmanumDam, maxd)
 }
 
 rcpp_genecont <- function(numSire, numDam, numAnc, numKeep, ainKeep, rNames, cNames, anOff) {
-    .Call('optiSel_rcpp_genecont', PACKAGE = 'optiSel', numSire, numDam, numAnc, numKeep, ainKeep, rNames, cNames, anOff)
+    .Call(`_optiSel_rcpp_genecont`, numSire, numDam, numAnc, numKeep, ainKeep, rNames, cNames, anOff)
 }
 
 rcpp_haplofreq <- function(pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, stdBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, minSNP, minL, ubFreq, ArmaPos, stdsymB, skip, cskip, getFreq, getOrig) {
-    .Call('optiSel_rcpp_haplofreq', PACKAGE = 'optiSel', pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, stdBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, minSNP, minL, ubFreq, ArmaPos, stdsymB, skip, cskip, getFreq, getOrig)
+    .Call(`_optiSel_rcpp_haplofreq`, pathThisBreed, pathRefBreeds, pathFreq, pathOrig, MarkerName, stdBreedSymbol, ArmaIndexC, ArmaIndexR, NFileC, NFileR, NC, ArmaNR, minSNP, minL, ubFreq, ArmaPos, stdsymB, skip, cskip, getFreq, getOrig)
 }
 
 rcpp_makeA <- function(numSire, numDam, AFounder, numFounder, IndivName) {
-    .Call('optiSel_rcpp_makeA', PACKAGE = 'optiSel', numSire, numDam, AFounder, numFounder, IndivName)
+    .Call(`_optiSel_rcpp_makeA`, numSire, numDam, AFounder, numFounder, IndivName)
 }
 
 rcpp_makeA_lowMem <- function(numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff) {
-    .Call('optiSel_rcpp_makeA_lowMem', PACKAGE = 'optiSel', numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff)
+    .Call(`_optiSel_rcpp_makeA_lowMem`, numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff)
 }
 
 rcpp_nativecont <- function(pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb) {
-    .Call('optiSel_rcpp_nativecont', PACKAGE = 'optiSel', pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb)
+    .Call(`_optiSel_rcpp_nativecont`, pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb)
 }
 
 rcpp_segBreedComp <- function(pathNative, Nfile, N, ArmaIndexN, MatChr, Armakb) {
-    .Call('optiSel_rcpp_segBreedComp', PACKAGE = 'optiSel', pathNative, Nfile, N, ArmaIndexN, MatChr, Armakb)
+    .Call(`_optiSel_rcpp_segBreedComp`, pathNative, Nfile, N, ArmaIndexN, MatChr, Armakb)
 }
 
 rcpp_segIBD <- function(path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip) {
-    .Call('optiSel_rcpp_segIBD', PACKAGE = 'optiSel', path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip)
+    .Call(`_optiSel_rcpp_segIBD`, path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip)
 }
 
 rcpp_segIBDandN <- function(pathThisBreed, pathNative, NFileC, NFileN, ArmaIndexC, ArmaIndexN, NC, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip) {
-    .Call('optiSel_rcpp_segIBDandN', PACKAGE = 'optiSel', pathThisBreed, pathNative, NFileC, NFileN, ArmaIndexC, ArmaIndexN, NC, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip)
+    .Call(`_optiSel_rcpp_segIBDandN`, pathThisBreed, pathNative, NFileC, NFileN, ArmaIndexC, ArmaIndexN, NC, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip)
 }
 
 rcpp_segIBDandNVersion2 <- function(pathThisBreed, NFileC, NC, ArmaIndexC, ArmaNat, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip) {
-    .Call('optiSel_rcpp_segIBDandNVersion2', PACKAGE = 'optiSel', pathThisBreed, NFileC, NC, ArmaIndexC, ArmaNat, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip)
+    .Call(`_optiSel_rcpp_segIBDandNVersion2`, pathThisBreed, NFileC, NC, ArmaIndexC, ArmaNat, minSNP, minL, ArmaPos, Armakb, a, stdsymB, skip, cskip)
 }
 
 rcpp_segInbreeding <- function(path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, M, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip) {
-    .Call('optiSel_rcpp_segInbreeding', PACKAGE = 'optiSel', path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, M, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip)
+    .Call(`_optiSel_rcpp_segInbreeding`, path1, path2, NFile1, NFile2, ArmaIndex1, ArmaIndex2, N1, N2, M, minSNP, minL, ArmacM, Armakb, a, stdsymB, skip, cskip)
 }
 
 rcpp_segN <- function(pathNative, NFileN, NC, ArmaIndexN, ArmaNkb) {
-    .Call('optiSel_rcpp_segN', PACKAGE = 'optiSel', pathNative, NFileN, NC, ArmaIndexN, ArmaNkb)
+    .Call(`_optiSel_rcpp_segN`, pathNative, NFileN, NC, ArmaIndexN, ArmaNkb)
 }
 

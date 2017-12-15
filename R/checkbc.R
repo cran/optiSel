@@ -1,8 +1,8 @@
 
-"checkbc"<-function(Breeds, bc){
-  if(identical(bc, NA)){return(NA)}
+"checkbc"<-function(BreedNames, bc){
+  if(is.null(bc)){stop("Breed composition 'bc' is not defined.\n")}
   
-  Breeds <- unique(Breeds)
+  BreedNames <- unique(BreedNames)
   bc <- c(bc)
   storage.mode(bc)<-"double"
   
@@ -11,9 +11,9 @@
   if(any(bc< -1e-07)){            stop("Vector 'bc' contains negative values.\n")}
   if(abs(sum(bc)-1) > 1e-07){     stop("The values in vector 'bc' do not sum up to 1.\n")}
   if(is.null(names(bc))){         stop("Vector 'bc' needs comonent names.\n")}
-  if(!all(names(bc) %in% Breeds)){stop("Some breeds in vector 'bc' do not appear in column Breed of phen.\n")}
+  if(!all(names(bc) %in% BreedNames)){stop("Some breeds in vector 'bc' do not appear in column Breed of phen.\n")}
 
-  bcomp <- setNames(rep(0, length(Breeds)), Breeds)
+  bcomp <- setNames(rep(0, length(BreedNames)), BreedNames)
   bcomp[names(bc)] <- bc
   bcomp[bcomp<0]   <-0
   bcomp            <- bcomp/sum(bcomp)

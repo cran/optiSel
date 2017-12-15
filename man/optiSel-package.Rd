@@ -111,8 +111,6 @@ Finally, there are some functions for estimating population parameters:
 
 \tabular{ll}{
 \link{conttac}   \tab Calculates genetic \bold{cont}ributions of breeds \bold{t}o  \bold{a}ge \bold{c}ohorts,\cr
-\link{kinwac}         \tab Calculates for every individual it's mean \bold{kin}ship \bold{w}ith the \bold{a}ge \bold{c}ohort to which \cr
-    \tab it belongs,\cr
 \link{summary.candes} \tab Calculates for every age cohort several genetic parameters. These may \cr
                       \tab include average kinships, kinships at native loci,\cr
                       \tab the native effective size, and the native genome equivalent.\cr
@@ -175,7 +173,7 @@ head(Pedig)
 phen    <- Pedig[Pedig$Breed=="Hinterwaelder",]
 pKin    <- pedIBD(Pedig)
 pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder")
-pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE, N=Inf)
+pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE, reduce.data=FALSE)
 Param   <- summary(pop, tlim=c(1970,2005), histNe=150, base=1800, df=4)
 
 

@@ -66,27 +66,16 @@
   segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores)
   segN[segN==0] <- 1e-14
   
-  NC  <- segBreedComp(Native, map, unitP=unitP)$native
-  if(("Sex" %in% colnames(phen)) && all(!is.na(phen$Sex))){
-    sex <- phen[rownames(segIBDandN),"Sex"]
-    u   <- ifelse(sex=="female", 1/(2*sum(sex=="female")), 1/(2*sum(sex=="male")))
-  }else{
-    u   <- rep(1/nrow(segIBDandN), nrow(segIBDandN))
-  }
-  
-  d1  <- t(u)%*%(NC-diag(segIBDandN))/(2*nrow(segIBDandN))
-  d2  <- t(u)%*%(NC-diag(segN))/(2*nrow(segN))
   
   
-  
-  Res <- optiSolve::ratiofun(Q1=segIBDandN, d1=d1, Q2=segN, d2=d2, id=rownames(segIBDandN))
+  Res <- optiSolve::ratiofun(Q1=segIBDandN, d1=0, Q2=segN, d2=0, id=rownames(segIBDandN))
   
   Res$mean <- mean(segIBDandN)/mean(segN)
+  NC       <- segBreedComp(Native, map, unitP=unitP)$native
+  Res$NC   <- setNames(NC, rownames(segIBDandN))
   
-  attributes(Res)$NC <- mean(NC)
-  
-  cat("Kinship at native alleles:", round(Res$mean,    4), "\n")
-  cat("Native Contribution:      ", round(attributes(Res)$NC, 4), "\n")
+  cat("Kinship at native alleles:", round(Res$mean,     4), "\n")
+  cat("Native Contribution:      ", round(mean(Res$NC), 4), "\n")
   
   if(lowMem & !("match" %in% names(files))){
     file.remove(Native)

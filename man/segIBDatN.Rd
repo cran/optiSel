@@ -83,7 +83,7 @@ sKinatN$mean
 
 ## Results for individuals:
 sKinatN$of <- sKinatN$Q1/sKinatN$Q2
-sKinatN$of["276000101676415","276000108826036"]
+sKinatN$of["Angler1","Angler5"]
 #[1] 0.4394066
 
 ## Use temporary files to reduce working memory:

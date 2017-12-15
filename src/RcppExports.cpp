@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // rcpp_completeness
 Rcpp::DataFrame rcpp_completeness(Rcpp::StringVector Indiv, const arma::ivec& ArmanumSire, const arma::ivec& ArmanumDam, int maxd);
-RcppExport SEXP optiSel_rcpp_completeness(SEXP IndivSEXP, SEXP ArmanumSireSEXP, SEXP ArmanumDamSEXP, SEXP maxdSEXP) {
+RcppExport SEXP _optiSel_rcpp_completeness(SEXP IndivSEXP, SEXP ArmanumSireSEXP, SEXP ArmanumDamSEXP, SEXP maxdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // rcpp_genecont
 Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& numDam, const arma::ivec& numAnc, const arma::ivec& numKeep, const arma::ivec& ainKeep, const Rcpp::CharacterVector rNames, const Rcpp::CharacterVector cNames, const arma::ivec& anOff);
-RcppExport SEXP optiSel_rcpp_genecont(SEXP numSireSEXP, SEXP numDamSEXP, SEXP numAncSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP rNamesSEXP, SEXP cNamesSEXP, SEXP anOffSEXP) {
+RcppExport SEXP _optiSel_rcpp_genecont(SEXP numSireSEXP, SEXP numDamSEXP, SEXP numAncSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP rNamesSEXP, SEXP cNamesSEXP, SEXP anOffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // rcpp_haplofreq
 Rcpp::List rcpp_haplofreq(std::string pathThisBreed, std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string stdBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC, int NFileR, int NC, const arma::ivec& ArmaNR, int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, std::string stdsymB, int skip, int cskip, int getFreq, int getOrig);
-RcppExport SEXP optiSel_rcpp_haplofreq(SEXP pathThisBreedSEXP, SEXP pathRefBreedsSEXP, SEXP pathFreqSEXP, SEXP pathOrigSEXP, SEXP MarkerNameSEXP, SEXP stdBreedSymbolSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaIndexRSEXP, SEXP NFileCSEXP, SEXP NFileRSEXP, SEXP NCSEXP, SEXP ArmaNRSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ubFreqSEXP, SEXP ArmaPosSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP, SEXP getFreqSEXP, SEXP getOrigSEXP) {
+RcppExport SEXP _optiSel_rcpp_haplofreq(SEXP pathThisBreedSEXP, SEXP pathRefBreedsSEXP, SEXP pathFreqSEXP, SEXP pathOrigSEXP, SEXP MarkerNameSEXP, SEXP stdBreedSymbolSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaIndexRSEXP, SEXP NFileCSEXP, SEXP NFileRSEXP, SEXP NCSEXP, SEXP ArmaNRSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ubFreqSEXP, SEXP ArmaPosSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP, SEXP getFreqSEXP, SEXP getOrigSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,7 +71,7 @@ END_RCPP
 }
 // rcpp_makeA
 Rcpp::NumericMatrix rcpp_makeA(const arma::ivec& numSire, const arma::ivec& numDam, const arma::mat& AFounder, const arma::ivec& numFounder, const Rcpp::CharacterVector IndivName);
-RcppExport SEXP optiSel_rcpp_makeA(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP) {
+RcppExport SEXP _optiSel_rcpp_makeA(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,7 +86,7 @@ END_RCPP
 }
 // rcpp_makeA_lowMem
 Rcpp::NumericMatrix rcpp_makeA_lowMem(const arma::ivec& numSire, const arma::ivec& numDam, const arma::mat& AFounder, const arma::ivec& numFounder, const Rcpp::CharacterVector IndivName, const arma::ivec& numKeep, const arma::ivec& ainKeep, const arma::ivec& anOff);
-RcppExport SEXP optiSel_rcpp_makeA_lowMem(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP anOffSEXP) {
+RcppExport SEXP _optiSel_rcpp_makeA_lowMem(SEXP numSireSEXP, SEXP numDamSEXP, SEXP AFounderSEXP, SEXP numFounderSEXP, SEXP IndivNameSEXP, SEXP numKeepSEXP, SEXP ainKeepSEXP, SEXP anOffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -104,7 +104,7 @@ END_RCPP
 }
 // rcpp_nativecont
 Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, int M, const arma::vec& ArmaNkb);
-RcppExport SEXP optiSel_rcpp_nativecont(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP MSEXP, SEXP ArmaNkbSEXP) {
+RcppExport SEXP _optiSel_rcpp_nativecont(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP MSEXP, SEXP ArmaNkbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -120,7 +120,7 @@ END_RCPP
 }
 // rcpp_segBreedComp
 Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int Nfile, int N, const arma::ivec& ArmaIndexN, const arma::ivec& MatChr, const arma::vec& Armakb);
-RcppExport SEXP optiSel_rcpp_segBreedComp(SEXP pathNativeSEXP, SEXP NfileSEXP, SEXP NSEXP, SEXP ArmaIndexNSEXP, SEXP MatChrSEXP, SEXP ArmakbSEXP) {
+RcppExport SEXP _optiSel_rcpp_segBreedComp(SEXP pathNativeSEXP, SEXP NfileSEXP, SEXP NSEXP, SEXP ArmaIndexNSEXP, SEXP MatChrSEXP, SEXP ArmakbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,7 +136,7 @@ END_RCPP
 }
 // rcpp_segIBD
 Rcpp::NumericMatrix rcpp_segIBD(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip);
-RcppExport SEXP optiSel_rcpp_segIBD(SEXP path1SEXP, SEXP path2SEXP, SEXP NFile1SEXP, SEXP NFile2SEXP, SEXP ArmaIndex1SEXP, SEXP ArmaIndex2SEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmacMSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
+RcppExport SEXP _optiSel_rcpp_segIBD(SEXP path1SEXP, SEXP path2SEXP, SEXP NFile1SEXP, SEXP NFile2SEXP, SEXP ArmaIndex1SEXP, SEXP ArmaIndex2SEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmacMSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -162,7 +162,7 @@ END_RCPP
 }
 // rcpp_segIBDandN
 Rcpp::NumericMatrix rcpp_segIBDandN(std::string pathThisBreed, std::string pathNative, int NFileC, int NFileN, const arma::ivec& ArmaIndexC, const arma::ivec& ArmaIndexN, int NC, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip);
-RcppExport SEXP optiSel_rcpp_segIBDandN(SEXP pathThisBreedSEXP, SEXP pathNativeSEXP, SEXP NFileCSEXP, SEXP NFileNSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaIndexNSEXP, SEXP NCSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmaPosSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
+RcppExport SEXP _optiSel_rcpp_segIBDandN(SEXP pathThisBreedSEXP, SEXP pathNativeSEXP, SEXP NFileCSEXP, SEXP NFileNSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaIndexNSEXP, SEXP NCSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmaPosSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -187,7 +187,7 @@ END_RCPP
 }
 // rcpp_segIBDandNVersion2
 Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFileC, int NC, const arma::ivec& ArmaIndexC, const arma::mat& ArmaNat, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip);
-RcppExport SEXP optiSel_rcpp_segIBDandNVersion2(SEXP pathThisBreedSEXP, SEXP NFileCSEXP, SEXP NCSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaNatSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmaPosSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
+RcppExport SEXP _optiSel_rcpp_segIBDandNVersion2(SEXP pathThisBreedSEXP, SEXP NFileCSEXP, SEXP NCSEXP, SEXP ArmaIndexCSEXP, SEXP ArmaNatSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmaPosSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -210,7 +210,7 @@ END_RCPP
 }
 // rcpp_segInbreeding
 Rcpp::NumericVector rcpp_segInbreeding(std::string path1, std::string path2, int NFile1, int NFile2, const arma::ivec& ArmaIndex1, const arma::ivec& ArmaIndex2, int N1, int N2, int M, int minSNP, double minL, const arma::vec& ArmacM, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip);
-RcppExport SEXP optiSel_rcpp_segInbreeding(SEXP path1SEXP, SEXP path2SEXP, SEXP NFile1SEXP, SEXP NFile2SEXP, SEXP ArmaIndex1SEXP, SEXP ArmaIndex2SEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP MSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmacMSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
+RcppExport SEXP _optiSel_rcpp_segInbreeding(SEXP path1SEXP, SEXP path2SEXP, SEXP NFile1SEXP, SEXP NFile2SEXP, SEXP ArmaIndex1SEXP, SEXP ArmaIndex2SEXP, SEXP N1SEXP, SEXP N2SEXP, SEXP MSEXP, SEXP minSNPSEXP, SEXP minLSEXP, SEXP ArmacMSEXP, SEXP ArmakbSEXP, SEXP aSEXP, SEXP stdsymBSEXP, SEXP skipSEXP, SEXP cskipSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -237,7 +237,7 @@ END_RCPP
 }
 // rcpp_segN
 Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, const arma::vec& ArmaNkb);
-RcppExport SEXP optiSel_rcpp_segN(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP ArmaNkbSEXP) {
+RcppExport SEXP _optiSel_rcpp_segN(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP ArmaNkbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -249,4 +249,25 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(rcpp_segN(pathNative, NFileN, NC, ArmaIndexN, ArmaNkb));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_optiSel_rcpp_completeness", (DL_FUNC) &_optiSel_rcpp_completeness, 4},
+    {"_optiSel_rcpp_genecont", (DL_FUNC) &_optiSel_rcpp_genecont, 8},
+    {"_optiSel_rcpp_haplofreq", (DL_FUNC) &_optiSel_rcpp_haplofreq, 21},
+    {"_optiSel_rcpp_makeA", (DL_FUNC) &_optiSel_rcpp_makeA, 5},
+    {"_optiSel_rcpp_makeA_lowMem", (DL_FUNC) &_optiSel_rcpp_makeA_lowMem, 8},
+    {"_optiSel_rcpp_nativecont", (DL_FUNC) &_optiSel_rcpp_nativecont, 6},
+    {"_optiSel_rcpp_segBreedComp", (DL_FUNC) &_optiSel_rcpp_segBreedComp, 6},
+    {"_optiSel_rcpp_segIBD", (DL_FUNC) &_optiSel_rcpp_segIBD, 16},
+    {"_optiSel_rcpp_segIBDandN", (DL_FUNC) &_optiSel_rcpp_segIBDandN, 15},
+    {"_optiSel_rcpp_segIBDandNVersion2", (DL_FUNC) &_optiSel_rcpp_segIBDandNVersion2, 13},
+    {"_optiSel_rcpp_segInbreeding", (DL_FUNC) &_optiSel_rcpp_segInbreeding, 17},
+    {"_optiSel_rcpp_segN", (DL_FUNC) &_optiSel_rcpp_segN, 5},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_optiSel(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

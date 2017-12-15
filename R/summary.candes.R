@@ -39,7 +39,8 @@
   isComplete <- !is.na(object$phen$I)&!is.na(object$phen$Born)
   x        <- object$phen$Born[isComplete]
   y        <- object$phen$I[isComplete]
-  w        <- 0.01+0.99*object$phen$Offspring[isComplete]
+  #w        <- 0.05+0.95*object$phen$Offspring[isComplete]
+  w        <- rep(1, length(x))
   mySpline <- sm.spline(x, y, w, df=df)
   date     <- sort(unique(object$phen$Born))
   I        <- predict(mySpline, date)
@@ -50,11 +51,11 @@
   object$phen$Born[is.na(object$phen$Born)]<- -1234567
   
   nameNatK <- character(0)
-  for(i in seq_along(object)){
-    if(class(object[[i]])%in% c("quadFun","ratioFun")){
-      name <- object[[i]]$name
+  for(i in seq_along(object$kinship)){
+    if(class(object$kinship[[i]])%in% c("quadFun","ratioFun")){
+      name <- object$kinship[[i]]$name
       Param[[name]] <- NA
-      if(class(object[[i]])=="ratioFun"){
+      if(class(object$kinship[[i]])=="ratioFun"){
         nameNatK <- c(nameNatK, name)
         }
     }
@@ -68,14 +69,14 @@
     Use  <- matrix(Use, N, N, byrow=TRUE) & matrix(Use, N, N, byrow=FALSE)
     diag(Use) <- FALSE
     
-    for(k in seq_along(object)){
-      if(class(object[[k]])=="quadFun"){
-        name <- object[[k]]$name
-        Param[i, name] <- sum((object[[k]]$Q)[Use])/Nobs
+    for(k in seq_along(object$kinship)){
+      if(class(object$kinship[[k]])=="quadFun"){
+        name <- object$kinship[[k]]$name
+        Param[i, name] <- sum((object$kinship[[k]]$Q)[Use])/Nobs
       }
-      if(class(object[[k]])=="ratioFun"){
-        name <- object[[k]]$name
-        Param[i, name] <- sum((object[[k]]$Q1)[Use])/sum((object[[k]]$Q2)[Use])
+      if(class(object$kinship[[k]])=="ratioFun"){
+        name <- object$kinship[[k]]$name
+        Param[i, name] <- sum((object$kinship[[k]]$Q1)[Use])/sum((object$kinship[[k]]$Q2)[Use])
       }
     }
   }

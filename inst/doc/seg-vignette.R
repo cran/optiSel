@@ -32,7 +32,7 @@ sKin[1:3,1:3]
 
 ## ------------------------------------------------------------------------
 Males  <- phen$Indiv[phen$Sex=="male" & phen$Breed=="Angler" & phen$BV>2.0]
-sKin[Males, "276000102372349", drop=FALSE]
+sKin[Males, "Angler2", drop=FALSE]
 
 ## ------------------------------------------------------------------------
 D     <- sim2dis(sKin, a=6.0, baseF=0.03, method=1)
@@ -43,7 +43,7 @@ plot(Res, pch=18, col=col, main="Multidimensional Scaling", cex=0.5, xlab="",yla
 
 ## ---- fig.width = 5, results="hide"--------------------------------------
 Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt", minL=1.0)
-plot(Haplo, ID="276000101676415", hap=2)
+plot(Haplo, ID="Angler1", hap=2)
 
 ## ---- fig.width = 5, results="hide"--------------------------------------
 Haplo <- freqlist(
@@ -80,7 +80,7 @@ sKinatN <- segIBDatN(GTfiles, phen, map, thisBreed="Angler", minL=1.0)
 
 ## ------------------------------------------------------------------------
 sKinatN$of <- sKinatN$Q1/sKinatN$Q2
-sKinatN$of["276000108612636", "276000102379430"]
+sKinatN$of["Angler2", "Angler4"]
 
 ## ------------------------------------------------------------------------
 keep <- phen$Indiv[phen$Breed=="Angler"]

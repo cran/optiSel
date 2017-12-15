@@ -82,20 +82,10 @@
     pedN       <- pedN[keep.only, keep.only]
   }
   
+  Res <- optiSolve::ratiofun(Q1=pedIBDandN, d1=0, Q2=pedN, d2=0, id=rownames(pedIBDandN))
   
-  NC  <- Cont[rownames(pedIBDandN), "native"]
-  
-  if(("Sex" %in% colnames(Pedig)) && all(!is.na(Pedig[rownames(pedIBDandN),"Sex"]))){
-    sex <- Pedig[rownames(pedIBDandN),"Sex"]
-    u   <- ifelse(sex=="female", 1/(2*sum(sex=="female")), 1/(2*sum(sex=="male")))
-  }else{
-    u <- rep(1/nrow(pedIBDandN), nrow(pedIBDandN))
-  }
-  
-  d1  <- t(u)%*%(NC-diag(pedIBDandN))/(2*nrow(pedIBDandN))
-  d2  <- t(u)%*%(NC-diag(pedN))/(2*nrow(pedN))
-  
-  Res <- optiSolve::ratiofun(Q1=pedIBDandN, d1=d1, Q2=pedN, d2=d2, id=rownames(pedIBDandN))
+  NC     <- Cont[rownames(pedIBDandN), "native"]
+  Res$NC <- setNames(NC, rownames(pedIBDandN))
   
   if(showInfo){
     if(getNe){
@@ -103,9 +93,8 @@
       attr(Res,"nativeNe") <- nativeNe
     }
     Res$mean <- mean(pedIBDandN)/mean(pedN)
-    attr(Res,"NC") <- mean(NC)
-    cat("Kinship at native alleles :",  round(Res$mean, 4), "\n")
-    cat("Native Contribution       : ", round(mean(NC), 4), "\n", sep="")
+    cat("Kinship at native alleles :",  round(Res$mean,     4), "\n")
+    cat("Native Contribution       : ", round(mean(Res$NC), 4), "\n", sep="")
   }else{
     Res$mean <- NA
   }

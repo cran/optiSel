@@ -107,7 +107,7 @@ keep <- sampleIndiv(Pedig[Pedig$Breed=="Hinterwaelder",], from="Born", each=50)
 cand <- candes(phen   = Pedig[keep,],
                pKin   = pedIBD(Pedig, keep.only=keep), 
                pKinatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep), 
-               quiet=TRUE)
+               quiet=TRUE, reduce.data=FALSE)
 
 ## ---- fig.show='hold'----------------------------------------------------
 sy <- summary(cand, tlim=c(1970, 2000), histNe=150, base=1800, df=4)

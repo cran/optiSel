@@ -47,7 +47,7 @@ Pedig   <- prePed(ExamplePed, thisBreed="Hinterwaelder", lastNative=1970)
 phen    <- Pedig[Pedig$Breed=="Hinterwaelder",]
 pKin    <- pedIBD(Pedig)
 pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder")
-pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE)
+pop     <- candes(phen=phen, pKin=pKin, pKinatN=pKinatN, quiet=TRUE, reduce.data=FALSE)
 Param   <- summary(pop, tlim=c(1970,1995), histNe=150, base=1800, df=4)
 
 plot(Param$t, Param$pKinatN,type="l", ylim=c(0,0.1))

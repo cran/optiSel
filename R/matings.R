@@ -1,17 +1,31 @@
 
 
-"matings" <- function(cand, Kin, N=2*sum(cand$Sex=="female"), alpha=1, ub.nOff=NA, max=FALSE, solver="default", ...){
-  if(!("Indiv" %in% colnames(cand))){stop("Column 'Indiv' is missing in cand.")}
-  if(!("Sex"   %in% colnames(cand))){stop("Column 'Sex' is missing in cand.")}
-  if(!("oc"    %in% colnames(cand))){stop("Column 'oc' is missing in cand.")}
+"matings" <- function(phen, Kin, alpha=1, ub.n=NA, max=FALSE, solver="default", ...){
+  if(!("Indiv" %in% colnames(phen))){stop("Column 'Indiv' is missing in phen.")}
+  if(!("Sex"   %in% colnames(phen))){stop("Column 'Sex' is missing in phen.")}
+  if(!("n"     %in% colnames(phen))){stop("Column 'n' is missing in phen.")}
   
-  ub.herd <- alpha * N * table(cand$herd)/sum(table(cand$herd))
-  cand$nOff <- noffspring(cand, N=N)$nOff
-  cand <- cand[cand$nOff>0,]
-  Sire <- cand$Indiv[cand$Sex=="male"]
-  Dam  <- cand$Indiv[cand$Sex=="female"]
+  phen <- checkphen(phen, columns=c("Indiv", "Sex"), quiet=TRUE, na.Sex=FALSE) 
+  if(!is.numeric(phen$n) | any(is.na(phen$n)) | any(phen$n<0) | any(floor(phen$n)!= phen$n)){
+    stop("column 'n' must be numeric with non-negative integer values.")
+  }
+  if(sum(phen$n[phen$Sex=="male"])!=sum(phen$n[phen$Sex=="female"])){
+    stop("Total numbers of matings for males amnd females must be equal.")
+  }
 
-  if(is.null(rownames(Kin))||is.null(rownames(Kin))){
+  if("herd" %in% colnames(phen)){
+    phen$herd <- as.character(phen$herd)
+    phen$herd[phen$Sex=="male"] <- NA
+    if(any(is.na(phen$herd[phen$Sex=="female"]))){
+      stop("Column 'herd' contains NA for some females.")
+    }
+  }
+  
+  phen <- phen[phen$n>0,]
+  Sire <- phen$Indiv[phen$Sex=="male"]
+  Dam  <- phen$Indiv[phen$Sex=="female"]
+
+  if(is.null(rownames(Kin))||is.null(colnames(Kin))){
     stop("Row names and column names of Matrix 'Kin' must be the individual IDs.")
   }
 
@@ -24,8 +38,9 @@
   }
   
   if(alpha<1){
-    if("herd" %in% colnames(cand)){
-      cand$herd <- as.character(cand$herd)
+    if("herd" %in% colnames(phen)){
+      phen$herd <- as.character(phen$herd)
+      ub.herd   <- alpha * tapply(phen$n, phen$herd,sum)
     }else{
       stop("Column 'herd' is needed if alpha<1.")
     }
@@ -34,7 +49,7 @@
   Kin <- Kin[Sire, Dam]
   Zeros <- 0*Kin
   
-  rhsM <- cand$nOff[cand$Indiv %in% Sire]
+  rhsM <- phen$n[phen$Indiv %in% Sire]
   ConM <- NULL
   for(k in 1:length(Sire)){
     Con <- Zeros
@@ -42,7 +57,7 @@
     ConM <- rbind(ConM, c(Con))
   }
   
-  rhsF <- cand$nOff[cand$Indiv %in% Dam]
+  rhsF <- phen$n[phen$Indiv %in% Dam]
   ConF <- NULL
   for(k in 1:length(Dam)){
     Con <- Zeros
@@ -51,18 +66,16 @@
   }
 
   if(alpha<1){
-    herds   <- setdiff(unique(cand$herd), NA)
-    rhsH    <- rep(ub.herd[as.character(herds)], each=length(Sire))
+    herds <- setdiff(unique(phen$herd), NA)
+    rhsH  <- rep(ub.herd[as.character(herds)], each=length(Sire))
     ConH  <- NULL
     for(l in herds){
       for(k in 1:length(Sire)){
         Con <- Zeros
-        Con[k,] <- cand[Dam,"herd"] %in% l  
+        Con[k,] <- phen[Dam,"herd"] %in% l  
         ConH <- rbind(ConH, c(Con))
       }
     }
-    print(herds)
-    print(rhsH)
   }
   
   nVar <- nrow(Kin)*ncol(Kin)
@@ -75,9 +88,9 @@
     h <- c(h, rep(0, nVar))
   }
   
-  if(identical(solver, "default") & !is.na(ub.nOff)){
+  if(identical(solver, "default") & !is.na(ub.n)){
     G <- rbind(G, diag(nVar))
-    h <- c(h, rep(ub.nOff, nVar))
+    h <- c(h, rep(ub.n, nVar))
   }
   
   if(alpha<1){
@@ -105,10 +118,10 @@
     info   <- res$infostring
     objval <- sum(c(Kin)*res$x)/sum(res$x)
   }else{ #use Rsymphony_solve_LP
-    if(is.na(ub.nOff)){
+    if(is.na(ub.n)){
       bounds <- NULL
     }else{
-      bounds <- list(upper=list(ind=1:(length(Sire)*length(Dam)), val=rep(ub.nOff, length(Sire)*length(Dam))))
+      bounds <- list(upper=list(ind=1:(length(Sire)*length(Dam)), val=rep(ub.n, length(Sire)*length(Dam))))
     }
     
     Dir    <- c(rep("==", length(b)), rep("<=", length(h)))
@@ -127,13 +140,13 @@
   Mating <- as.data.table(Mating)
   colnames(Mating) <- Dam
   Mating$Sire <- Sire
-  Matings <- melt(Mating, id.vars="Sire", variable.name="Dam", value.name="nOff")
+  Matings <- melt(Mating, id.vars="Sire", variable.name="Dam", value.name="n")
   Matings$Dam <- as.character(Matings$Dam)
-  Matings <- Matings[Matings$nOff>0,]
+  Matings <- Matings[Matings$n>0,]
   setDF(Matings)
   if(alpha<1){
-    herds <- cand$herd
-    names(herds) <- cand$Indiv
+    herds <- phen$herd
+    names(herds) <- phen$Indiv
     Matings$herd <- herds[Matings$Dam]
     }
   attributes(Matings)$objval <- objval

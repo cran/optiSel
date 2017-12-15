@@ -7,11 +7,12 @@
 Calculates the optimum numbers of offspring from optimum contributions of selection candidates.
 }
 \usage{
-noffspring(cand, N)}
+noffspring(cand, N, random=TRUE)}
 
 \arguments{
 \item{cand}{Data frame with optimum contributions (column \code{oc}), sexes (column \code{Sex}), and IDs (column \code{Indiv}) of the selection candidates.}
 \item{N}{Desired number of individuals in the offspring population.}
+\item{random}{Logical. If \code{2*N*oc[i]} is not an integer value (say \code{2*N*oc[i]=11.4}) then individual \code{i} will have either 11 or 12 offspring. The actual number is either determined randomly or not.}
 }
 
 \details{
@@ -27,25 +28,30 @@ Column \code{nOff} is approximately \code{2*N*cand$oc} with \code{sum(noff[cand$
 
 
 \examples{
+set.seed(1)
 data(PedigWithErrors)
-data(Phen)
 
-keep  <- Phen$Indiv
-Pedig <- prePed(PedigWithErrors, keep=keep, thisBreed="Hinterwaelder", lastNative=1970)
-cand   <- candes(phen=Phen, fA=pedIBD(Pedig, keep.only=keep))
-con   <- list(ub.fA=0.03, uniform="female")
-Offspring <- opticont("max.BV", cand, con, trace = FALSE)
+Pedig      <- prePed(PedigWithErrors, thisBreed="Hinterwaelder")
+use        <- Pedig$Born \%in\% (1998:2008) & Pedig$Breed=="Hinterwaelder"
+Population <- sampleIndiv(Pedig[use, ], each=50)
+pKin       <- pedIBD(Pedig, keep.only=Population)
+Phen       <- Pedig[Population, ]
+Phen$isCandidate <- Phen$Born \%in\% (2003:2008)
 
+cont       <- agecont(Pedig, Population)
+cand       <- candes(phen=Phen, fA=pedIBD(Pedig, keep.only=Phen$Indiv), cont=cont)
+con        <- list(ub.fA=0.0175, uniform="female")
+Offspring  <- opticont("max.BV", cand, con, trace = FALSE)
 
-N <- 150
+N <- 250
 Candidate <- Offspring$parent
 Candidate$nOff <- noffspring(Candidate, N)$nOff
 
 sum(Candidate$nOff[Candidate$Sex=="male"])
-#[1] 150
+#[1] 250
 
 sum(Candidate$nOff[Candidate$Sex=="female"])
-#[1] 150
+#[1] 250
 
 round(2*N*Candidate$oc-Candidate$nOff, 2)
 }

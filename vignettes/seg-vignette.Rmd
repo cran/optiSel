@@ -167,11 +167,11 @@ sKin <- segIBD(GTfiles, map, minSNP=20, minL=1.0)
 sKin[1:3,1:3]
 ```
 
-The R code below displays the kinship between the female with ID `276000102372349` and all genotyped Angler males with breeding value larger than 2.0.
+The R code below displays the kinship between the female with ID `Angler2` and all genotyped Angler males with breeding value larger than 2.0.
 
 ```{r}
 Males  <- phen$Indiv[phen$Sex=="male" & phen$Breed=="Angler" & phen$BV>2.0]
-sKin[Males, "276000102372349", drop=FALSE]
+sKin[Males, "Angler2", drop=FALSE]
 ```
 
 In general, the males that have lowest kinship with the female should be favoured for mating. In this case, however, all kinships are low, so this criterion can be neglected.
@@ -198,11 +198,11 @@ Artificial selection and the substantial genetic drift in populations with small
 For individuals with genetic contributions from several breeds, each marker belongs to a haplotype segment that originates from a specific breed. Gene flow is usually from commercial breeds to the endangered breeds but not vice-versa. Thus, if a sufficiently long segment from an endangered breed can also be found in a commercial breed, then it can be concluded that the segment is not native in the endangered breed. Instead, the segment is assigned to the breed in which it has maximum frequency. This can be done with function [haplofreq][haplofreq].
 
 
-Below, the frequency of each segment from haplotype 2 of Angler 276000101676415 in Rotbunt cattle is plotted with function [plot][plot.HaploFreq] (red area). 
+Below, the frequency of each segment from haplotype 2 of Angler bull "Angler1" in Rotbunt cattle is plotted with function [plot][plot.HaploFreq] (red area). 
 
 ```{r, fig.width = 5, results="hide"}
 Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt", minL=1.0)
-plot(Haplo, ID="276000101676415", hap=2)
+plot(Haplo, ID="Angler1", hap=2)
 ```
 
 It can be concluded that the first chromosome originates from Rotbunt cattle or from a closely related breed. In contrast, the second chromosome does not originate from Rotbunt cattle.
@@ -276,7 +276,7 @@ sKinatN <- segIBDatN(GTfiles, phen, map, thisBreed="Angler", minL=1.0)
 
 ```{r}
 sKinatN$of <- sKinatN$Q1/sKinatN$Q2
-sKinatN$of["276000108612636", "276000102379430"]
+sKinatN$of["Angler2", "Angler4"]
 ```
 
 
