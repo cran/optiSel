@@ -87,6 +87,10 @@
     if(any(is.na(phen$Breed))){
       stop("Column 'Breed' of argument phen contains 'NA'.\n")
     }
+    if("unknown" %in% phen$Breed){
+      cat("Individuals with breed name 'unknown' are removed.\n")
+      phen <- phen[phen$Breed != "unknown", ]
+    }
   }
   
   

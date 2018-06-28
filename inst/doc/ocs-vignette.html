@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2017-12-15" />
+<meta name="date" content="2018-06-28" />
 
 <title></title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Optimum Contribution Selection</li>
 </ol></h1>
 <h4 class="author"><em>Robin Wellmann</em></h4>
-<h4 class="date"><em>2017-12-15</em></h4>
+<h4 class="date"><em>2018-06-28</em></h4>
 
 
 
@@ -155,7 +155,7 @@ phen<span class="op">$</span>isCandidate &lt;-<span class="st"> </span>phen<span
 ## 
 ##  Mean values of the parameters are:   Value 
 ##  for trait   'BV'   in Angler:       -0.0530
-##  for kinship 'sKin' in Angler:        0.0550
+##  for kinship 'sKin' in Angler:        0.0552
 ## 
 ##  Available objective functions and constraints:                   
 ##  for trait   'BV'   in Angler: min.BV, max.BV, lb.BV, eq.BV, ub.BV
@@ -169,7 +169,7 @@ phen<span class="op">$</span>isCandidate &lt;-<span class="st"> </span>phen<span
 <p>The upper bound for the mean kinship in the offspring should depend on the current mean kinship in the population, which is included in component <code>mean</code> of <code>cand</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cand<span class="op">$</span>mean</code></pre></div>
 <pre><code>##           BV       sKin
-## 1 -0.0529632 0.05497215</code></pre>
+## 1 -0.0529632 0.05515035</code></pre>
 <p>In general, if an upper bound for a kinship <span class="math inline">\(K\)</span> should be defined, it is recommended to derive the threshold value from the desired effective size <span class="math inline">\(N_e\)</span> of the population by the formula <span class="math display">\[ub.K=\overline{K}+(1-\overline{K})\Delta F,\]</span> where <span class="math inline">\(\overline{K}\)</span> is the current mean kinship in the population, which has been estimated above, <span class="math inline">\(\Delta F=\frac{1}{2 N_eL}\)</span>, and <span class="math inline">\(L\)</span> is the generation interval. The critical effective size, i. e. the size below which the fitness of the population steadily decreases, depends on the population and is usually between 50 and 100. But there seems to be a consensus that 50-100 is a long-term viable effective size. To be on the safe side, an effective size of <span class="math inline">\(N_e=100\)</span> should be envisaged <span class="citation">(T H E Meuwissen 2009)</span>.</p>
 <p>A list containing the constraints is defined below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Ne &lt;-<span class="st"> </span><span class="dv">100</span>
@@ -197,14 +197,14 @@ con &lt;-<span class="st"> </span><span class="kw">list</span>(
 ## 
 ##    Variable                  Value      Bound    OK?
 ##    --------------------------------------------------
-##    BV                 Angler 0.2594 max        :      
+##    BV                 Angler 0.26   max        :      
 ##    --------------------------------------------------
 ##    lower bounds              all x  &gt;=  lb     : TRUE 
 ##    upper bounds              all x  &lt;=  ub     : TRUE 
 ##    breed contribution Angler 1      ==  1      : TRUE 
 ##    sex contrib. diff. Angler 0      ==  0      : TRUE 
-##    BV                 Angler 0.2594            :      
-##    sKin               Angler 0.0559 &lt;=  0.0559 : TRUE 
+##    BV                 Angler 0.26              :      
+##    sKin               Angler 0.0561 &lt;=  0.0561 : TRUE 
 ##    --------------------------------------------------</code></pre>
 <p>The report above states that the solution is considered optimal by the solver and that all constraints are fulfilled since valid=TRUE. This information can also be obtained as</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>info</code></pre></div>
@@ -213,41 +213,41 @@ con &lt;-<span class="st"> </span><span class="kw">list</span>(
 <p>The value of the objective function can be accessed as</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>obj.fun</code></pre></div>
 <pre><code>##        BV 
-## 0.2594244</code></pre>
+## 0.2599722</code></pre>
 <p>and the expected average values of the kinshps and traits in the offspring are</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>mean</code></pre></div>
 <pre><code>##          BV       sKin
-## 1 0.2594244 0.05593452</code></pre>
+## 1 0.2599722 0.05611254</code></pre>
 <p>The results are OK. If they are not, then try to use another solver. The solver can be specified in parameter <code>solver</code> of function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a>. Available solvers are <code>&quot;alabama&quot;</code>, <code>&quot;cccp&quot;</code>, <code>&quot;cccp2&quot;</code>, <code>&quot;csdp&quot;</code>, and <code>&quot;slsqp&quot;</code>. By default the solver is chosen automatically. Alternatively, the same solver may be used but with different tuning parameters. The available paramters are displayed if the function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a> is called (as shown above).</p>
 <p>The optimum contributions of the selection candidates are in component <code>parent</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Candidate &lt;-<span class="st"> </span>Offspring<span class="op">$</span>parent[,  <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;oc&quot;</span>, <span class="st">&quot;herd&quot;</span>)]
 <span class="kw">head</span>(Candidate[Candidate<span class="op">$</span>Sex<span class="op">==</span><span class="st">&quot;male&quot;</span> <span class="op">&amp;</span><span class="st"> </span>Candidate<span class="op">$</span>oc<span class="op">&gt;</span><span class="fl">0.001</span>,])</code></pre></div>
 <pre><code>##               Indiv  Sex         oc herd
-## Angler147 Angler147 male 0.28480012 &lt;NA&gt;
-## Angler166 Angler166 male 0.13096065 &lt;NA&gt;
-## Angler171 Angler171 male 0.08411906 &lt;NA&gt;</code></pre>
+## Angler147 Angler147 male 0.28740275 &lt;NA&gt;
+## Angler166 Angler166 male 0.13564234 &lt;NA&gt;
+## Angler171 Angler171 male 0.07687589 &lt;NA&gt;</code></pre>
 <p>In general, since the number of females with offspring is large, we expect that about <span class="math inline">\(\frac{N_e}{4L}\approx 5\)</span> new males are selected each year. In the first year of OCS with overlapping generation often only very few individuals are selected for breeding. This changes in subsequent years and can be avoided by imposing upper bounds for the optimum contributions.</p>
 <p>The numbers of offspring can be obtained from the optimum contributions and the size <code>N</code> of the offspring population with function <a href="https://rdrr.io/cran/optiSel/man/noffspring.html">noffspring</a>. These values are rounded up or down to whole numbers.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Candidate<span class="op">$</span>n &lt;-<span class="st"> </span><span class="kw">noffspring</span>(Candidate, <span class="dt">N=</span><span class="dv">20</span>)<span class="op">$</span>nOff
 <span class="kw">head</span>(Candidate[Candidate<span class="op">$</span>Sex<span class="op">==</span><span class="st">&quot;male&quot;</span> <span class="op">&amp;</span><span class="st"> </span>Candidate<span class="op">$</span>oc<span class="op">&gt;</span><span class="fl">0.001</span>,])</code></pre></div>
 <pre><code>##               Indiv  Sex         oc herd  n
-## Angler147 Angler147 male 0.28480012 &lt;NA&gt; 11
-## Angler166 Angler166 male 0.13096065 &lt;NA&gt;  6
-## Angler171 Angler171 male 0.08411906 &lt;NA&gt;  3</code></pre>
+## Angler147 Angler147 male 0.28740275 &lt;NA&gt; 12
+## Angler166 Angler166 male 0.13564234 &lt;NA&gt;  5
+## Angler171 Angler171 male 0.07687589 &lt;NA&gt;  3</code></pre>
 <p>Males and females can be allocated for mating with function matings such that all breeding animals have the desired number of matings. In the example below the mean marker-based inbreeding coefficient in the offspring is minimized.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Mating &lt;-<span class="st"> </span><span class="kw">matings</span>(Candidate, <span class="dt">Kin=</span>sKin)</code></pre></div>
 <pre><code>## Optimal branch and bound solution found</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Mating)</code></pre></div>
 <pre><code>##         Sire       Dam n
 ## 2  Angler166  Angler66 1
-## 4  Angler147  Angler76 1
-## 7  Angler147 Angler106 1
-## 11 Angler166 Angler109 1
-## 13 Angler147 Angler110 1
-## 18 Angler171 Angler113 1</code></pre>
+## 4  Angler147  Angler81 1
+## 7  Angler147  Angler83 1
+## 10 Angler147 Angler106 1
+## 13 Angler147 Angler113 1
+## 17 Angler166 Angler118 1</code></pre>
 <p>The mean inbreeding in the offspring (which is equal to the mean kinship of the parents) is:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">attributes</span>(Mating)<span class="op">$</span>objval</code></pre></div>
-<pre><code>## [1] 0.02286156</code></pre>
+<pre><code>## [1] 0.02566023</code></pre>
 </div>
 <div id="defining-the-objective-of-a-breeding-program" class="section level2">
 <h2>Defining the Objective of a Breeding Program</h2>
@@ -302,8 +302,8 @@ sKinatN &lt;-<span class="st"> </span><span class="kw">segIBDatN</span>(GTfiles,
 ##  Mean values of the parameters are:   Value 
 ##  for trait     'BV'      in Angler:  -0.0530
 ##  for trait     'NC'      in Angler:   0.4091
-##  for kinship   'sKin'    in Angler:   0.0550
-##  for nat. kin. 'sKinatN' in Angler:   0.0765
+##  for kinship   'sKin'    in Angler:   0.0552
+##  for nat. kin. 'sKinatN' in Angler:   0.0770
 ## 
 ##  Available objective functions and constraints:                        
 ##  for trait     'BV'      in Angler: min.BV, max.BV, lb.BV, eq.BV, ub.BV
@@ -315,7 +315,7 @@ sKinatN &lt;-<span class="st"> </span><span class="kw">segIBDatN</span>(GTfiles,
 <p>Compared to the introductory example the possibility to restrict or to maximize native contributions became available because column <code>NC</code> was added to data frame <code>Cattle</code>. Additionally, the possibility to minimize or to restrict the kinship at native segments <code>sKinatN</code> became available since this kinship was used as an argument to function candes. The current mean values in the population are</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cand<span class="op">$</span>mean</code></pre></div>
 <pre><code>##           BV        NC       sKin    sKinatN
-## 1 -0.0529632 0.4090566 0.05497215 0.07654763</code></pre>
+## 1 -0.0529632 0.4090566 0.05515035 0.07701049</code></pre>
 <p>Function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a> can now be used to perform the optimization.</p>
 <p>Depending on what the objective of the breeding program is, you may continue reading at the appropriate section:</p>
 <ul>
@@ -338,8 +338,8 @@ sKinatN &lt;-<span class="st"> </span><span class="kw">segIBDatN</span>(GTfiles,
 ## 1  TRUE  cccp2 optimal</code></pre>
 <p>The expected values of the parameters in the next generation are</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>mean</code></pre></div>
-<pre><code>##          BV        NC       sKin    sKinatN
-## 1 0.2594244 0.4015824 0.05593452 0.07955012</code></pre>
+<pre><code>##          BV        NC       sKin   sKinatN
+## 1 0.2599722 0.4013531 0.05611254 0.0800292</code></pre>
 <p>The results are the same as in the introductory example (as expected). This approach may be apppropriate for a population without introgression, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the native contributions should be restricted in order not to decrease. Otherwise the genetic originality of the breed may get lost in the long term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">uniform    =</span><span class="st">&quot;female&quot;</span>,
@@ -352,9 +352,9 @@ Offspring2 &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span 
 <p>For comparison, the summaries of both scenarios are combined into a single data frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">maxBV=</span>Offspring<span class="op">$</span>mean, <span class="dt">maxBV2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##                BV        NC       sKin    sKinatN
-## Ref    -0.0529632 0.4090566 0.05497215 0.07654763
-## maxBV   0.2594244 0.4015824 0.05593452 0.07955012
-## maxBV2  0.2370521 0.4090577 0.05529105 0.07748867</code></pre>
+## Ref    -0.0529632 0.4090566 0.05515035 0.07701049
+## maxBV   0.2599722 0.4013531 0.05611254 0.08002920
+## maxBV2  0.2375737 0.4090579 0.05545814 0.07795111</code></pre>
 <p>Since native contributions and breeding values are negatively correlated, the genetic gain decreases slightly when native contributions are constrained not to decrease.</p>
 </div>
 <div id="minimize-inbreeding" class="section level3">
@@ -366,8 +366,8 @@ Offspring2 &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring   &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(cand<span class="op">$</span>mean, Offspring<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##           BV        NC       sKin    sKinatN
-## 1 -0.0529632 0.4090566 0.05497215 0.07654763
-## 2 -0.1413072 0.4320944 0.04867808 0.06362482</code></pre>
+## 1 -0.0529632 0.4090566 0.05515035 0.07701049
+## 2 -0.1413072 0.4320944 0.04878925 0.06388093</code></pre>
 <p>Minimizing kinship without constraining the mean breeding value decreases the mean breeding value in the offspring slightly because the individuals with high breeding values are related. For this breed, it also increases the native contribution because the individuals from other breeds that were used for upgrading were related.</p>
 <p>While in livestock breeds the native contributions should be restricted in order to maintain the genetic originality of the breeds, in several companion breeds the opposite is true. Several companion breeds have high inbreeding coefficients and descend from only very few (e.g. 3) founders <span class="citation">(Wellmann and Pfeiffer 2009)</span>, and purging seems to be not feasible. Hence, a sufficient genetic diversity of the population cannot be achieved in the population even if marker data is used to minimize inbreeding. For these breeds it may be appropriate to use unrelated individuals from a variety of other breeds in order to increase the genetic diversity. However, only a small contribution from other breeds is needed, so the native contributions should be restricted also for these breeds in order to preserve their genetic originality. Hence, the difference between a breed with high diversity and a breed with low diversity suffering from inbreeding depression is, that the optimum value for the native contribution is smaller than 1 for the latter.</p>
 <p>For such a breed it is advisable to allow the use of unrelated individuals from other breeds but to restrict the admissible mean contribution from other breeds in the population. The mean kinship at native alleles should be restricted as well to require only a small amount of introgression:</p>
@@ -380,9 +380,9 @@ Offspring2     &lt;-<span class="st"> </span><span class="kw">opticont</span>(<s
 <p>For comparison, the estimates for both scenarios are combined into a single data frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">minKin=</span>Offspring<span class="op">$</span>mean, <span class="dt">minKin2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##                 BV        NC       sKin    sKinatN
-## Ref     -0.0529632 0.4090566 0.05497215 0.07654763
-## minKin  -0.1413072 0.4320944 0.04867808 0.06362482
-## minKin2 -0.1855352 0.4490567 0.05088076 0.07244558</code></pre>
+## Ref     -0.0529632 0.4090566 0.05515035 0.07701049
+## minKin  -0.1413072 0.4320944 0.04878925 0.06388093
+## minKin2 -0.1855764 0.4490567 0.05099125 0.07268123</code></pre>
 <p>Of course, for a companion breed, the lower bound for the native contribution should be much higher.</p>
 </div>
 <div id="recover-the-native-genetic-background" class="section level3">
@@ -399,7 +399,7 @@ Offspring &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span c
 ## 1  TRUE  cccp2 optimal</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>mean</code></pre></div>
 <pre><code>##           BV        NC       sKin    sKinatN
-## 1 -0.1496039 0.4507294 0.05229563 0.07750082</code></pre>
+## 1 -0.1482697 0.4507981 0.05246962 0.07796275</code></pre>
 <p>For this breed, maximizing native contributions results in negative genetic gain because native contributions and breeding values are negatively correlated. This can be avoided by adding an additional constraint for the breeding values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">uniform    =</span> <span class="st">&quot;female&quot;</span>,
@@ -411,10 +411,10 @@ Offspring &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span c
 Offspring2  &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</code></pre></div>
 <p>For comparison, the estimated parameters of both scenarios are combined into a single data frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">maxNC=</span>Offspring<span class="op">$</span>mean, <span class="dt">maxNC2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
-<pre><code>##                BV        NC       sKin    sKinatN
-## Ref    -0.0529632 0.4090566 0.05497215 0.07654763
-## maxNC  -0.1496039 0.4507294 0.05229563 0.07750082
-## maxNC2 -0.0529570 0.4487906 0.05219637 0.07748910</code></pre>
+<pre><code>##                 BV        NC       sKin    sKinatN
+## Ref    -0.05296320 0.4090566 0.05515035 0.07701049
+## maxNC  -0.14826967 0.4507981 0.05246962 0.07796275
+## maxNC2 -0.05295395 0.4489659 0.05236654 0.07795088</code></pre>
 </div>
 <div id="increase-diversity-between-breeds" class="section level3">
 <h3>Increase Diversity Between Breeds</h3>
@@ -436,11 +436,11 @@ cand &lt;-<span class="st"> </span><span class="kw">candes</span>(<span class="d
 ##  for trait     'BV.Fleckvieh'   in Fleckvieh :  -0.1136
 ##  for trait     'BV.Rotbunt'     in Rotbunt   :   0.0886
 ##  for kinship   'sKin'           across breeds:   0.0350
-##  for nat. kin. 'sKinatN.Angler' in Angler    :   0.0765
-##  for kinship   'sKin.Angler'    in Angler    :   0.0550
-##  for kinship   'sKin.Holstein'  in Holstein  :   0.1071
-##  for kinship   'sKin.Fleckvieh' in Fleckvieh :   0.0684
-##  for kinship   'sKin.Rotbunt'   in Rotbunt   :   0.1070
+##  for nat. kin. 'sKinatN.Angler' in Angler    :   0.0770
+##  for kinship   'sKin.Angler'    in Angler    :   0.0552
+##  for kinship   'sKin.Holstein'  in Holstein  :   0.1073
+##  for kinship   'sKin.Fleckvieh' in Fleckvieh :   0.0686
+##  for kinship   'sKin.Rotbunt'   in Rotbunt   :   0.1071
 ## 
 ##  Available objective functions and constraints:                                                                                     
 ##  for trait     'NC'             in Angler    : min.NC, max.NC, lb.NC, eq.NC, ub.NC                                                  
@@ -501,31 +501,31 @@ con  &lt;-<span class="st"> </span><span class="kw">list</span>(
 ##    BV                 Fleckvieh     -0.1244            :      
 ##    BV                 Rotbunt       0.0861            :      
 ##    sKin               across breeds 0.0332            :      
-##    sKin               Angler        0.0487            :      
-##    sKin               Holstein      0.1075            :      
-##    sKin               Fleckvieh     0.0687            :      
-##    sKin               Rotbunt       0.1078            :      
-##    sKinatN            Angler        0.0637 &lt;=  0.0775 : TRUE 
+##    sKin               Angler        0.0488            :      
+##    sKin               Holstein      0.1076            :      
+##    sKin               Fleckvieh     0.0688            :      
+##    sKin               Rotbunt       0.1079            :      
+##    sKinatN            Angler        0.0639 &lt;=  0.078  : TRUE 
 ##    ---------------------------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>info</code></pre></div>
 <pre><code>##   valid solver  status
 ## 1  TRUE   cccp optimal</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>mean</code></pre></div>
-<pre><code>##          NC         BV BV.Angler BV.Holstein BV.Fleckvieh BV.Rotbunt
-## 1 0.4333183 -0.1165935 -0.145326  0.02899812    -0.124364 0.08612751
-##         sKin sKin.Angler sKin.Holstein sKin.Fleckvieh sKin.Rotbunt
-## 1 0.03315834  0.04872121     0.1074871     0.06871999    0.1077745
+<pre><code>##          NC         BV  BV.Angler BV.Holstein BV.Fleckvieh BV.Rotbunt
+## 1 0.4333204 -0.1165914 -0.1453216  0.02899812    -0.124364 0.08612751
+##        sKin sKin.Angler sKin.Holstein sKin.Fleckvieh sKin.Rotbunt
+## 1 0.0331582  0.04883196     0.1075815     0.06882723     0.107866
 ##   sKinatN.Angler
-## 1     0.06368671</code></pre>
+## 1     0.06394064</code></pre>
 <p>Since the contributions of the selection candidates minimize the mean kinship <code>sKin</code> in the core set, they maximize the genetic diversity of the core set. This is achieved by increasing the gentic diversity within the breed or by increasing the genetic distance between the breed of interest and the other breeds. The optimum contributions are standardized so that their sum is equal to one within each breed:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(Offspring<span class="op">$</span>parent[Offspring<span class="op">$</span>parent<span class="op">$</span>oc<span class="op">&gt;</span><span class="fl">0.02</span>,<span class="kw">c</span>(<span class="st">&quot;Breed&quot;</span>,<span class="st">&quot;lb&quot;</span>,<span class="st">&quot;oc&quot;</span>,<span class="st">&quot;ub&quot;</span>)])</code></pre></div>
 <pre><code>##           Breed lb         oc ub
-## Angler8  Angler  0 0.02383260 NA
-## Angler14 Angler  0 0.13923596 NA
-## Angler16 Angler  0 0.07641662 NA
-## Angler25 Angler  0 0.05764641 NA
-## Angler30 Angler  0 0.02743479 NA
-## Angler53 Angler  0 0.07552095 NA</code></pre>
+## Angler8  Angler  0 0.02384601 NA
+## Angler14 Angler  0 0.13924764 NA
+## Angler16 Angler  0 0.07642780 NA
+## Angler25 Angler  0 0.05765746 NA
+## Angler30 Angler  0 0.02744591 NA
+## Angler53 Angler  0 0.07553502 NA</code></pre>
 </div>
 </div>
 <div id="pedigree-based-ocs" class="section level2">
@@ -598,8 +598,8 @@ pKinatN &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <
 ##  Mean values of the parameters are:          Value 
 ##  for trait     'BV'      in Hinterwaelder:  -0.6212
 ##  for trait     'NC'      in Hinterwaelder:   0.6236
-##  for kinship   'pKin'    in Hinterwaelder:   0.0253
-##  for nat. kin. 'pKinatN' in Hinterwaelder:   0.0451
+##  for kinship   'pKin'    in Hinterwaelder:   0.0254
+##  for nat. kin. 'pKinatN' in Hinterwaelder:   0.0452
 ## 
 ##  Available objective functions and constraints:                               
 ##  for trait     'BV'      in Hinterwaelder: min.BV, max.BV, lb.BV, eq.BV, ub.BV
@@ -612,7 +612,7 @@ pKinatN &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <
 <p>For defining appropriate threshold values for the constraints, the current mean kinships, the mean native contribution, and the mean breeding value in the population need to be known. The values can be obtained as</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cand<span class="op">$</span>mean</code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
-## 1 -0.6212472 0.6235631 0.02528665 0.04505241</code></pre>
+## 1 -0.6212472 0.6235631 0.02540349 0.04524766</code></pre>
 <p>Depending on what the objective of the breeding program is, you may continue reading at the appropriate section:</p>
 <ul>
 <li><a href="#maximize-genetic-gain-pedigree-based">Maximize Genetic Gain</a></li>
@@ -630,8 +630,8 @@ pKinatN &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(cand<span class="op">$</span>mean, Offspring<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
-## 1 -0.6212472 0.6235631 0.02528665 0.04505241
-## 2 -0.5378618 0.6152668 0.02627022 0.04704803</code></pre>
+## 1 -0.6212472 0.6235631 0.02540349 0.04524766
+## 2 -0.5375276 0.6152864 0.02638693 0.04723949</code></pre>
 <p>This approach may be apppropriate for a population without introgression and complete pedigrees, but for populations with historic introgression, the kinship at native alleles should be restricted as well in accordance with the desired effective size, and the native contributions should be restricted in order not to decrease. Otherwise the genetic originality of the breed may get lost in the long term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">uniform    =</span> <span class="st">&quot;female&quot;</span>,
@@ -643,9 +643,9 @@ Offspring2     &lt;-<span class="st"> </span><span class="kw">opticont</span>(<s
 <p>For comparison, the parameters of both scenarios are combined into a single data frame with <code>rbind</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">maxBV=</span>Offspring<span class="op">$</span>mean, <span class="dt">maxBV2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##                BV        NC       pKin    pKinatN
-## Ref    -0.6212472 0.6235631 0.02528665 0.04505241
-## maxBV  -0.5378618 0.6152668 0.02627022 0.04704803
-## maxBV2 -0.5487270 0.6235636 0.02588799 0.04601804</code></pre>
+## Ref    -0.6212472 0.6235631 0.02540349 0.04524766
+## maxBV  -0.5375276 0.6152864 0.02638693 0.04723949
+## maxBV2 -0.5484241 0.6235636 0.02600152 0.04621302</code></pre>
 <p>Thus, genetic gain in Method 2 is only slightly below the genetic gain in Method 1, but the native contributions do not decrease and the kinship at native alleles increases at a lower rate.</p>
 </div>
 <div id="minimize-inbreeding-1" class="section level3">
@@ -657,8 +657,8 @@ Offspring2     &lt;-<span class="st"> </span><span class="kw">opticont</span>(<s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="st">&quot;min.pKin&quot;</span>, cand, con)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(cand<span class="op">$</span>mean, Offspring<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
-## 1 -0.6212472 0.6235631 0.02528665 0.04505241
-## 2 -0.6740305 0.6293595 0.02193709 0.03875837</code></pre>
+## 1 -0.6212472 0.6235631 0.02540349 0.04524766
+## 2 -0.6740305 0.6293595 0.02202135 0.03889580</code></pre>
 <p>The approach shown above has the disadvantage that kinships between individuals are less reliable if ancestors are missing in the pedigree. The alternative approach, shown below, is to minimize the kinship at native alleles and to restrict pedigree based kinship.</p>
 <p>While in livestock breeds the native contributions should be preserved in order to maintain the genetic originality of the breeds, in several companion breeds the opposite is true. Several companion breeds have high inbreeding coefficients and descend from only very few (e.g. 3) founders. Hence, a sufficient genetic diversity cannot be achieved in the population. For these breeds it may be appropriate to use unrelated individuals from a variety of other breeds in order to increase the genetic diversity. However, only a small contribution from other breeds is needed, so the native contributions should be restricted also for these breeds in order to preserve their genetic originality. The difference between a breed with high diversity and a breed with low diversity suffering from inbreeding depression is, that the optimum value for the native contribution is smaller than 1 for the latter. For such a breed it is advisable to allow the use of individuals from other breeds but to restrict the admissible mean contribution from other breeds.</p>
 <p>In summary, the alternative approach is to minimize the kinship at native alleles and to restrict pedigree based kinship and native contributions:</p>
@@ -672,9 +672,9 @@ Offspring2  &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span
 <p>For comparison, the parameter estimates are combined into a single data frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">minKin=</span>Offspring<span class="op">$</span>mean, <span class="dt">minKin2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##                 BV        NC       pKin    pKinatN
-## Ref     -0.6212472 0.6235631 0.02528665 0.04505241
-## minKin  -0.6740305 0.6293595 0.02193709 0.03875837
-## minKin2 -0.6813351 0.6360344 0.02212155 0.03851295</code></pre>
+## Ref     -0.6212472 0.6235631 0.02540349 0.04524766
+## minKin  -0.6740305 0.6293595 0.02202135 0.03889580
+## minKin2 -0.6813346 0.6360344 0.02220580 0.03864749</code></pre>
 <p>The pedigree based kinship is slightly higher in the second approach, but the kinship at native alleles is lower. Since pedigree based kinships are less reliable due to missing ancestors in the pedigree, the second approach is recommended. However, the use of pedigree data has the disadvantage that only the expected kinships can be minimized. The expected kinships deviate from the realized kinships due to mendelian segregation. Hence, for breeds with serious inbreeding problems it is recommended to genotype the selection candidates and to perform marker-based optimum contribution selection.</p>
 </div>
 <div id="recover-the-native-genetic-background-1" class="section level3">
@@ -687,8 +687,8 @@ Offspring2  &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span
 )
 Offspring &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Offspring<span class="op">$</span>mean</code></pre></div>
-<pre><code>##           BV        NC       pKin    pKinatN
-## 1 -0.6947239 0.6534619 0.02627134 0.04576731</code></pre>
+<pre><code>##           BV       NC       pKin    pKinatN
+## 1 -0.6944341 0.653495 0.02638776 0.04595925</code></pre>
 <p>For some breeds, native contributions and breeding values are negatively correlated, so maximizing native contributions results in negative genetic. This can be avoided by adding an additional constraint for the breeding values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">con &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">uniform    =</span> <span class="st">&quot;female&quot;</span>,
@@ -700,9 +700,9 @@ Offspring2 &lt;-<span class="st"> </span><span class="kw">opticont</span>(<span 
 <p>For comparison, the estimates for both scenarios are combined into a single data frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rbind</span>(<span class="dt">Ref=</span>cand<span class="op">$</span>mean, <span class="dt">maxNC=</span>Offspring<span class="op">$</span>mean, <span class="dt">maxNC2=</span>Offspring2<span class="op">$</span>mean)</code></pre></div>
 <pre><code>##                BV        NC       pKin    pKinatN
-## Ref    -0.6212472 0.6235631 0.02528665 0.04505241
-## maxNC  -0.6947239 0.6534619 0.02627134 0.04576731
-## maxNC2 -0.6212445 0.6477829 0.02627221 0.04589208</code></pre>
+## Ref    -0.6212472 0.6235631 0.02540349 0.04524766
+## maxNC  -0.6944341 0.6534950 0.02638776 0.04595925
+## maxNC2 -0.6212451 0.6478607 0.02638880 0.04607922</code></pre>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

@@ -118,7 +118,7 @@ cand     <- candes(phen=Phen, pKin=pKin, pKinatN=pKinatN, cont=cont)
 
 cand$mean
 #          BV        NC      pKin    pKinatN
-#1 -0.5648208 0.5763161 0.0229697 0.04679669
+#1 -0.5648208 0.5763161 0.02305245 0.0469267
 
 
 ### Define constraints for OCS
@@ -126,7 +126,7 @@ cand$mean
 ### L:  Generation interval
 
 Ne   <- 100
-L    <- 1/(cont$male[1]+cont$female[1])
+L    <- 1/(4*cont$male[1]) + 1/(4*cont$female[1])
 con <- list(uniform    = "female",
             ub.pKin    = cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne*L)),
             ub.pKinatN = cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne*L)),
@@ -141,10 +141,8 @@ Offspring  <- opticont("max.BV", cand, con, trace=FALSE)
 
 rbind(cand$mean, Offspring$mean)   
 #          BV        NC       pKin    pKinatN
-#1 -0.5648208 0.5763161 0.02296970 0.04679669
-#2 -0.5021379 0.5763216 0.02349468 0.04791409
-
-
+#1 -0.5648208 0.5763161 0.02305245 0.04692670
+#2 -0.4972791 0.5763177 0.02341923 0.04790749
 
 ### Data frame with optimum contributions
 
@@ -201,13 +199,13 @@ Offspring$info
 # Average values of traits and kinships 
 rbind(cand$mean, Offspring$mean)         
 #           BV        NC       sKin    sKinatN
-#1 -0.07658022 0.4117947 0.05497811 0.07761692
-#2 -0.07657958 0.4308066 0.04821757 0.06375584
+#1 -0.07658022 0.4117947 0.05506277 0.07783431
+#2 -0.07657951 0.4308061 0.04830328 0.06395410
 
 # Value of the objective function 
 Offspring$obj.fun
 #      sKin 
-#0.04821757
+#0.04830328 
 
 ### Data frame with optimum contributions
 

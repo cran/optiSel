@@ -28,7 +28,7 @@
     obj$a1    <- setNames(rep(0,nrow(phen)), phen$Indiv)
   }else{
     diffF1    <- obj$mkin1$diffF
-    NPO       <- NPOpop(ageClass, phen=phen,    Breed=obj$breed, symmetric=TRUE, quiet=TRUE)
+    NPO       <- pPOpop(ageClass, Breed=obj$breed, N0=ra*N)
     nPO       <- NPOdata(phen, Classes=classes, symmetric=TRUE, quiet=TRUE)
     NPO       <- NPO[classes,classes, drop=FALSE]
     diag(NPO) <- 1/NIndiv0

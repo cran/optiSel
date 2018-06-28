@@ -74,8 +74,8 @@
   NC       <- segBreedComp(Native, map, unitP=unitP)$native
   Res$NC   <- setNames(NC, rownames(segIBDandN))
   
-  cat("Kinship at native alleles:", round(Res$mean,     4), "\n")
-  cat("Native Contribution:      ", round(mean(Res$NC), 4), "\n")
+  #cat("Kinship at native alleles:", round(Res$mean,     4), "\n")
+  #cat("Native Contribution:      ", round(mean(Res$NC), 4), "\n")
   
   if(lowMem & !("match" %in% names(files))){
     file.remove(Native)

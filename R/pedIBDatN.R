@@ -93,8 +93,8 @@
       attr(Res,"nativeNe") <- nativeNe
     }
     Res$mean <- mean(pedIBDandN)/mean(pedN)
-    cat("Kinship at native alleles :",  round(Res$mean,     4), "\n")
-    cat("Native Contribution       : ", round(mean(Res$NC), 4), "\n", sep="")
+    #cat("Kinship at native alleles :",  round(Res$mean,     4), "\n")
+    #cat("Native Contribution       : ", round(mean(Res$NC), 4), "\n", sep="")
   }else{
     Res$mean <- NA
   }

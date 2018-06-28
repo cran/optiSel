@@ -62,7 +62,7 @@
         ra  <- sum(ageClass$rcont0[ageClass$Breed==b & ageClass$age==1])
         r0  <- ageClass$rcont0[ageClass$Breed==b]
         nr  <- ageClass$Class[ageClass$Breed==b]
-        NPO <- NPOpop(ageClass, phen=phen, Breed=b, N0=N*ra, symmetric=TRUE, quiet=quiet)[nr, nr, drop=FALSE]
+        NPO <- pPOpop(ageClass, Breed=b, N0=N*ra)[nr, nr, drop=FALSE]
         diag(NPO)    <- 1/pmax(r0*N,1)
         mkin         <- kinship[[v]]$mkin
         curK[i,"Val"] <- c(r0%*%(mkin$f + NPO*mkin$diffF)%*%r0)
@@ -72,7 +72,7 @@
         ra  <- sum(ageClass$rcont0[ageClass$Breed==b & ageClass$age==1])
         r0  <- ageClass$rcont0[ageClass$Breed==b]
         nr  <- ageClass$Class[ageClass$Breed==b]
-        NPO <- NPOpop(ageClass, phen=phen, Breed=b, N0=N*ra, symmetric=TRUE, quiet=quiet)[nr, nr, drop=FALSE]
+        NPO <- pPOpop(ageClass, Breed=b, N0=N*ra)[nr, nr, drop=FALSE]
         diag(NPO) <- 1/pmax(r0*N,1)
         mkin <- kinship[[v]]$mkin1
         x1   <- c(r0%*%(mkin$f + NPO*mkin$diffF)%*%r0)

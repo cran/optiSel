@@ -120,6 +120,15 @@
     Pedig$Sex[Pedig$Indiv %in% Pedig$Sire] <- "male"
     Pedig$Sex[Pedig$Indiv %in% Pedig$Dam] <- "female"
     
+    asSire  <- Pedig$Indiv %in% Pedig$Sire
+    asDam   <- Pedig$Indiv %in% Pedig$Dam
+    Dummies <- c(paste0("Founder", 1:20), paste0("Migrant", 1:20))
+    if(any(asSire & asDam & !(Pedig$Indiv %in% Dummies))){
+      cat("The following individuals appear as sire and as dam:\n")
+      print(Pedig[asSire & asDam & !(Pedig$Indiv %in% Dummies), 1:3])
+      stop("Please correct this")
+    }
+    
     ######  prune Pedigree   #######
     if(!is.null(keep)){
       Pedig <- nadiv::prunePed(Pedig, phenotyped=keep)

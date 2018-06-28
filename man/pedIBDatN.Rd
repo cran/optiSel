@@ -23,7 +23,11 @@ Data frame containing the pedigree with \code{Indiv} (Individual ID), \code{Sire
 Calculates a list containing matrices needed to compute pedigree based kinships at native alleles, defined as the conditional probability that two randomly chosen alleles are IBD, given that both originate from native founders.
 A native founder is an individual with unkown parents belonging to \code{thisBreed}.
 
-If parameter \code{keep.only} is specified, then the mean kinship at native alleles, and the genetic contribution from native founders are also computed. The native effective size is estimated from \code{nGen} generations only if \code{nGen} is not \code{NA}.
+The kinship at native alleles between individuals i and j is \code{Q1[i,j]/Q2[i,j]}.
+
+The mean kinship at native alleles in the offspring is \code{(x'Q1x+d1)/(x'Q2x+d2)}, where \code{x} is the vector with genetic contributions of the selection candidates.
+
+The native effective size is estimated from \code{nGen} generations only if \code{nGen} is not \code{NA}.
 }
 
 \value{
@@ -34,9 +38,7 @@ A list of class \code{ratioFun} including components:
 \item{d2}{The value by which the probability that two alleles chosen from the offspring are native increases due to genetic drift.}
 \item{id}{IDs of the individuals for which the probabilites have been computed.}
 \item{mean}{Mean kinship at native alleles of the individuals specified in argument \code{keep.only}. Note that \code{1-mean} is the genetic diversity at native segments of the specified individuals from \code{thisBreed}}
-The kinship at native alleles between individuals i and j is \code{Q1[i,j]/Q2[i,j]}.
 
-The mean kinship at native alleles in the offspring is \code{(x'Q1x+d1)/(x'Q2x+d2)}, where \code{x} is the vector with genetic contributions of the selection candidates.
 
 }
 
@@ -52,8 +54,6 @@ pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep, nGen=6)
 #Number of Native  Founders: 150
 #Individuals in Pedigree   : 1658
 #Native effective size     : 49.5
-#Kinship at native alleles : 0.0777 
-#Native Contribution       : 0.4374
 
 ## Mean kinship at native segments:
 pKinatN$mean

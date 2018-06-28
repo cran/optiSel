@@ -5,7 +5,7 @@
   colDesc     <- data.frame(" Trait"=Trait, validName=rep(TRUE,length(Trait)), isNumeric=TRUE, NA.ok=TRUE, row.names=seq_along(Trait), check.names = FALSE)
 
   for(i in seq_along(Trait)){
-    if(Trait[i] %in% c("lb", "ub", "oc", "Born", "Sex", "Indiv", "Sire", "Dam", "Breed", "I", "Offspring", "herd", "Herd", "isCandidate", "c0","c1","Age","Class","Dead")){
+    if(Trait[i] %in% c("lb", "ub", "oc", "Born", "Sex", "Indiv", "Sire", "Dam", "Breed", "I", "Offspring", "herd", "Herd", "isCandidate", "c0","c1","Age","Class","Dead", "numIndiv", "numSire", "numDam")){
       colDesc[i,"validName"] <- FALSE
     }
     if(!is.numeric(phen[[i]])){

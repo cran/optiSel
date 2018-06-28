@@ -63,6 +63,8 @@
   BreedNames <- names(breed)
   for(b in BreedNames){
     if(min(ageClass$n[ageClass$age==1 & ageClass$Breed==b])==0){
+      cat("Number of individuals in age class 1:\n")
+      print(table(phen$Breed[phen$Age==1], phen$Sex[phen$Age==1]))
       stop(paste0("There is no ", b, " from a youngest age class in the data set."))
     }
   }

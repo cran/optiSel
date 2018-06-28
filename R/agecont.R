@@ -3,7 +3,8 @@
 ### In this case, the individual is born when its sire is in age class 1.
 
 "agecont" <- function(Pedig, use=Pedig$Born >= quantile(Pedig$Born, 0.75), maxAge=NA){
-  rownames(Pedig) <- Pedig$Indiv
+  Pedig <- checkphen(Pedig, columns=c("Indiv", "Born", "Sire", "Dam"), quiet=TRUE)
+
   Pedig$Born <- floor(Pedig$Born)
   
   Sire <- Pedig[use,"Sire"]

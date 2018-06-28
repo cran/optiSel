@@ -15,7 +15,7 @@
 
   bcomp <- setNames(rep(0, length(BreedNames)), BreedNames)
   bcomp[names(bc)] <- bc
-  bcomp[bcomp<0]   <-0
+  bcomp[bcomp<0.001]   <-0.001
   bcomp            <- bcomp/sum(bcomp)
   bcomp
 }

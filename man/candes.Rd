@@ -70,8 +70,8 @@ cand$current[,c("Name", "Type", "Breed", "Val", "Var")]
 #     Name      Type         Breed         Val     Var
 #1      BV     trait Hinterwaelder -0.55979308      BV
 #2      NC     trait Hinterwaelder  0.56695077      NC
-#3    pKin   kinship Hinterwaelder  0.02225465    pKin
-#4 pKinatN nat. kin. Hinterwaelder  0.04671867 pKinatN
+#3    pKin   kinship Hinterwaelder  0.02230896    pKin
+#4 pKinatN nat. kin. Hinterwaelder  0.04678453 pKinatN
 
 # BV:      simulated breeding values
 # NC:      native genetic contribution computed from pedigree

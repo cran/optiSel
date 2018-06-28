@@ -26,14 +26,14 @@
     obj$a    <- setNames(rep(0,nrow(phen)), phen$Indiv)
     obj$d    <- Delta00
   }else{
-    NPO       <- NPOpop(ageClass, phen=phen,    Breed=obj$breed, symmetric=TRUE, quiet=TRUE)
+    NPO       <- pPOpop(ageClass, Breed=obj$breed, N0=ra*N)
     nPO       <- NPOdata(phen, Classes=classes, symmetric=TRUE, quiet=TRUE)
     NPO       <- NPO[classes,classes, drop=FALSE]
     diag(NPO) <- 1/NIndiv0
     diag(nPO) <- 1/nIndiv
     
     u <- ageClass[phen$Class,"rcont1"]
-    u <- u*(1/ageClass[phen$Class,"n"] - 1/pmax(N*ageClass[phen$Class,"rcont0"],1))
+    u <- u*(1/pmax(ageClass[phen$Class,"n"],1) - 1/pmax(N*ageClass[phen$Class,"rcont0"],1))
     u <- u*(obj$mkin$selfkin[phen$Indiv]-obj$mkin$kinwac[phen$Indiv])
     u[is.na(u)|phen$Breed!=obj$breed] <- 0
     

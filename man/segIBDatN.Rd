@@ -53,16 +53,14 @@ A list of class \code{ratioFun} including components:
 \item{id}{IDs of the individuals for which the probabilites have been computed.}
 \item{mean}{Mean kinship at native alleles of the specified individuals. Note that \code{1-mean} is the genetic diversity at native segments of the specified individuals from \code{thisBreed}}
 
-The kinship at native alleles between individuals i and j is \code{Q1[i,j]/Q2[i,j]}.
-
-The mean kinship at native alleles in the offspring is \code{(x'Q1x+d1)/(x'Q2x+d2)}, where \code{x} is the vector with genetic contributions of the selection candidates.
-
-
-The mean native contribution \code{NC} of the individuals is also computed.
 }
 
 \details{
 Calculates a list containing matrices needed to compute segment based kinships at native alleles, defined as the conditional probability that two randomly chosen alleles are IBD, given that both originate from native ancestors. An allele is considered to originate from a native ancesor if the segment containing the allele has low frequency in all reference breeds.
+
+The kinship at native alleles between individuals i and j is \code{Q1[i,j]/Q2[i,j]}.
+
+The mean kinship at native alleles in the offspring is \code{(x'Q1x+d1)/(x'Q2x+d2)}, where \code{x} is the vector with genetic contributions of the selection candidates.
 
 \bold{Genotype file format}: Each file containing phased genotypes has a header and no row names. Cells are separated by blank spaces. The number of rows is equal to the number of markers from the respective chromosome and the markers are in the same order as in the \code{map}. The first \code{cskip} columns are ignored. The remaining columns contain genotypes of individuals written as two alleles separated by a character, e.g. A/B, 0/1, A|B, A B, or 0 1. The same two symbols must be used for all markers. Column names are the IDs of the individuals. If the blank space is used as separator then the ID of each individual should repeated in the header to get a regular delimited file. The columns to be skipped and the individual IDs must have no white spaces. The name of each file must contain the chromosome name as specified in the \code{map} in the form \code{"ChrNAME."}, e.g. \code{"Breed2.Chr1.phased"}.
 }
