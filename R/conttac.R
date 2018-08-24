@@ -8,7 +8,7 @@
   native     <- ContByYear$native
   ContByYear <- ContByYear[,-(1:2)]
   Migrant    <- rowSums(ContByYear)
-  ContByYear <- ContByYear[, colMeans(ContByYear)>=mincont]
+  ContByYear <- ContByYear[, colMeans(ContByYear)>=mincont, drop=FALSE]
   if(!("other" %in% colnames(ContByYear)))ContByYear$other<-0
   ContByYear$other <- ContByYear$other+Migrant-rowSums(ContByYear)
   if("unknown"%in% colnames(ContByYear)){

@@ -53,10 +53,11 @@ f     <- segIBD(files, map, minSNP=15, minL=1.0)
 mean(f)
 #[1] 0.05677993
 
+\dontrun{
 f     <- segIBD(files, map, minSNP=15, minL=1.0, cores=NA)
 mean(f)
 #[1] 0.05677993
-
+}
 
 
 ## Multidimensional scaling of animals:

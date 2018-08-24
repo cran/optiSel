@@ -69,7 +69,7 @@ Freq <- freqlist(
 plot(Freq, ID=1, hap=2, refBreed="Rotbunt")
 plot(Freq, ID=1, hap=2, refBreed="Holstein", Chr=1)
 
-\dontshow{
+\dontrun{
 ## Test for using multiple cores:
 
 Freq1 <- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt", 

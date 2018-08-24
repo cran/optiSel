@@ -6,6 +6,16 @@ makeA <- function(Pedig, keep.only=NULL, keep=keep.only, AFounder=NULL){
     setDF(Pedig)
     }
   
+  if(is.logical(keep)){
+    if(length(keep)!=nrow(Pedig)){stop("The length of logical vector keep must be equal to the number of rows in Pedig.\n")}
+    keep <- Pedig[[1]][!is.na(keep)&keep] 
+  }
+
+  if(is.logical(keep.only)){
+    if(length(keep.only)!=nrow(Pedig)){stop("The length of logical vector keep.only must be equal to the number of rows in Pedig.\n")}
+    keep.only <- Pedig[[1]][!is.na(keep.only)&keep.only] 
+  } 
+  
   ids   <- as.character(Pedig[[1]])
   Pedig <- prePed(Pedig[,1:3], keep=keep, addNum=TRUE)
 

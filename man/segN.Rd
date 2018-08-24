@@ -45,11 +45,11 @@ fN   <- segN(Freq<0.01, map)
 mean(fN)
 #[1] 0.15418
 
+\dontrun{
 fN   <- segN(Freq<0.01, map, cores=NA)
 mean(fN)
 #[1] 0.15418
-
-
+}
 
 
 ## using files:

@@ -61,10 +61,11 @@ fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20)
 mean(fIBDN)
 #[1] 0.01032261
 
+\dontrun{
 fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20, cores=NA)
 mean(fIBDN)
 #[1] 0.01032261
-
+}
 
 ## using files:
 \dontrun{
