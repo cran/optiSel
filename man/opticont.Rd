@@ -12,7 +12,7 @@ Optimization can be done for several breeds or breeding lines simultaneously, wh
 }
 \usage{
 opticont(method, cand, con, bc=NULL,  solver="default", quiet=FALSE, 
-         make.definite=solver=="csdp", ...)
+         make.definite=FALSE, ...)
 }
 
 \arguments{
@@ -28,12 +28,12 @@ opticont(method, cand, con, bc=NULL,  solver="default", quiet=FALSE,
 
 \item{bc}{Named numeric vector with breed contributions, which is only needed if \code{cand$phen} contains individuals from different breeds. It contains the proportion of each breed in a hypothetical multi-breed population for which the diversity across breeds should be managed. The names of the components are the breed names. }
 
-\item{solver}{Name of the solver used for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, \code{"csdp"}, and \code{"slsqp"}. By default, the solver is chosen automatically. The solvers are the same as for function \link[optiSolve]{solvecop} from package \code{optiSolve}.}
+\item{solver}{Name of the solver used for optimization. Available solvers are  \code{"alabama"}, \code{"cccp"}, \code{"cccp2"}, and \code{"slsqp"}. Solver \code{"csdp"} is disabled because the package Rcsdp has been removed from Cran. By default, the solver is chosen automatically. The solvers are the same as for function \link[optiSolve]{solvecop} from package \code{optiSolve}.}
 
 \item{quiet}{If \code{quiet=FALSE} then detailed information is shown.}
 \item{make.definite}{Logical variable indicating whether non-positive-semidefinite matrices should be approximated by positive-definite matrices. This is always done for solvers that are known not to convergue otherwise.}
 
-\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values. Definitions of the tuning parameters can be found for \code{alabama}  in \link[alabama]{auglag} and \link[stats]{optim}, for \code{cccp} and \code{cccp2} in \link[cccp]{ctrl}, for \code{csdp} in \url{https://projects.coin-or.org/Csdp/export/49/trunk/doc/csdpuser.pdf}, and for \code{slsqp}  in \link[nloptr]{nl.opts}.}
+\item{...}{Tuning parameters of the solver. The available parameters depend on the solver and will be printed when function \code{opticont} is used with default values. Definitions of the tuning parameters can be found for \code{alabama}  in \link[alabama]{auglag} and \link[stats]{optim}, for \code{cccp} and \code{cccp2} in \link[cccp]{ctrl}, and for \code{slsqp}  in \link[nloptr]{nl.opts}.}
 
 }
 \details{
@@ -128,8 +128,8 @@ cand$mean
 Ne   <- 100
 L    <- 1/(4*cont$male[1]) + 1/(4*cont$female[1])
 con <- list(uniform    = "female",
-            ub.pKin    = cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne*L)),
-            ub.pKinatN = cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne*L)),
+            ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
+            ub.pKinatN = 1-(1-cand$mean$pKinatN)*(1-1/(2*Ne))^(1/L),
             lb.NC      = cand$mean$NC)
 
 ### Solve the optimization problem
@@ -142,7 +142,7 @@ Offspring  <- opticont("max.BV", cand, con, trace=FALSE)
 rbind(cand$mean, Offspring$mean)   
 #          BV        NC       pKin    pKinatN
 #1 -0.5648208 0.5763161 0.02305245 0.04692670
-#2 -0.4972791 0.5763177 0.02341923 0.04790749
+#2 -0.4972679 0.5763177 0.02342014 0.04790944
 
 ### Data frame with optimum contributions
 
@@ -186,7 +186,7 @@ cand  <- candes(phen=Phen, sKin=sKin, sKinatN=sKinatN, cont=cont)
 Ne <- 100 
 L  <- 4.7 
 con <- list(uniform    = "female",
-            ub.sKinatN = cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne*L)),
+            ub.sKinatN = 1-(1-cand$mean$sKinatN)*(1-1/(2*Ne))^(1/L),
             lb.NC      = 1.03*cand$mean$NC,
             lb.BV      = cand$mean$BV)
 
@@ -232,11 +232,11 @@ Ne <- 100
 
 con  <- list(uniform          = "female", 
              ub.sKin          = cand$mean$sKin - 0.01/L,
-             ub.sKin.Angler   = cand$mean$sKin.Angler   +  (1-cand$mean$sKin.Angler  )/(2*Ne*L),
-             ub.sKin.Holstein = cand$mean$sKin.Holstein + (1-cand$mean$sKin.Holstein )/(2*Ne*L),
-             ub.sKin.Rotbunt  = cand$mean$sKin.Rotbunt  + (1-cand$mean$sKin.Rotbunt  )/(2*Ne*L),
-             ub.sKin.Fleckvieh= cand$mean$sKin.Fleckvieh+ (1-cand$mean$sKin.Fleckvieh)/(2*Ne*L),
-             ub.sKinatN.Angler= cand$mean$sKinatN.Angler+ (1-cand$mean$sKinatN.Angler)/(2*Ne*L), 
+             ub.sKin.Angler   = 1-(1-cand$mean$sKin.Angler)*(1-1/(2*Ne))^(1/L),
+             ub.sKin.Holstein = 1-(1-cand$mean$sKin.Holstein)*(1-1/(2*Ne))^(1/L),
+             ub.sKin.Rotbunt  = 1-(1-cand$mean$sKin.Rotbunt)*(1-1/(2*Ne))^(1/L),
+             ub.sKin.Fleckvieh= 1-(1-cand$mean$sKin.Fleckvieh)*(1-1/(2*Ne))^(1/L),
+             ub.sKinatN.Angler= 1-(1-cand$mean$sKinatN.Angler)*(1-1/(2*Ne))^(1/L), 
              lb.NC            = cand$mean$NC + 0.05/L)
             
 Offspring <- opticont("max.BV", cand, con, trace=FALSE, solver="slsqp")

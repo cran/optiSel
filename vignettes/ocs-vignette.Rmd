@@ -111,9 +111,9 @@ The upper bound for the mean kinship in the offspring should depend on the curre
 cand$mean
 ```
 
-In general, if an upper bound for a kinship $K$ should be defined, it is recommended to derive the threshold value from the desired effective size $N_e$ of the population by the formula
-$$ub.K=\overline{K}+(1-\overline{K})\Delta F,$$
-where $\overline{K}$ is the current mean kinship in the  population, which has been estimated above, $\Delta F=\frac{1}{2 N_eL}$, and $L$ is the generation interval. The critical effective size, i. e. the size below which the fitness of the population steadily decreases, depends on the population and is usually between 50 and 100. But there seems to be a consensus that 50-100 is a long-term viable effective size. To be on the safe side, an effective size of $N_e=100$ should be envisaged [@Meuwissen2009]. 
+In general, if an upper bound for a kinship $K$ should be defined, it is recommended to derive the threshold value from the desired effective size $N_e$ of the population. If the OCS program started at time $t_0$, then the upper bound for the mean kinship at time $t$ should be
+$$ub.K=1-(1-\overline{K}_{t_0})\left(1-\frac{1}{2 N_e}\right)^{\frac{t-t_0}{L}},$$
+where $\overline{K}_{t_0}$ is the mean kinship in the  population at time $t_0$, and $L$ is the generation interval. The critical effective size, i. e. the size below which the fitness of the population steadily decreases, depends on the population and is usually between 50 and 100. But there seems to be a consensus that 50-100 is a long-term viable effective size. To be on the safe side, an effective size of $N_e=100$ should be envisaged [@Meuwissen2009]. 
 
 A list containing the constraints is defined below.
 
@@ -122,7 +122,7 @@ Ne <- 100
 
 con <- list(
   uniform = "female",
-  ub.sKin = cand$mean$sKin + (1-cand$mean$sKin)*(1/(2*Ne*L))
+  ub.sKin = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L)
 )
 ```
 
@@ -150,7 +150,7 @@ Offspring$mean
 ```
 
 The results are OK. If they are not, then try to use another solver. The solver can be specified in parameter `solver` of function [opticont][opticont].
-Available solvers are `"alabama"`, `"cccp"`, `"cccp2"`, `"csdp"`, and `"slsqp"`. By default the solver is chosen automatically. Alternatively, the same solver may be used but with different tuning parameters. The available paramters are displayed if the function [opticont][opticont] is called (as shown above).
+Available solvers are `"alabama"`, `"cccp"`, `"cccp2"`, and `"slsqp"`. By default the solver is chosen automatically. Alternatively, the same solver may be used but with different tuning parameters. The available paramters are displayed if the function [opticont][opticont] is called (as shown above).
 
 The optimum contributions of the selection candidates are in component `parent`:
 
@@ -261,7 +261,7 @@ First we create a list of constraints:
 ```{r}
 con <- list(
   uniform = "female",
-  ub.sKin = cand$mean$sKin + (1-cand$mean$sKin)*(1/(2*Ne*L))
+  ub.sKin = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L)
   )
 ```
 
@@ -286,8 +286,8 @@ The results are the same as in the introductory example (as expected). This appr
 ```{r, results="hide"}
 con <- list(
   uniform    ="female",
-  ub.sKin    = cand$mean$sKin    + (1-cand$mean$sKin)*(1/(2*Ne*L)),
-  ub.sKinatN = cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne*L)),
+  ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
+  ub.sKinatN = 1-(1-cand$mean$sKinatN)*(1-1/(2*Ne))^(1/L),
   lb.NC      = cand$mean$NC
   )
 
@@ -332,7 +332,7 @@ For such a breed it is advisable to allow the use of unrelated individuals from 
 con <- list(
   uniform    = "female",
   lb.NC      = cand$mean$NC + 0.04,
-  ub.sKinatN = cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne*L))
+  ub.sKinatN = 1-(1-cand$mean$sKinatN)*(1-1/(2*Ne))^(1/L)
 )
 Offspring2     <- opticont("min.sKin", cand, con)
 ```
@@ -352,8 +352,8 @@ For endangered breeds the priority of a breeding program could be to recover the
 ```{r, results="hide"} 
 con <- list(
   uniform    = "female",
-  ub.sKin    = cand$mean$sKin    + (1-cand$mean$sKin   )*(1/(2*Ne*L)),
-  ub.sKinatN = cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne*L))
+  ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
+  ub.sKinatN = 1-(1-cand$mean$sKinatN)*(1-1/(2*Ne))^(1/L)
 )
 Offspring <- opticont("max.NC", cand, con)
 ```
@@ -370,8 +370,8 @@ For this breed, maximizing native contributions results in negative genetic gain
 ```{r, results="hide"} 
 con <- list(
   uniform    = "female",
-  ub.sKin    = cand$mean$sKin    + (1-cand$mean$sKin   )*(1/(2*Ne*L)),
-  ub.sKinatN = cand$mean$sKinatN + (1-cand$mean$sKinatN)*(1/(2*Ne*L)),
+  ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
+  ub.sKinatN = 1-(1-cand$mean$sKinatN)*(1-1/(2*Ne))^(1/L),
   lb.BV      = cand$mean$BV
 )
 
@@ -402,7 +402,7 @@ cand <- candes(phen=Cattle, sKin=sKin, sKinatN.Angler=sKinatN, bc="sKin", cont=c
 mKin <- cand$mean$sKinatN.Angler
 con  <- list(
   uniform = c("Angler.female", "Fleckvieh", "Holstein", "Rotbunt"), 
-  ub.sKinatN.Angler = mKin + (1-mKin)*(1/(2*Ne*L))
+  ub.sKinatN.Angler = 1-(1-mKin)*(1-1/(2*Ne))^(1/L)
   )
 ```
 
@@ -522,7 +522,7 @@ This is the traditional approach proposed by @Meuwissen1997. First we create a l
 ```{r}
 con <- list(
   uniform = "female",
-  ub.pKin = cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne*L))
+  ub.pKin = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L)
 )
 ```
 
@@ -541,8 +541,8 @@ This approach may be apppropriate for a population without introgression and com
 ```{r, results="hide"}
 con <- list(
   uniform    = "female",
-  ub.pKin    = cand$mean$pKin    + (1-cand$mean$pKin)*(1/(2*Ne*L)),
-  ub.pKinatN = cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne*L)),
+  ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
+  ub.pKinatN = 1-(1-cand$mean$pKinatN)*(1-1/(2*Ne))^(1/L),
   lb.NC      = cand$mean$NC
 )
 Offspring2     <- opticont("max.BV", cand, con)
@@ -585,7 +585,7 @@ In summary, the alternative approach is to minimize the kinship at native allele
 con  <- list(
   uniform = "female",
   lb.NC   = 1.02*cand$mean$NC,
-  ub.pKin = cand$mean$pKin + (1-cand$mean$pKin)*(1/(2*Ne*L))
+  ub.pKin = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L)
 )
 
 Offspring2  <- opticont("min.pKinatN", cand, con)
@@ -607,8 +607,8 @@ For endangered breeds the priority of a breeding program could be to recover the
 ```{r, results="hide"} 
 con <- list(
   uniform    = "female",
-  ub.pKin    = cand$mean$pKin    + (1-cand$mean$pKin   )*(1/(2*Ne*L)),
-  ub.pKinatN = cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne*L))
+  ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
+  ub.pKinatN = 1-(1-cand$mean$pKinatN)*(1-1/(2*Ne))^(1/L)
 )
 Offspring <- opticont("max.NC", cand, con)
 ```
@@ -622,8 +622,8 @@ For some breeds, native contributions and breeding values are negatively correla
 ```{r, results="hide"} 
 con <- list(
   uniform    = "female",
-  ub.pKin    = cand$mean$pKin    + (1-cand$mean$pKin   )*(1/(2*Ne*L)),
-  ub.pKinatN = cand$mean$pKinatN + (1-cand$mean$pKinatN)*(1/(2*Ne*L)),
+  ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
+  ub.pKinatN = 1-(1-cand$mean$pKinatN)*(1-1/(2*Ne))^(1/L),
   lb.BV      = cand$mean$BV
 )
 Offspring2 <- opticont("max.NC", cand, con)

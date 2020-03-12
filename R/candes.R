@@ -68,7 +68,7 @@
     b <- kinship[[i]]$breed
     if(b != "across breeds"){
       Classes <- ageClass$Class[ageClass$Breed==b]
-      if(class(kinship[[i]])=="quadFun"){
+      if("quadFun" %in% class(kinship[[i]])){
         kinship[[i]]$mkin  <- meankin(phen, kinship[[i]]$Q,  Classes)
       }else{
         kinship[[i]]$mkin1 <- meankin(phen, kinship[[i]]$Q1, Classes)
@@ -80,7 +80,7 @@
   ### Define functions for prediciting Kin and KinatN at time t+1 ###########
 
   for(i in seq_along(kinship)){
-    if(class(kinship[[i]])=="quadFun"){
+    if("quadFun" %in% class(kinship[[i]])){
       kinship[[i]] <- fun4Kin(kinship[[i]], ageClass, phen, N)
     }else{
       kinship[[i]] <- fun4KinatN(kinship[[i]], ageClass, phen, N)

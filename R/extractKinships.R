@@ -4,14 +4,14 @@
   ### Kinships are converted to class quadFun ##########################
   
   for(i in seq_along(obj)){
-    if((class(obj[[i]])!="quadFun") && (class(obj[[i]])!="ratioFun") && (!is.matrix(obj[[i]]))){
+    if(!("quadFun" %in% class(obj[[i]])) && !("ratioFun" %in% class(obj[[i]])) && (!is.matrix(obj[[i]]))){
       stop("All '...' arguments must have class 'quadFun', 'ratioFun', or 'matrix'.\n")
     }
     
     Name <- names(obj)[i]
     if(is.null(Name)){stop(paste("A name must be specified for all additional parameters.\n",sep=""))}
     
-    if(class(obj[[i]])=="quadFun" || class(obj[[i]])=="ratioFun"){
+    if(("quadFun" %in% class(obj[[i]])) || ("ratioFun" %in% class(obj[[i]]))){
       obj[[i]]$name <- Name
     }
     if(is.matrix(obj[[i]])){
@@ -28,7 +28,7 @@
   
   Seq <- seq_along(obj)
   for(i in Seq){
-    if((class(obj[[i]])=="quadFun") && all(phen$Indiv %in% obj[[i]]$id) && (length(BreedNames)>1)){
+    if(("quadFun" %in% class(obj[[i]])) && all(phen$Indiv %in% obj[[i]]$id) && (length(BreedNames)>1)){
       Name <- obj[[i]]$name
       bname <- str_extract(Name, paste(BreedNames, collapse="|"))
       if(!is.na(bname)){stop(paste0("Kinship" , Name, " contains kinships from more than one breed, so the parameter name should not contain a breed name.\n"))}
@@ -57,7 +57,7 @@
       ### Check if all kinship matrices contain either all individuals or ###
       ### all individuals from exactly one breed ############################
       if(all(phen$Indiv %in% obj[[i]]$id)){
-        if(class(obj[[i]])=="ratioFun"){stop("Kinships at native alleles must include individuals from only one breed.\n")}
+        if("ratioFun" %in% class(obj[[i]])){stop("Kinships at native alleles must include individuals from only one breed.\n")}
         obj[[i]]$breed <- "across breeds"
       }else{
         thisBreed <- unique(phen[intersect(phen$Indiv, obj[[i]]$id),"Breed"])
@@ -79,7 +79,7 @@
   
   for(i in seq_along(obj)){
     obj[[i]] <- adjust(obj[[i]], phen$Indiv)
-    if(class(obj[[i]])=="ratioFun"){
+    if("ratioFun" %in% class(obj[[i]])){
       obj[[i]]$NC <- obj[[i]]$NC[obj[[i]]$id]
     }
   }

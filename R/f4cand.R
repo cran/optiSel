@@ -9,24 +9,24 @@
   }else{
     f <- cand$kinship[[optiParam]]
     if(f$breed=="across breeds"){
-      if(class(f)=="ratioFun"){
+      if("ratioFun" %in% class(f)){
         f$d1 <- 0
         f$d2 <- 0
         f$a1 <- 0*f$a1
         f$a2 <- 0*f$a2
       }
-      if(class(f)=="quadFun"){
+      if("quadFun" %in% class(f)){
         f$d <- 0
         f$a <- 0*f$a
       }      
     }else{
-      if(class(f)=="ratioFun"){
+      if("ratioFun" %in% class(f)){
         f$d1 <- f$d1*(bc[f$breed])^2
         f$d2 <- f$d2*(bc[f$breed])^2
         f$a1 <- f$a1* bc[f$breed]
         f$a2 <- f$a2* bc[f$breed]
       }
-      if(class(f)=="quadFun"){
+      if("quadFun" %in% class(f)){
         f$d <- f$d*(bc[f$breed])^2
         f$a <- f$a*(bc[f$breed])
       }

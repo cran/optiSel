@@ -12,9 +12,13 @@ Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int N
   int m, i, iB, nB, cB, iSNP;
   unsigned int chr;
   int M = Armakb.n_elem;
-  char str[100], Line[2000000], merge[2];
+  char str[100], merge[2];
   FILE *fN;
-  
+
+  size_t bufsize = 2*Nfile;  
+  char* Line = (char*)malloc(bufsize*sizeof(char));
+  if(Line == NULL){error_return("Memory allocation failed.");};
+   
   int* indexN        = (int*)calloc(N,sizeof(int));                    /*     N - vector */
   double* kb         = (double*)calloc(Armakb.n_elem, sizeof(double)); /*    MatChr+1 - vector */
   double** BreedCont = (double**)calloc(255, sizeof(double*));  
@@ -39,17 +43,18 @@ Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int N
   for(chr=0;chr<pathNative.size();chr++){
     fN = fopen(pathNative[chr].c_str(),"r");
     if(fN== NULL){error_return("File opening failed.");}; 
-    fgets(Line,2000000,fN);
+    while(fgetc(fN)!='\n'){}
     m=0;
     while(fscanf(fN, "%s ", str)>0){
-      fgets(Line, 2*Nfile, fN);
-      for(i=0; i<N; i++){
-        iB = (int) Line[2*indexN[i]];
-        hasCont[iB] = 1;
-        BreedCont[iB][i] += kb[iSNP];
+      if(fgets(Line, 2*Nfile, fN)!=NULL){
+        for(i=0; i<N; i++){
+          iB = (int) Line[2*indexN[i]];
+          hasCont[iB] = 1;
+          BreedCont[iB][i] += kb[iSNP];
+        }
+      m = m + 1;
+      iSNP = iSNP + 1;
       }
-    m = m + 1;
-    iSNP = iSNP + 1;
     }
     if(m!=MatChr.at(chr)){Rprintf("Numbers of marker in map and file are not equal at chromosome %d\n",chr);}
     fclose(fN);

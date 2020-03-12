@@ -21,10 +21,6 @@ rcpp_makeA_lowMem <- function(numSire, numDam, AFounder, numFounder, IndivName, 
     .Call(`_optiSel_rcpp_makeA_lowMem`, numSire, numDam, AFounder, numFounder, IndivName, numKeep, ainKeep, anOff)
 }
 
-rcpp_nativecont <- function(pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb) {
-    .Call(`_optiSel_rcpp_nativecont`, pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb)
-}
-
 rcpp_segBreedComp <- function(pathNative, Nfile, N, ArmaIndexN, MatChr, Armakb) {
     .Call(`_optiSel_rcpp_segBreedComp`, pathNative, Nfile, N, ArmaIndexN, MatChr, Armakb)
 }

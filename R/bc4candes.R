@@ -16,7 +16,7 @@
     if(!(bcKin %in% names(kinship))){
       stop(paste0("bc=", bcKin, " is not a valid name of a kinship.\n"))
     }
-    if(class(kinship[[bcKin]])!="quadFun"){
+    if(!("quadFun" %in% class(kinship[[bcKin]]))){
       stop(paste0("bc=", bcKin, " is not a kinship.\n"))
     }
     if(kinship[[bcKin]]$breed != "across breeds"){
@@ -25,7 +25,7 @@
   }else{
     iKin <- NA
     for(i in rev(seq_along(kinship))){
-      if((class(kinship[[i]])=="quadFun") && (kinship[[i]]$breed == "across breeds")){
+      if(("quadFun" %in% class(kinship[[i]])) && (kinship[[i]]$breed == "across breeds")){
         iKin <- i
       }
     }

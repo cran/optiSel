@@ -45,20 +45,21 @@ Rcpp::NumericMatrix rcpp_segN(std::string pathNative, int NFileN, int NC, const 
   
   m=0;
   while(fscanf(fN, "%s ", str2)>0){
-    fgets(Line, 2*NFileN, fN);
-    for(i=0; i<NC;i++){
-      Nat[i] = ((Line[2*indexN[i]]=='1')?1:0);
-    }
-    for(i=0; i<NC;i++){
-      if(Nat[i]>0){
-        for(j=0; j<i+1; j++){
-          if(Nat[j]>0){
-            fsegN[i][j] += Nkb[m];
+    if(fgets(Line, 2*NFileN, fN)!=NULL){
+      for(i=0; i<NC;i++){
+        Nat[i] = ((Line[2*indexN[i]]=='1')?1:0);
+      }
+      for(i=0; i<NC;i++){
+        if(Nat[i]>0){
+          for(j=0; j<i+1; j++){
+            if(Nat[j]>0){
+              fsegN[i][j] += Nkb[m];
+            }
           }
         }
       }
+      m=m+1;
     }
-    m=m+1;
   }
   fclose(fN);	
   

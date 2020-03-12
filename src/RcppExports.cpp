@@ -102,22 +102,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_nativecont
-Rcpp::NumericVector rcpp_nativecont(std::string pathNative, int NFileN, int NC, const arma::ivec& ArmaIndexN, int M, const arma::vec& ArmaNkb);
-RcppExport SEXP _optiSel_rcpp_nativecont(SEXP pathNativeSEXP, SEXP NFileNSEXP, SEXP NCSEXP, SEXP ArmaIndexNSEXP, SEXP MSEXP, SEXP ArmaNkbSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type pathNative(pathNativeSEXP);
-    Rcpp::traits::input_parameter< int >::type NFileN(NFileNSEXP);
-    Rcpp::traits::input_parameter< int >::type NC(NCSEXP);
-    Rcpp::traits::input_parameter< const arma::ivec& >::type ArmaIndexN(ArmaIndexNSEXP);
-    Rcpp::traits::input_parameter< int >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type ArmaNkb(ArmaNkbSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_nativecont(pathNative, NFileN, NC, ArmaIndexN, M, ArmaNkb));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rcpp_segBreedComp
 Rcpp::NumericMatrix rcpp_segBreedComp(std::vector<std::string> pathNative, int Nfile, int N, const arma::ivec& ArmaIndexN, const arma::ivec& MatChr, const arma::vec& Armakb);
 RcppExport SEXP _optiSel_rcpp_segBreedComp(SEXP pathNativeSEXP, SEXP NfileSEXP, SEXP NSEXP, SEXP ArmaIndexNSEXP, SEXP MatChrSEXP, SEXP ArmakbSEXP) {
@@ -257,7 +241,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_optiSel_rcpp_haplofreq", (DL_FUNC) &_optiSel_rcpp_haplofreq, 21},
     {"_optiSel_rcpp_makeA", (DL_FUNC) &_optiSel_rcpp_makeA, 5},
     {"_optiSel_rcpp_makeA_lowMem", (DL_FUNC) &_optiSel_rcpp_makeA_lowMem, 8},
-    {"_optiSel_rcpp_nativecont", (DL_FUNC) &_optiSel_rcpp_nativecont, 6},
     {"_optiSel_rcpp_segBreedComp", (DL_FUNC) &_optiSel_rcpp_segBreedComp, 6},
     {"_optiSel_rcpp_segIBD", (DL_FUNC) &_optiSel_rcpp_segIBD, 16},
     {"_optiSel_rcpp_segIBDandN", (DL_FUNC) &_optiSel_rcpp_segIBDandN, 15},

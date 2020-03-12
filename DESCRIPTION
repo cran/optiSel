@@ -1,8 +1,8 @@
 Package: optiSel
 Type: Package
 Title: Optimum Contribution Selection and Population Genetics
-Version: 2.0.2
-Date: 2018-08-24
+Version: 2.0.3
+Date: 2020-03-12
 Author: Robin Wellmann
 Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
 Depends: R (>= 3.5.0)
@@ -16,8 +16,8 @@ LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr, ggplot2, rmarkdown
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 7.1.0
 NeedsCompilation: yes
-Packaged: 2018-08-24 11:15:30 UTC; Robin
+Packaged: 2020-03-12 10:12:36 UTC; Robin
 Repository: CRAN
-Date/Publication: 2018-08-24 12:20:02 UTC
+Date/Publication: 2020-03-12 11:20:02 UTC

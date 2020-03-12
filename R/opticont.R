@@ -1,11 +1,11 @@
 
 
-"opticont"<-function(method, cand, con, bc=NULL,  solver="default", quiet=FALSE, make.definite=solver=="csdp", ...){
+"opticont"<-function(method, cand, con, bc=NULL,  solver="default", quiet=FALSE, make.definite=FALSE, ...){
   ################################
   ###   Check the parameters   ###
   ################################
   
-  if(class(cand)!="candes"){stop("Parameter 'cand' must be created with function candes.")}
+  if(!("candes" %in% class(cand))){stop("Parameter 'cand' must be created with function candes.")}
   
   BreedNames   <- names(cand$breed)
   KinshipNames <- names(cand$kinship)
