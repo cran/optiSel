@@ -109,8 +109,8 @@
     opt <- do.call(ecos.control, opt)
     
     dims <- list(l=length(h), q=NULL, e=0L)
-    A    <- Matrix(A, sparse=TRUE)
-    G    <- Matrix(G, sparse=TRUE)
+    #A    <- Matrix(A, sparse=TRUE)
+    #G    <- Matrix(G, sparse=TRUE)
     sig  <- ifelse(max,-1,1)
     
     res    <- ECOS_csolve(c=sig*c(Kin), G=G, h=h, dims=dims, A=A, b=b, int_vars=as.integer(1:nVar), control=opt)
