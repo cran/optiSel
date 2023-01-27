@@ -29,7 +29,7 @@
     }
     
     if(var %in% KinshipNames){
-      if(class(cand$kinship[[var]])=="quadFun"){
+      if(inherits(cand$kinship[[var]], "quadFun")){
         sy[i,"Val"] <- c(t(x)%*%(cand$kinship[[var]]$Q)%*%x/(thisbc^2)) 
         sy[i,"Val"] <- sy[i,"Val"] + sum(x*cand$kinship[[var]]$a)/thisbc + cand$kinship[[var]]$d
       }

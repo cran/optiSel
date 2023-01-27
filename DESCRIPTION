@@ -1,8 +1,8 @@
 Package: optiSel
 Type: Package
 Title: Optimum Contribution Selection and Population Genetics
-Version: 2.0.5
-Date: 2021-01-12
+Version: 2.0.6
+Date: 2023-01-27
 Author: Robin Wellmann
 Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
 Depends: R (>= 3.5.0)
@@ -18,6 +18,6 @@ Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 NeedsCompilation: yes
-Packaged: 2021-01-12 11:23:56 UTC; Robin
+Packaged: 2023-01-27 09:50:20 UTC; rowel
 Repository: CRAN
-Date/Publication: 2021-01-12 14:20:02 UTC
+Date/Publication: 2023-01-27 17:10:02 UTC

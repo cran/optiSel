@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // rcpp_completeness
 Rcpp::DataFrame rcpp_completeness(Rcpp::StringVector Indiv, const arma::ivec& ArmanumSire, const arma::ivec& ArmanumDam, int maxd);
 RcppExport SEXP _optiSel_rcpp_completeness(SEXP IndivSEXP, SEXP ArmanumSireSEXP, SEXP ArmanumDamSEXP, SEXP maxdSEXP) {

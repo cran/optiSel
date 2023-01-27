@@ -5,7 +5,6 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
 Rcpp::NumericMatrix rcpp_segIBDandNVersion2(std::string pathThisBreed, int NFileC, int NC, const arma::ivec& ArmaIndexC, const arma::mat& ArmaNat, int minSNP, double minL, const arma::vec& ArmaPos, const arma::vec& Armakb, double a, std::string stdsymB, int skip, int cskip) {

@@ -35,8 +35,9 @@ Animal breeding relies on the prediction of breeding values of selection candida
 
 Note that the calculation of breeding values is not included as there already exist a couple of R packages for this purpose. Recommended are the free package [MCMCglmm][1] for small and medium sized data sets, and package [asreml][2] for large data sets.
 
-[1]: https://www.jstatsoft.org/article/view/v033i02/v33i02.pdf
-[2]: https://www.vsni.co.uk/downloads/asreml/release2/doc/asreml-R.pdf
+[1]: https://www.jstatsoft.org/htaccess.php?volume=033&type=i&issue=02&filename=paper
+[2]: https://asreml.kb.vsni.co.uk/wp-content/uploads/sites/3/ASReml-R-Reference-Manual-4.pdf
+
 
 ## Data Preparation
 

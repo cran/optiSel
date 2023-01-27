@@ -5,7 +5,6 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
 Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, std::string pathFreq, std::string pathOrig, std::vector< std::string > MarkerName, std::string stdBreedSymbol, const arma::ivec& ArmaIndexC, const arma::imat& ArmaIndexR, int NFileC,int NFileR, int NC, const arma::ivec& ArmaNR, int minSNP, double minL, double ubFreq, const arma::vec& ArmaPos, std::string  stdsymB, int skip, int cskip, int getFreq, int getOrig) {
@@ -249,7 +248,8 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
           }
         }
         if(saveFreq){
-          sprintf(smaxFreq, "%0.3f", maxFreq);
+          /* sprintf(smaxFreq, "%0.3f", maxFreq);*/
+          snprintf(smaxFreq, 6*sizeof(char),"%0.3f", maxFreq);
           fLine[6*i+0]=smaxFreq[0];
           fLine[6*i+1]=smaxFreq[1];
           fLine[6*i+2]=smaxFreq[2];
@@ -322,7 +322,8 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
         }
       }
       if(saveFreq){
-        sprintf(smaxFreq, "%0.3f", maxFreq);
+       /* sprintf(smaxFreq, "%0.3f", maxFreq);*/
+        snprintf(smaxFreq, 6*sizeof(char),"%0.3f", maxFreq);
         fLine[6*i+0]=smaxFreq[0];
         fLine[6*i+1]=smaxFreq[1];
         fLine[6*i+2]=smaxFreq[2];

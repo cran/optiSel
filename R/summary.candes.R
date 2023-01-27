@@ -1,7 +1,7 @@
 
 "summary.candes"<-function(object, tlim=range(object$phen$Born, na.rm=TRUE), histNe=NA, base=tlim[1], df=4, ...){
   ### Check arguments ###
-  if(class(object)!="candes"){stop("Argument object must be created with function candes.\n")}
+  if(!inherits(object,"candes")){stop("Argument object must be created with function candes.\n")}
   if(!("Born" %in% colnames(object$phen))){     stop("Column 'Born' with Year-of-Birth is missing.\n")}
   if(!("I" %in% colnames(object$phen))){        stop("Column 'I' with the generation interval is missing.\n")}
   if(!("Offspring" %in% colnames(object$phen))){stop("Column 'Offspring' indicating the individuals with offspring.\n")}
@@ -52,10 +52,10 @@
   
   nameNatK <- character(0)
   for(i in seq_along(object$kinship)){
-    if(class(object$kinship[[i]])%in% c("quadFun","ratioFun")){
+    if(inherits(object$kinship[[i]],"quadFun") || inherits(object$kinship[[i]],"ratioFun")){
       name <- object$kinship[[i]]$name
       Param[[name]] <- NA
-      if(class(object$kinship[[i]])=="ratioFun"){
+      if(inherits(object$kinship[[i]],"ratioFun")){
         nameNatK <- c(nameNatK, name)
         }
     }
@@ -70,11 +70,11 @@
     diag(Use) <- FALSE
     
     for(k in seq_along(object$kinship)){
-      if(class(object$kinship[[k]])=="quadFun"){
+      if(inherits(object$kinship[[k]],"quadFun")){
         name <- object$kinship[[k]]$name
         Param[i, name] <- sum((object$kinship[[k]]$Q)[Use])/Nobs
       }
-      if(class(object$kinship[[k]])=="ratioFun"){
+      if(inherits(object$kinship[[k]],"ratioFun")){
         name <- object$kinship[[k]]$name
         Param[i, name] <- sum((object$kinship[[k]]$Q1)[Use])/sum((object$kinship[[k]]$Q2)[Use])
       }

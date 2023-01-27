@@ -5,7 +5,6 @@
 using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp11)]] 
 // [[Rcpp::export]]
 
 Rcpp::NumericMatrix rcpp_genecont(const arma::ivec& numSire, const arma::ivec& numDam, const arma::ivec&  numAnc, const arma::ivec& numKeep, const arma::ivec& ainKeep, const Rcpp::CharacterVector rNames, const Rcpp::CharacterVector cNames, const arma::ivec& anOff){

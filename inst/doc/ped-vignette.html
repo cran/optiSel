@@ -12,59 +12,107 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2021-01-12" />
+<meta name="date" content="2023-01-27" />
 
-<title></title>
+<title>1. Pedigree-based Evaluations</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
-
-
-<style type="text/css">code{white-space: pre;}</style>
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
 <style type="text/css" data-origin="pandoc">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -73,13 +121,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -90,8 +145,210 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
+<style type="text/css">
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -103,15 +360,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore"><ol style="list-style-type: decimal">
-<li>Pedigree-based Evaluations</li>
-</ol></h1>
+<h1 class="title toc-ignore">1. Pedigree-based Evaluations</h1>
 <h4 class="author">Robin Wellmann</h4>
-<h4 class="date">2021-01-12</h4>
+<h4 class="date">2023-01-27</h4>
 
 
 
-<p>Animal breeding relies on the prediction of breeding values of selection candidates and subsequent selection of animals for breeding in a way that restricts the rate of inbreeeding and maintains genetic originality of the breed. The methods of choice are the utilization of pedigree data, of genetic marker data, or a combination of both. This section covers the following evaluations based on pedigree data:</p>
+<p>Animal breeding relies on the prediction of breeding values of
+selection candidates and subsequent selection of animals for breeding in
+a way that restricts the rate of inbreeeding and maintains genetic
+originality of the breed. The methods of choice are the utilization of
+pedigree data, of genetic marker data, or a combination of both. This
+section covers the following evaluations based on pedigree data:</p>
 <ul>
 <li><a href="#data-preparation">Data Preparation</a>
 <ul>
@@ -125,62 +385,90 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Number of Maximum Generations Traced</li>
 <li>Index of Pedigree Completeness</li>
 </ul></li>
-<li><a href="#individual-specific-parameters">Individual Specific Parameters</a>
+<li><a href="#individual-specific-parameters">Individual Specific
+Parameters</a>
 <ul>
 <li><a href="#inbreeding-coefficients">Inbreeding Coefficients</a></li>
 <li><a href="#breed-composition">Breed Composition</a></li>
 <li><a href="#kinship">Kinship</a></li>
-<li><a href="#kinship-at-native-alleles">Kinship at Native Alleles</a></li>
+<li><a href="#kinship-at-native-alleles">Kinship at Native
+Alleles</a></li>
 </ul></li>
-<li><a href="#population-specific-parameters">Population Specific Parameters</a>
+<li><a href="#population-specific-parameters">Population Specific
+Parameters</a>
 <ul>
 <li><a href="#genetic-diversity">Genetic Diversity</a></li>
-<li><a href="#kinship-and-diversity-at-native-alleles">Kinship and Diversity at Native Alleles</a></li>
+<li><a href="#kinship-and-diversity-at-native-alleles">Kinship and
+Diversity at Native Alleles</a></li>
 <li><a href="#native-effective-size">Native Effective Size</a></li>
 <li><a href="#effective-size">Effective Size</a></li>
-<li><a href="#change-of-native-genome-equivalent-and-ne">Change of Native Genome Equivalent and Ne</a></li>
-<li><a href="#change-of-breed-composition">Change of Breed Compostion</a></li>
+<li><a href="#change-of-native-genome-equivalent-and-ne">Change of
+Native Genome Equivalent and Ne</a></li>
+<li><a href="#change-of-breed-composition">Change of Breed
+Compostion</a></li>
 </ul></li>
 </ul>
-<p>Note that the calculation of breeding values is not included as there already exist a couple of R packages for this purpose. Recommended are the free package <a href="https://www.jstatsoft.org/article/view/v033i02/v33i02.pdf">MCMCglmm</a> for small and medium sized data sets, and package <a href="https://www.vsni.co.uk/downloads/asreml/release2/doc/asreml-R.pdf">asreml</a> for large data sets.</p>
+<p>Note that the calculation of breeding values is not included as there
+already exist a couple of R packages for this purpose. Recommended are
+the free package <a href="https://www.jstatsoft.org/htaccess.php?volume=033&amp;type=i&amp;issue=02&amp;filename=paper">MCMCglmm</a>
+for small and medium sized data sets, and package <a href="https://asreml.kb.vsni.co.uk/wp-content/uploads/sites/3/ASReml-R-Reference-Manual-4.pdf">asreml</a>
+for large data sets.</p>
 <div id="data-preparation" class="section level2">
 <h2>Data Preparation</h2>
-<p>A pedigree is a data frame or data table with the first three columns being the individual ID, the sire ID, and the dam ID. Depending on the intended evaluation, the pedigree may also provide the names of the breeds (column <code>Breed</code>), the years of birth or generation numbers (column <code>Born</code> ), and the sexes (column <code>Sex</code>). A toy example of a pedigree may look like this:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedigree &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
-  <span class="dt">Indiv=</span> <span class="kw">c</span>(<span class="st">&quot;Iffes&quot;</span>,     <span class="st">&quot;Peter&quot;</span>,    <span class="st">&quot;Anna-Lena&quot;</span>, <span class="st">&quot;Kevin&quot;</span>,    <span class="st">&quot;Horst&quot;</span>),
-  <span class="dt">Sire =</span> <span class="kw">c</span>(<span class="st">&quot;Kevin&quot;</span>,     <span class="st">&quot;Kevin&quot;</span>,     <span class="ot">NA</span>,          <span class="dv">0</span>,         <span class="st">&quot;Horst&quot;</span>),
-  <span class="dt">Dam  =</span> <span class="kw">c</span>(<span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;Angelika&quot;</span>, <span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;&quot;</span>,           <span class="ot">NA</span>),
-  <span class="dt">Breed=</span> <span class="kw">c</span>(<span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Angler&quot;</span>,   <span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Holstein&quot;</span>, <span class="st">&quot;Angler&quot;</span>),
-  <span class="dt">Born =</span> <span class="kw">c</span>(<span class="dv">2015</span>,        <span class="dv">2016</span>,       <span class="dv">2011</span>,       <span class="dv">2010</span>,        <span class="dv">2015</span>)
-  )
-Pedigree</code></pre></div>
+<p>A pedigree is a data frame or data table with the first three columns
+being the individual ID, the sire ID, and the dam ID. Depending on the
+intended evaluation, the pedigree may also provide the names of the
+breeds (column <code>Breed</code>), the years of birth or generation
+numbers (column <code>Born</code> ), and the sexes (column
+<code>Sex</code>). A toy example of a pedigree may look like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Pedigree <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Indiv=</span> <span class="fu">c</span>(<span class="st">&quot;Iffes&quot;</span>,     <span class="st">&quot;Peter&quot;</span>,    <span class="st">&quot;Anna-Lena&quot;</span>, <span class="st">&quot;Kevin&quot;</span>,    <span class="st">&quot;Horst&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sire =</span> <span class="fu">c</span>(<span class="st">&quot;Kevin&quot;</span>,     <span class="st">&quot;Kevin&quot;</span>,     <span class="cn">NA</span>,          <span class="dv">0</span>,         <span class="st">&quot;Horst&quot;</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dam  =</span> <span class="fu">c</span>(<span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;Angelika&quot;</span>, <span class="st">&quot;Chantalle&quot;</span>, <span class="st">&quot;&quot;</span>,           <span class="cn">NA</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Breed=</span> <span class="fu">c</span>(<span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Angler&quot;</span>,   <span class="st">&quot;Angler&quot;</span>,    <span class="st">&quot;Holstein&quot;</span>, <span class="st">&quot;Angler&quot;</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Born =</span> <span class="fu">c</span>(<span class="dv">2015</span>,        <span class="dv">2016</span>,       <span class="dv">2011</span>,       <span class="dv">2010</span>,        <span class="dv">2015</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Pedigree</span></code></pre></div>
 <pre><code>##       Indiv  Sire       Dam    Breed Born
 ## 1     Iffes Kevin Chantalle   Angler 2015
 ## 2     Peter Kevin  Angelika   Angler 2016
 ## 3 Anna-Lena  &lt;NA&gt; Chantalle   Angler 2011
 ## 4     Kevin     0           Holstein 2010
 ## 5     Horst Horst      &lt;NA&gt;   Angler 2015</code></pre>
-<p>Individual IDs must be unique and should not contain blank spaces. The above pedigree contains a loop, so it is not a valid pedigree (Horst is an ancestor of himself). Function <a href="https://rdrr.io/cran/optiSel/man/prePed.html">prePed</a> will prepare the pedigree and turn it into a valid one. The function</p>
+<p>Individual IDs must be unique and should not contain blank spaces.
+The above pedigree contains a loop, so it is not a valid pedigree (Horst
+is an ancestor of himself). Function <a href="https://rdrr.io/cran/optiSel/man/prePed.html">prePed</a> will
+prepare the pedigree and turn it into a valid one. The function</p>
 <ul>
-<li>renames the first three columns as <code>Indiv</code>, <code>Sire</code>, <code>Dam</code> (if needed),</li>
-<li>replaces 0, &quot;&quot;, and &quot; &quot; in columns <code>Sire</code> and <code>Dam</code> by <code>NA</code>,</li>
+<li>renames the first three columns as <code>Indiv</code>,
+<code>Sire</code>, <code>Dam</code> (if needed),</li>
+<li>replaces 0, ““, and” ” in columns <code>Sire</code> and
+<code>Dam</code> by <code>NA</code>,</li>
 <li>breaks loops and reports which animal was included in a loop,</li>
-<li>adds or updates column <code>Sex</code>. Sexes will be denoted as <code>male</code> and <code>female</code>.</li>
-<li>adds one row for each founder if the row is not already included,</li>
-<li>sorts the pedigree such that individuals appear in the pedigree before they appear as parent,</li>
-<li>guesses the breed name of animals with missing breeds (including added founders),</li>
-<li>adds columns <code>numIndiv</code>, <code>numSire</code>, and <code>numDam</code> with numeric IDs of the individuals (if <code>addNum=TRUE</code> is specified),</li>
-<li>sets the breed name of founders from <code>thisBreed</code> that are born after <code>lastNative</code> to unknown (if these parameters are specified).</li>
+<li>adds or updates column <code>Sex</code>. Sexes will be denoted as
+<code>male</code> and <code>female</code>.</li>
+<li>adds one row for each founder if the row is not already
+included,</li>
+<li>sorts the pedigree such that individuals appear in the pedigree
+before they appear as parent,</li>
+<li>guesses the breed name of animals with missing breeds (including
+added founders),</li>
+<li>adds columns <code>numIndiv</code>, <code>numSire</code>, and
+<code>numDam</code> with numeric IDs of the individuals (if
+<code>addNum=TRUE</code> is specified),</li>
+<li>sets the breed name of founders from <code>thisBreed</code> that are
+born after <code>lastNative</code> to unknown (if these parameters are
+specified).</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;optiSel&quot;</span>)
-Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(Pedigree)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;optiSel&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(Pedigree)</span></code></pre></div>
 <pre><code>## Pedigree loops were detected. We recommend to correct them manually before
 ## using prePed(). The parents of the following individuals are set to unknown
 ## to remove the loops.
 ##        Sire  Dam
 ## Horst Horst &lt;NA&gt;</code></pre>
 <p>The result is:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedig[,<span class="op">-</span><span class="dv">1</span>]</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Pedig[,<span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
 <pre><code>##            Sire       Dam    Sex          Breed Born   I Offspring
 ## Chantalle  &lt;NA&gt;      &lt;NA&gt; female         Angler   NA  NA      TRUE
 ## Angelika   &lt;NA&gt;      &lt;NA&gt; female         Angler   NA  NA      TRUE
@@ -189,86 +477,146 @@ Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(Pedigree)</co
 ## Anna-Lena  &lt;NA&gt; Chantalle   &lt;NA&gt;         Angler 2011 NaN     FALSE
 ## Iffes     Kevin Chantalle   &lt;NA&gt;         Angler 2015   5     FALSE
 ## Peter     Kevin  Angelika   &lt;NA&gt;         Angler 2016   6     FALSE</code></pre>
-<p>Plots can be created to show specified individuals and their relatives. In the first step, function <a href="https://rdrr.io/cran/optiSel/man/subPed.html">subPed</a> is used below to create a small pedigree that includes only the individuals to be plotted, which are <code>&quot;Chantalle&quot;</code> and <code>&quot;Angelika&quot;</code>, up to <code>prevGen</code> previous (ancestral) generations, and up to <code>succGen</code> succeeding (descendant) generations. The pedigree was plotted with function <a href="https://rdrr.io/cran/optiSel/man/pedplot.html">pedplot</a>. It is basically a wrapper function for function <code>plot.pedigree</code> from package <code>kinship2</code>, but has additional arguments. Parameter <code>label</code> contains the columns of the pedigree to be used for labeling. By default, symbols of individuals included in vector <code>keep</code> are plotted in black and for individuals from other breeds the symbol is crossed out.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sPed &lt;-<span class="st"> </span><span class="kw">subPed</span>(Pedig, <span class="dt">keep =</span> <span class="kw">c</span>(<span class="st">&quot;Chantalle&quot;</span>,<span class="st">&quot;Angelika&quot;</span>), <span class="dt">prevGen =</span> <span class="dv">2</span>, <span class="dt">succGen =</span> <span class="dv">1</span>)
-<span class="kw">pedplot</span>(sPed, <span class="dt">label =</span> <span class="kw">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;Breed&quot;</span>), <span class="dt">cex =</span> <span class="fl">0.55</span>)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>Hereby, <code>SAnna-Lena</code> denotes the unknown sire of <code>Anna-Lena</code>.</p>
+<p>Plots can be created to show specified individuals and their
+relatives. In the first step, function <a href="https://rdrr.io/cran/optiSel/man/subPed.html">subPed</a> is used
+below to create a small pedigree that includes only the individuals to
+be plotted, which are <code>&quot;Chantalle&quot;</code> and
+<code>&quot;Angelika&quot;</code>, up to <code>prevGen</code> previous (ancestral)
+generations, and up to <code>succGen</code> succeeding (descendant)
+generations. The pedigree was plotted with function <a href="https://rdrr.io/cran/optiSel/man/pedplot.html">pedplot</a>. It is
+basically a wrapper function for function <code>plot.pedigree</code>
+from package <code>kinship2</code>, but has additional arguments.
+Parameter <code>label</code> contains the columns of the pedigree to be
+used for labeling. By default, symbols of individuals included in vector
+<code>keep</code> are plotted in black and for individuals from other
+breeds the symbol is crossed out.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sPed <span class="ot">&lt;-</span> <span class="fu">subPed</span>(Pedig, <span class="at">keep =</span> <span class="fu">c</span>(<span class="st">&quot;Chantalle&quot;</span>,<span class="st">&quot;Angelika&quot;</span>), <span class="at">prevGen =</span> <span class="dv">2</span>, <span class="at">succGen =</span> <span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pedplot</span>(sPed, <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;Breed&quot;</span>), <span class="at">cex =</span> <span class="fl">0.55</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Hereby, <code>SAnna-Lena</code> denotes the unknown sire of
+<code>Anna-Lena</code>.</p>
 </div>
 <div id="quality-control" class="section level2">
 <h2>Quality Control</h2>
-<p>The next step is to find out if the completeness of the pedigree is sufficient for the intended evaluation, and to identify individuals with sufficient pedigree information. This will be demonstrated at the example of a pedigree of Hinterwald cattle. Data frame <code>Phen</code> contains selection candidates with breeding values in column <code>BV</code>, and data frame <code>PedigWithErrors</code> contains their pedigree. The column with individual IDs is called <code>Indiv</code> in both data sets.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)
-<span class="kw">data</span>(<span class="st">&quot;Phen&quot;</span>)
-Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors)</code></pre></div>
-<p>Function <a href="https://rdrr.io/cran/optiSel/man/completeness.html">completeness</a> can be used to determine the proportion of known ancestors of each specified individual in each ancestral generation:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">compl &lt;-<span class="st"> </span><span class="kw">completeness</span>(Pedig, <span class="dt">keep=</span>Phen<span class="op">$</span>Indiv, <span class="dt">by=</span><span class="st">&quot;Indiv&quot;</span>)
-<span class="kw">head</span>(compl)</code></pre></div>
+<p>The next step is to find out if the completeness of the pedigree is
+sufficient for the intended evaluation, and to identify individuals with
+sufficient pedigree information. This will be demonstrated at the
+example of a pedigree of Hinterwald cattle. Data frame <code>Phen</code>
+contains selection candidates with breeding values in column
+<code>BV</code>, and data frame <code>PedigWithErrors</code> contains
+their pedigree. The column with individual IDs is called
+<code>Indiv</code> in both data sets.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;Phen&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(PedigWithErrors)</span></code></pre></div>
+<p>Function <a href="https://rdrr.io/cran/optiSel/man/completeness.html">completeness</a>
+can be used to determine the proportion of known ancestors of each
+specified individual in each ancestral generation:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>compl <span class="ot">&lt;-</span> <span class="fu">completeness</span>(Pedig, <span class="at">keep=</span>Phen<span class="sc">$</span>Indiv, <span class="at">by=</span><span class="st">&quot;Indiv&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(compl)</span></code></pre></div>
 <pre><code>##               Indiv Generation Completeness
-## 277 276000891901739          0          1.0
-## 278 276000891901739          1          0.5
-## 289 276000891471209          0          1.0
-## 290 276000891471209          1          0.5
-## 293 276000891862755          0          1.0
-## 294 276000891862755          1          0.5</code></pre>
-<p>or the mean completeness of the pedigrees of specified individuals within sexes:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">compl &lt;-<span class="st"> </span><span class="kw">completeness</span>(Pedig, <span class="dt">keep=</span>Phen<span class="op">$</span>Indiv, <span class="dt">by=</span><span class="st">&quot;Sex&quot;</span>)
-<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
-<span class="kw">ggplot</span>(compl, <span class="kw">aes</span>(<span class="dt">x=</span>Generation, <span class="dt">y=</span>Completeness, <span class="dt">col=</span>Sex)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>()</code></pre></div>
+## 269 276000891901739          0          1.0
+## 270 276000891901739          1          0.5
+## 279 276000891471209          0          1.0
+## 280 276000891471209          1          0.5
+## 283 276000891862755          0          1.0
+## 284 276000891862755          1          0.5</code></pre>
+<p>or the mean completeness of the pedigrees of specified individuals
+within sexes:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>compl <span class="ot">&lt;-</span> <span class="fu">completeness</span>(Pedig, <span class="at">keep=</span>Phen<span class="sc">$</span>Indiv, <span class="at">by=</span><span class="st">&quot;Sex&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(compl, <span class="fu">aes</span>(<span class="at">x=</span>Generation, <span class="at">y=</span>Completeness, <span class="at">col=</span>Sex)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The completeness of the pedigree of each individual can be summarized with function <a href="https://rdrr.io/cran/optiSel/man/summary.Pedig.html">summary</a>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Summary &lt;-<span class="st"> </span><span class="kw">summary</span>(Pedig, <span class="dt">keep.only=</span>Phen<span class="op">$</span>Indiv)
-<span class="kw">head</span>(Summary[Summary<span class="op">$</span>equiGen<span class="op">&gt;</span><span class="fl">3.0</span>, <span class="op">-</span><span class="dv">1</span>])</code></pre></div>
+<p>The completeness of the pedigree of each individual can be summarized
+with function <a href="https://rdrr.io/cran/optiSel/man/summary.Pedig.html">summary</a>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(Pedig, <span class="at">keep.only=</span>Phen<span class="sc">$</span>Indiv)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Summary[Summary<span class="sc">$</span>equiGen<span class="sc">&gt;</span><span class="fl">3.0</span>, <span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##                  equiGen fullGen maxGen       PCI  Inbreeding
 ## 276000812496744 6.032959       3     12 0.9677419 0.008903503
-## 276000891862786 6.565186       3     12 0.9677419 0.013700247
 ## 276000812202159 5.789307       1     12 0.7692308 0.027274609
 ## 276000812749837 4.419678       2     12 0.8333333 0.005828857
 ## 276000891618444 4.234375       1     12 0.5454545 0.000000000
-## 276000812922523 5.575928       2     12 0.8333333 0.003438234</code></pre>
+## 276000812922523 5.575928       2     12 0.8333333 0.003438234
+## 276000891862786 6.565186       3     12 0.9677419 0.013700247</code></pre>
 <p>The following parameters were computed for each individual:</p>
 <dl>
 <dt><code>equiGen</code></dt>
-<dd>Number of equivalent complete generations, defined as the sum of the proportion of known ancestors over all generations traced,
+<dd>
+Number of equivalent complete generations, defined as the sum of the
+proportion of known ancestors over all generations traced,
 </dd>
 <dt><code>fullGen</code></dt>
-<dd>Number of fully traced generations,
+<dd>
+Number of fully traced generations,
 </dd>
 <dt><code>maxGen</code></dt>
-<dd>Number of maximum generations traced,
+<dd>
+Number of maximum generations traced,
 </dd>
 <dt><code>PCI</code></dt>
-<dd>Index of pedigree completeness, which is the harmonic mean of the pedigree completenesses of the parents (MacCluer et al, 1983),
+<dd>
+Index of pedigree completeness, which is the harmonic mean of the
+pedigree completenesses of the parents (MacCluer et al, 1983),
 </dd>
 <dt><code>Inbreeding</code></dt>
-<dd>Inbreeding coefficient.
+<dd>
+Inbreeding coefficient.
 </dd>
 </dl>
-<p>The best possibility to characterize completeness of pedigree information by a single value is the <em>number of equivalent complete generations</em>, averaged over all individuals of the actual breeding population which were included in the evaluations.</p>
-<p>The relevant parameter to identify individuals with insufficient pedigree information to estimate inbreeding, however, is the <code>PCI</code>. This is because inbreeding can be detected only if both maternal and paternal ancestries are known. The harmonic mean ensures that the less complete paternal pedigree is weighted more heavily, so the <code>PCI</code> equals zero when either parent is unkown. Inbreeding coefficients can be valid despite small <code>PCI</code>s if the most recent founders were indeed unrelated, e.g. because they were from other breeds.</p>
-<p>Note that inbreeding coefficients can be computed faster with function <a href="https://rdrr.io/cran/optiSel/man/pedInbreeding.html">pedInbreeding</a>.</p>
+<p>The best possibility to characterize completeness of pedigree
+information by a single value is the <em>number of equivalent complete
+generations</em>, averaged over all individuals of the actual breeding
+population which were included in the evaluations.</p>
+<p>The relevant parameter to identify individuals with insufficient
+pedigree information to estimate inbreeding, however, is the
+<code>PCI</code>. This is because inbreeding can be detected only if
+both maternal and paternal ancestries are known. The harmonic mean
+ensures that the less complete paternal pedigree is weighted more
+heavily, so the <code>PCI</code> equals zero when either parent is
+unkown. Inbreeding coefficients can be valid despite small
+<code>PCI</code>s if the most recent founders were indeed unrelated,
+e.g. because they were from other breeds.</p>
+<p>Note that inbreeding coefficients can be computed faster with
+function <a href="https://rdrr.io/cran/optiSel/man/pedInbreeding.html">pedInbreeding</a>.</p>
 <div id="individual-specific-parameters" class="section level3">
 <h3>Individual Specific Parameters</h3>
 <div id="inbreeding-coefficients" class="section level4">
 <h4>Inbreeding Coefficients</h4>
-<p>The inbreeding coefficient of an individual is the probability that two alleles chosen at random from the maternal and paternal haplotypes are identically by descent (IBD). This parameter estimates the extent to which the individual may suffer from inbreeding depression and predicts the homogeneity of its offspring. It can be calculated with</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Animal &lt;-<span class="st"> </span><span class="kw">pedInbreeding</span>(Pedig)
-<span class="kw">mean</span>(Animal<span class="op">$</span>Inbr[Animal<span class="op">$</span>Indiv <span class="op">%in%</span><span class="st"> </span>Phen<span class="op">$</span>Indiv])</code></pre></div>
+<p>The inbreeding coefficient of an individual is the probability that
+two alleles chosen at random from the maternal and paternal haplotypes
+are identically by descent (IBD). This parameter estimates the extent to
+which the individual may suffer from inbreeding depression and predicts
+the homogeneity of its offspring. It can be calculated with</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Animal <span class="ot">&lt;-</span> <span class="fu">pedInbreeding</span>(Pedig)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(Animal<span class="sc">$</span>Inbr[Animal<span class="sc">$</span>Indiv <span class="sc">%in%</span> Phen<span class="sc">$</span>Indiv])</span></code></pre></div>
 <pre><code>## [1] 0.01943394</code></pre>
-<p>Whether mating to a sound inbred individual should be favored or avoided depends on whether the breeder wishes offspring with uniform or heterogeneous breeding values. More important than the inbreeding coefficient of an animal itself, however, is the expected inbreeding coefficient of the offspring, which should be low. The expected inbreeding coefficient of the offspring is equal to the kinship of the parents.</p>
+<p>Whether mating to a sound inbred individual should be favored or
+avoided depends on whether the breeder wishes offspring with uniform or
+heterogeneous breeding values. More important than the inbreeding
+coefficient of an animal itself, however, is the expected inbreeding
+coefficient of the offspring, which should be low. The expected
+inbreeding coefficient of the offspring is equal to the kinship of the
+parents.</p>
 </div>
 <div id="kinship" class="section level4">
 <h4>Kinship</h4>
-<p>The kinship between two individuals is the probability that two alleles randomly chosen from both individuals are IBD. A matrix containing the kinship between all pairs of individuals can be computed with function <a href="https://rdrr.io/cran/optiSel/man/pedIBD.html">pedIBD</a>. It is half the numerator relationship matrix. The R code below computes the kinship between the female with ID <code>276000812750188</code> and all male selection candidates that have a breeding value larger than 1.0 and a pedigree with at least 5 equivalent complete generations.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKin   &lt;-<span class="st"> </span><span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>Phen<span class="op">$</span>Indiv)
-isMale &lt;-<span class="st"> </span>Pedig<span class="op">$</span>Sex<span class="op">==</span><span class="st">&quot;male&quot;</span> <span class="op">&amp;</span><span class="st"> </span>(Pedig<span class="op">$</span>Indiv <span class="op">%in%</span><span class="st"> </span>Phen<span class="op">$</span>Indiv[Phen<span class="op">$</span>BV<span class="op">&gt;</span><span class="fl">1.0</span>])
-males  &lt;-<span class="st"> </span>Pedig<span class="op">$</span>Indiv[isMale <span class="op">&amp;</span><span class="st"> </span><span class="kw">summary</span>(Pedig)<span class="op">$</span>equiGen<span class="op">&gt;</span><span class="dv">5</span>]
-pKin[males, <span class="st">&quot;276000812750188&quot;</span>, drop=<span class="ot">FALSE</span>]</code></pre></div>
+<p>The kinship between two individuals is the probability that two
+alleles randomly chosen from both individuals are IBD. A matrix
+containing the kinship between all pairs of individuals can be computed
+with function <a href="https://rdrr.io/cran/optiSel/man/pedIBD.html">pedIBD</a>. It is
+half the numerator relationship matrix. The R code below computes the
+kinship between the female with ID <code>276000812750188</code> and all
+male selection candidates that have a breeding value larger than 1.0 and
+a pedigree with at least 5 equivalent complete generations.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pKin   <span class="ot">&lt;-</span> <span class="fu">pedIBD</span>(Pedig, <span class="at">keep.only=</span>Phen<span class="sc">$</span>Indiv)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>isMale <span class="ot">&lt;-</span> Pedig<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> (Pedig<span class="sc">$</span>Indiv <span class="sc">%in%</span> Phen<span class="sc">$</span>Indiv[Phen<span class="sc">$</span>BV<span class="sc">&gt;</span><span class="fl">1.0</span>])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>males  <span class="ot">&lt;-</span> Pedig<span class="sc">$</span>Indiv[isMale <span class="sc">&amp;</span> <span class="fu">summary</span>(Pedig)<span class="sc">$</span>equiGen<span class="sc">&gt;</span><span class="dv">5</span>]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>pKin[males, <span class="st">&quot;276000812750188&quot;</span>, drop<span class="ot">=</span><span class="cn">FALSE</span>]</span></code></pre></div>
 <pre><code>##                 276000812750188
 ## 276000811902819      0.28955731
 ## 276000812749676      0.06626139
-## 276000812750190      0.18099209
 ## 276000812689003      0.03807358
+## 276000812750190      0.18099209
 ## 276000813155662      0.17488755
 ## 276000812688988      0.16645344
 ## 276000812771544      0.01719556</code></pre>
@@ -276,12 +624,29 @@ pKin[males, <span class="st">&quot;276000812750188&quot;</span>, drop=<span clas
 </div>
 <div id="breed-composition" class="section level4">
 <h4>Breed Composition</h4>
-<p>Mating decisions should not only depend on the breeding value of the male and the kinship between male and female, but also on the native contribution of the male. Many endangered breeds have been graded up with commercial high-yielding breeds. These increasing contributions from other breeds displace the original genetic background of the endangered breed, decrease the genetic contribution from native ancestors, and reduce the conservation value of the breed.</p>
-<p>For computing the breed composition of individuals it should be taken into account that the breed name of founders born recently is in fact unkown even if they have been classified as purebred. Hence, for these individuals, the breed name should be changed to <code>&quot;unknown&quot;</code>. Below, the breed name of founders born after 1970 is changed to <code>&quot;unknown&quot;</code> if they had been classified as Hinterwald cattle. Thereafter, function <a href="https://rdrr.io/cran/optiSel/man/pedBreedComp.html">pedBreedComp</a> was used to estimate the contribution of each individual from each foreign breed and from native founders. The contribution an individual has from native founders is called the native contribution NC of the individual. Finally, column <code>NC</code> containing the native contributions was added to the pedigree.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cont  &lt;-<span class="st"> </span><span class="kw">pedBreedComp</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)
-Pedig<span class="op">$</span>NC &lt;-<span class="st"> </span>cont<span class="op">$</span>native
-<span class="kw">head</span>(cont[<span class="kw">rev</span>(Phen<span class="op">$</span>Indiv), <span class="dv">2</span><span class="op">:</span><span class="dv">6</span>])</code></pre></div>
+<p>Mating decisions should not only depend on the breeding value of the
+male and the kinship between male and female, but also on the native
+contribution of the male. Many endangered breeds have been graded up
+with commercial high-yielding breeds. These increasing contributions
+from other breeds displace the original genetic background of the
+endangered breed, decrease the genetic contribution from native
+ancestors, and reduce the conservation value of the breed.</p>
+<p>For computing the breed composition of individuals it should be taken
+into account that the breed name of founders born recently is in fact
+unkown even if they have been classified as purebred. Hence, for these
+individuals, the breed name should be changed to <code>&quot;unknown&quot;</code>.
+Below, the breed name of founders born after 1970 is changed to
+<code>&quot;unknown&quot;</code> if they had been classified as Hinterwald cattle.
+Thereafter, function <a href="https://rdrr.io/cran/optiSel/man/pedBreedComp.html">pedBreedComp</a>
+was used to estimate the contribution of each individual from each
+foreign breed and from native founders. The contribution an individual
+has from native founders is called the native contribution NC of the
+individual. Finally, column <code>NC</code> containing the native
+contributions was added to the pedigree.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(PedigWithErrors, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">lastNative=</span><span class="dv">1970</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>cont  <span class="ot">&lt;-</span> <span class="fu">pedBreedComp</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Pedig<span class="sc">$</span>NC <span class="ot">&lt;-</span> cont<span class="sc">$</span>native</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cont[<span class="fu">rev</span>(Phen<span class="sc">$</span>Indiv), <span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>])</span></code></pre></div>
 <pre><code>##                    native    unknown     unbek0  Fleckvieh Vorderwaelder
 ## 276000812749835 0.6096039 0.09570312 0.03677368 0.11021423    0.14770508
 ## 276000812749569 0.5945129 0.14160156 0.04071045 0.11599731    0.10717773
@@ -289,162 +654,277 @@ Pedig<span class="op">$</span>NC &lt;-<span class="st"> </span>cont<span class="
 ## 276000891920412 0.5501404 0.12109375 0.03527832 0.10354614    0.18994141
 ## 276000812496874 0.3734741 0.41601562 0.03430176 0.08294678    0.09326172
 ## 276000811287745 0.5804138 0.09765625 0.03259277 0.08963013    0.19970703</code></pre>
-<p>The columns are ordered so that the most influential foreign breeds come first. It can be seen that the contribution from native founders varies considerably between individuals. Individuals with high genetic contribution from native founders should be favored for mating provided that the kinship between male and female is sufficiently low.</p>
+<p>The columns are ordered so that the most influential foreign breeds
+come first. It can be seen that the contribution from native founders
+varies considerably between individuals. Individuals with high genetic
+contribution from native founders should be favored for mating provided
+that the kinship between male and female is sufficiently low.</p>
 </div>
 <div id="kinship-at-native-alleles" class="section level4">
 <h4>Kinship at Native Alleles</h4>
-<p>Since animals with high native contributions tend to be related, the inbreeding level could increase considerably when introgressed genetic material is removed from the population. This could be avoided by restricting the incease in kinship at native alleles in the population. The kinship at native alleles is also called the native kinship. An R-Object containing the information needed to estimate native kinship from pedigree can be obtained as:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKinatN &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>Phen<span class="op">$</span>Indiv)</code></pre></div>
+<p>Since animals with high native contributions tend to be related, the
+inbreeding level could increase considerably when introgressed genetic
+material is removed from the population. This could be avoided by
+restricting the incease in kinship at native alleles in the population.
+The kinship at native alleles is also called the native kinship. An
+R-Object containing the information needed to estimate native kinship
+from pedigree can be obtained as:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pKinatN <span class="ot">&lt;-</span> <span class="fu">pedIBDatN</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">keep.only=</span>Phen<span class="sc">$</span>Indiv)</span></code></pre></div>
 <p>For pairs of individuals the native kinship can be estimated as:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKinatN<span class="op">$</span>of &lt;-<span class="st"> </span>pKinatN<span class="op">$</span>Q1<span class="op">/</span>pKinatN<span class="op">$</span>Q2
-pKinatN<span class="op">$</span>of[<span class="st">&quot;276000891862786&quot;</span>,<span class="st">&quot;276000812497659&quot;</span>]</code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pKinatN<span class="sc">$</span>of <span class="ot">&lt;-</span> pKinatN<span class="sc">$</span>Q1<span class="sc">/</span>pKinatN<span class="sc">$</span>Q2</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pKinatN<span class="sc">$</span>of[<span class="st">&quot;276000891862786&quot;</span>,<span class="st">&quot;276000812497659&quot;</span>]</span></code></pre></div>
 <pre><code>## [1] 0.182625</code></pre>
-<p>However, the kinship at native alleles between two individuals says nothing about the amount of genetic material the individuals have from native ancesors. It only quantifies how different these native alleles are. Hence, in any case, the native contributions of the individuals should also be considered:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Pedig[<span class="kw">c</span>(<span class="st">&quot;276000891862786&quot;</span>, <span class="st">&quot;276000812497659&quot;</span>),<span class="kw">c</span>(<span class="st">&quot;Born&quot;</span>,<span class="st">&quot;NC&quot;</span>)]</code></pre></div>
+<p>However, the kinship at native alleles between two individuals says
+nothing about the amount of genetic material the individuals have from
+native ancesors. It only quantifies how different these native alleles
+are. Hence, in any case, the native contributions of the individuals
+should also be considered:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Pedig[<span class="fu">c</span>(<span class="st">&quot;276000891862786&quot;</span>, <span class="st">&quot;276000812497659&quot;</span>),<span class="fu">c</span>(<span class="st">&quot;Born&quot;</span>,<span class="st">&quot;NC&quot;</span>)]</span></code></pre></div>
 <pre><code>##                 Born        NC
 ## 276000891862786 2004 0.6164551
 ## 276000812497659 2004 0.6274414</code></pre>
-<p>The native contributions of both indivividuals are larger than the mean NC of the phenotyped individuals, which is 0.44. However, their native kinship is larger than the average, which is</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKinatN<span class="op">$</span>mean</code></pre></div>
+<p>The native contributions of both indivividuals are larger than the
+mean NC of the phenotyped individuals, which is 0.44. However, their
+native kinship is larger than the average, which is</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pKinatN<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>## [1] 0.0776925</code></pre>
-<p>The correlation between the kinship and the native kinship is high (as expected):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">subKin    &lt;-<span class="st"> </span>pKin[Phen<span class="op">$</span>Indiv, Phen<span class="op">$</span>Indiv]
-subNatKin &lt;-<span class="st"> </span>pKinatN<span class="op">$</span>of[Phen<span class="op">$</span>Indiv, Phen<span class="op">$</span>Indiv]
-<span class="kw">diag</span>(subKin)    &lt;-<span class="st"> </span><span class="ot">NA</span>
-<span class="kw">diag</span>(subNatKin) &lt;-<span class="st"> </span><span class="ot">NA</span>
-<span class="kw">cor</span>(<span class="kw">c</span>(subKin), <span class="kw">c</span>(subNatKin), <span class="dt">use=</span><span class="st">&quot;complete.obs&quot;</span>)</code></pre></div>
+<p>The correlation between the kinship and the native kinship is high
+(as expected):</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>subKin    <span class="ot">&lt;-</span> pKin[Phen<span class="sc">$</span>Indiv, Phen<span class="sc">$</span>Indiv]</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>subNatKin <span class="ot">&lt;-</span> pKinatN<span class="sc">$</span>of[Phen<span class="sc">$</span>Indiv, Phen<span class="sc">$</span>Indiv]</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(subKin)    <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(subNatKin) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">c</span>(subKin), <span class="fu">c</span>(subNatKin), <span class="at">use=</span><span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 0.8916129</code></pre>
-<p>The correlation is even higher if only individuals with high native contributions are considered.</p>
+<p>The correlation is even higher if only individuals with high native
+contributions are considered.</p>
 </div>
 </div>
 <div id="population-specific-parameters" class="section level3">
 <h3>Population Specific Parameters</h3>
 <div id="genetic-diversity" class="section level4">
 <h4>Genetic Diversity</h4>
-<p>The genetic diversity of a population is the probability that two alleles chosen at random from the population are not IBD. It is one minus the average kinship of the individuals. A simple estimate can be obtained as</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(pKin[Phen<span class="op">$</span>Indiv, Phen<span class="op">$</span>Indiv])</code></pre></div>
+<p>The genetic diversity of a population is the probability that two
+alleles chosen at random from the population are not IBD. It is one
+minus the average kinship of the individuals. A simple estimate can be
+obtained as</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">mean</span>(pKin[Phen<span class="sc">$</span>Indiv, Phen<span class="sc">$</span>Indiv])</span></code></pre></div>
 <pre><code>## [1] 0.9755853</code></pre>
-<p>The diversity of this population is high. A high genetic diversity enables to avoid inbreeding and ensures that polygenic traits have a high additive variance, which is required to achieve genetic gain. However, the diversity of this population seems to be extremely high. This could have two reasons:</p>
+<p>The diversity of this population is high. A high genetic diversity
+enables to avoid inbreeding and ensures that polygenic traits have a
+high additive variance, which is required to achieve genetic gain.
+However, the diversity of this population seems to be extremely high.
+This could have two reasons:</p>
 <ul>
-<li><p>The diversity is indeed very high because the individuals are in fact crossbred individuals with genetic contributions from many unrelated breeds, or</p></li>
-<li><p>The completeness of the pedigrees is insufficient for such an evaluation.</p></li>
+<li><p>The diversity is indeed very high because the individuals are in
+fact crossbred individuals with genetic contributions from many
+unrelated breeds, or</p></li>
+<li><p>The completeness of the pedigrees is insufficient for such an
+evaluation.</p></li>
 </ul>
-<p>For this breed it is unclear whether pedigree completeness is low because pedigrees of indivduals from other breeds were cut, or because previously unregistered animals have been registered. Hence, pedigrees of introduced individuals from other breeds should not be cut to reduce this uncertainty.</p>
-<p>A parameter which depends not so much on the completeness of the pedigrees is the diversity at native alleles.</p>
+<p>For this breed it is unclear whether pedigree completeness is low
+because pedigrees of indivduals from other breeds were cut, or because
+previously unregistered animals have been registered. Hence, pedigrees
+of introduced individuals from other breeds should not be cut to reduce
+this uncertainty.</p>
+<p>A parameter which depends not so much on the completeness of the
+pedigrees is the diversity at native alleles.</p>
 </div>
 <div id="kinship-and-diversity-at-native-alleles" class="section level4">
 <h4>Kinship and Diversity at Native Alleles</h4>
-<p>The kinship at native alleles in the population is the probability that two alleles chosen at random from the population are not IBD, given that both alleles originate from native founders. The mean kinship at native alleles is</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKinatN<span class="op">$</span>mean</code></pre></div>
+<p>The kinship at native alleles in the population is the probability
+that two alleles chosen at random from the population are not IBD, given
+that both alleles originate from native founders. The mean kinship at
+native alleles is</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pKinatN<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>## [1] 0.0776925</code></pre>
-<p>The genetic diversity at native alleles is one minus the kinship at native alleles <span class="citation">(named <em>conditional gene diversity</em> in Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus, it can be calculated as</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>pKinatN<span class="op">$</span>mean</code></pre></div>
+<p>The genetic diversity at native alleles is one minus the kinship at
+native alleles <span class="citation">(named <em>conditional gene
+diversity</em> in Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus,
+it can be calculated as</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> pKinatN<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>## [1] 0.9223075</code></pre>
-<p>Note that incomplete pedigrees result in an overestimation of the genetic diversity. This is not the case for the genetic diversity at native alleles because alleles originating from founders born after 1970 were classified to be non-native. Hence, the diversity at alleles originating from these individuals does not affect the estimate.</p>
-<p>A high diversity at native alleles is important if a goal of the breeding program is to remove introgressed genetic material from the population. Without maintenance of a high diversity at native alleles, inbreeding coefficients will soon rise to an unreasonable level.</p>
+<p>Note that incomplete pedigrees result in an overestimation of the
+genetic diversity. This is not the case for the genetic diversity at
+native alleles because alleles originating from founders born after 1970
+were classified to be non-native. Hence, the diversity at alleles
+originating from these individuals does not affect the estimate.</p>
+<p>A high diversity at native alleles is important if a goal of the
+breeding program is to remove introgressed genetic material from the
+population. Without maintenance of a high diversity at native alleles,
+inbreeding coefficients will soon rise to an unreasonable level.</p>
 </div>
 <div id="native-effective-size" class="section level4">
 <h4>Native Effective Size</h4>
-<p>The <em>native effective size</em> of a population is defined as the size of an idealized random mating population for which the <em>genetic diversity</em> decreases as fast as the <em>diversity at native alleles</em> decreases in the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus, the native effective size quantifies how fast the diversity at native alleles decreases. In contrast, the effective size quantifies how fast the genetic diversity decreases.</p>
-<p>In a population without historic introgression the native effective size (native Ne) is equal to the effective size (Ne) as estimated by <span class="citation">Wellmann and Bennewitz (2011)</span>. But in a population with historic introgression it can be argued that the effective size is not useful to describe the history of a population because even a small amount of introgression with unrelated individuals prevents a drop of genetic diversity, so the effecive size would be infinite.</p>
-<p>For estimating the native effective size, the diversity at native alleles needs to be estimated at various times, and then the native effective size is estimated from the slope of a regression function.</p>
-<p>An estimate of the native effective size is automatically provided when the kinship at native alleles is computed and parameter  is specified:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pKinatN  &lt;-<span class="st"> </span><span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>Phen<span class="op">$</span>Indiv, <span class="dt">nGen=</span><span class="dv">6</span>)</code></pre></div>
+<p>The <em>native effective size</em> of a population is defined as the
+size of an idealized random mating population for which the <em>genetic
+diversity</em> decreases as fast as the <em>diversity at native
+alleles</em> decreases in the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. Thus,
+the native effective size quantifies how fast the diversity at native
+alleles decreases. In contrast, the effective size quantifies how fast
+the genetic diversity decreases.</p>
+<p>In a population without historic introgression the native effective
+size (native Ne) is equal to the effective size (Ne) as estimated by
+<span class="citation">Wellmann and Bennewitz (2011)</span>. But in a
+population with historic introgression it can be argued that the
+effective size is not useful to describe the history of a population
+because even a small amount of introgression with unrelated individuals
+prevents a drop of genetic diversity, so the effecive size would be
+infinite.</p>
+<p>For estimating the native effective size, the diversity at native
+alleles needs to be estimated at various times, and then the native
+effective size is estimated from the slope of a regression function.</p>
+<p>An estimate of the native effective size is automatically provided
+when the kinship at native alleles is computed and parameter is
+specified:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pKinatN  <span class="ot">&lt;-</span> <span class="fu">pedIBDatN</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">keep.only=</span>Phen<span class="sc">$</span>Indiv, <span class="at">nGen=</span><span class="dv">6</span>)</span></code></pre></div>
 <pre><code>## Number of Migrant Founders: 237
 ## Number of Native  Founders: 150
 ## Individuals in Pedigree   : 1658
 ## Native effective size     : 49.5</code></pre>
 <p>The native Ne is stored as an attribute of the result:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">attributes</span>(pKinatN)<span class="op">$</span>nativeNe</code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(pKinatN)<span class="sc">$</span>nativeNe</span></code></pre></div>
 <pre><code>## [1] 49.5</code></pre>
-<p>Thus, the diversity at native alleles decreases as fast as in an idealized population consisting of 49.5 individuals.</p>
+<p>Thus, the diversity at native alleles decreases as fast as in an
+idealized population consisting of 49.5 individuals.</p>
 </div>
 <div id="effective-size" class="section level4">
 <h4>Effective Size</h4>
-<p>The effective size Ne of a population is the size of an idealized random mating population for which the <em>genetic diversity</em> decreases as fast as in the population under study. It is commonly estimated from the mean rate of increase in coancestry <span class="citation">(Cervantes et al. 2011)</span>, whereby the increase in coancestry between any pair of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is computed as <span class="math inline">\(\Delta c_{ij}=1-\sqrt[\frac{g_i+g_j}{2}]{1-c_{ij}}\)</span>, where <span class="math inline">\(c_{ij}\)</span> is the kinship between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, and <span class="math inline">\(g_i,g_j\)</span> are the numbers of equivalent complete generations of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. The effective size is then estimated as <span class="math inline">\(N_e=\frac{1}{2\overline{\Delta c}}\)</span>. Thus, the effective size can be estimated as:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">id     &lt;-<span class="st"> </span>Summary<span class="op">$</span>Indiv[Summary<span class="op">$</span>equiGen<span class="op">&gt;=</span><span class="dv">4</span> <span class="op">&amp;</span><span class="st"> </span>Summary<span class="op">$</span>Indiv <span class="op">%in%</span><span class="st"> </span>Phen<span class="op">$</span>Indiv]
-g      &lt;-<span class="st"> </span>Summary[id, <span class="st">&quot;equiGen&quot;</span>]
-N      &lt;-<span class="st"> </span><span class="kw">length</span>(g)
-n      &lt;-<span class="st"> </span>(<span class="kw">matrix</span>(g, N, N, <span class="dt">byrow=</span><span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span><span class="kw">matrix</span>(g, N, N, <span class="dt">byrow=</span><span class="ot">FALSE</span>))<span class="op">/</span><span class="dv">2</span>
-deltaC &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span><span class="op">-</span>pKin[id,id])<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span>n)
-Ne     &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">2</span><span class="op">*</span><span class="kw">mean</span>(deltaC))
-Ne</code></pre></div>
+<p>The effective size Ne of a population is the size of an idealized
+random mating population for which the <em>genetic diversity</em>
+decreases as fast as in the population under study. It is commonly
+estimated from the mean rate of increase in coancestry <span class="citation">(Cervantes et al. 2011)</span>, whereby the increase in
+coancestry between any pair of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is computed as <span class="math inline">\(\Delta
+c_{ij}=1-\sqrt[\frac{g_i+g_j}{2}]{1-c_{ij}}\)</span>, where <span class="math inline">\(c_{ij}\)</span> is the kinship between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, and <span class="math inline">\(g_i,g_j\)</span> are the numbers of equivalent
+complete generations of individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. The effective size is then estimated
+as <span class="math inline">\(N_e=\frac{1}{2\overline{\Delta
+c}}\)</span>. Thus, the effective size can be estimated as:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>id     <span class="ot">&lt;-</span> Summary<span class="sc">$</span>Indiv[Summary<span class="sc">$</span>equiGen<span class="sc">&gt;=</span><span class="dv">4</span> <span class="sc">&amp;</span> Summary<span class="sc">$</span>Indiv <span class="sc">%in%</span> Phen<span class="sc">$</span>Indiv]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>g      <span class="ot">&lt;-</span> Summary[id, <span class="st">&quot;equiGen&quot;</span>]</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>N      <span class="ot">&lt;-</span> <span class="fu">length</span>(g)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>n      <span class="ot">&lt;-</span> (<span class="fu">matrix</span>(g, N, N, <span class="at">byrow=</span><span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">matrix</span>(g, N, N, <span class="at">byrow=</span><span class="cn">FALSE</span>))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>deltaC <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span><span class="sc">-</span>pKin[id,id])<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>n)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>Ne     <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">mean</span>(deltaC))</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>Ne</span></code></pre></div>
 <pre><code>## [1] 97.95922</code></pre>
-<p>However, the above formula assumes that ancestors are missing at random. In populations with historic introgression, pedigrees of individuals from foreign breeds are often cut, so their parents are not missing at random. In fact, even a small amount of introgression suffices to prevent a decrease of genetic diversity, so that the effective size of such a population is <span class="math inline">\(\infty\)</span>.</p>
+<p>However, the above formula assumes that ancestors are missing at
+random. In populations with historic introgression, pedigrees of
+individuals from foreign breeds are often cut, so their parents are not
+missing at random. In fact, even a small amount of introgression
+suffices to prevent a decrease of genetic diversity, so that the
+effective size of such a population is <span class="math inline">\(\infty\)</span>.</p>
 </div>
 <div id="change-of-native-genome-equivalent-and-ne" class="section level4">
 <h4>Change of Native Genome Equivalent and Ne</h4>
-<p>The native genome equivalent NGE of a population is the minimum number of founders that would be needed to create a population consisting of unrelated individuals that has the same diversity at native alleles as the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. It is assumed that the individuals were unrelated in base year <code>base</code>, which could be well before pedigree recording had started. Between the base year and the year <code>lastNative</code> in which the last native founder was born, the population had a historical effective size of <code>histNe</code>. This assumption implies that the founders of the pedigree were related due to ancestors whose pedigrees had not been recorded.</p>
-<p>The decrease of native genome equivalents is estimated below for the time since <code>lastNative=1970</code> by assuming that individuals were unrelated in year <code>base=1800</code> and that the historical effective size was <code>histNe=150</code> between 1800 and 1970. Since the computation for the full pedigree could take some time, the parameters are estimated below from a subset of the pedigree, which are the individuals included in vector <code>keep</code>. Vector <code>keep</code> contains from each birth cohort 50 randomly sampled Hinterwald cattle.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)
-Pedig &lt;-<span class="st"> </span><span class="kw">prePed</span>(PedigWithErrors, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">lastNative=</span><span class="dv">1970</span>)
-<span class="kw">set.seed</span>(<span class="dv">0</span>)
-keep &lt;-<span class="st"> </span><span class="kw">sampleIndiv</span>(Pedig[Pedig<span class="op">$</span>Breed<span class="op">==</span><span class="st">&quot;Hinterwaelder&quot;</span>,], <span class="dt">from=</span><span class="st">&quot;Born&quot;</span>, <span class="dt">each=</span><span class="dv">50</span>)
-cand &lt;-<span class="st"> </span><span class="kw">candes</span>(<span class="dt">phen   =</span> Pedig[keep,],
-               <span class="dt">pKin   =</span> <span class="kw">pedIBD</span>(Pedig, <span class="dt">keep.only=</span>keep), 
-               <span class="dt">pKinatN=</span> <span class="kw">pedIBDatN</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="dt">keep.only=</span>keep), 
-               <span class="dt">quiet=</span><span class="ot">TRUE</span>, <span class="dt">reduce.data=</span><span class="ot">FALSE</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sy &lt;-<span class="st"> </span><span class="kw">summary</span>(cand, <span class="dt">tlim=</span><span class="kw">c</span>(<span class="dv">1970</span>, <span class="dv">2000</span>), <span class="dt">histNe=</span><span class="dv">150</span>, <span class="dt">base=</span><span class="dv">1800</span>, <span class="dt">df=</span><span class="dv">4</span>)</code></pre></div>
+<p>The native genome equivalent NGE of a population is the minimum
+number of founders that would be needed to create a population
+consisting of unrelated individuals that has the same diversity at
+native alleles as the population under study <span class="citation">(Wellmann, Hartwig, and Bennewitz 2012)</span>. It is
+assumed that the individuals were unrelated in base year
+<code>base</code>, which could be well before pedigree recording had
+started. Between the base year and the year <code>lastNative</code> in
+which the last native founder was born, the population had a historical
+effective size of <code>histNe</code>. This assumption implies that the
+founders of the pedigree were related due to ancestors whose pedigrees
+had not been recorded.</p>
+<p>The decrease of native genome equivalents is estimated below for the
+time since <code>lastNative=1970</code> by assuming that individuals
+were unrelated in year <code>base=1800</code> and that the historical
+effective size was <code>histNe=150</code> between 1800 and 1970. Since
+the computation for the full pedigree could take some time, the
+parameters are estimated below from a subset of the pedigree, which are
+the individuals included in vector <code>keep</code>. Vector
+<code>keep</code> contains from each birth cohort 50 randomly sampled
+Hinterwald cattle.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(PedigWithErrors, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">lastNative=</span><span class="dv">1970</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">sampleIndiv</span>(Pedig[Pedig<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Hinterwaelder&quot;</span>,], <span class="at">from=</span><span class="st">&quot;Born&quot;</span>, <span class="at">each=</span><span class="dv">50</span>)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen   =</span> Pedig[keep,],</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">pKin   =</span> <span class="fu">pedIBD</span>(Pedig, <span class="at">keep.only=</span>keep), </span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">pKinatN=</span> <span class="fu">pedIBDatN</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">keep.only=</span>keep), </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">quiet=</span><span class="cn">TRUE</span>, <span class="at">reduce.data=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>sy <span class="ot">&lt;-</span> <span class="fu">summary</span>(cand, <span class="at">tlim=</span><span class="fu">c</span>(<span class="dv">1970</span>, <span class="dv">2000</span>), <span class="at">histNe=</span><span class="dv">150</span>, <span class="at">base=</span><span class="dv">1800</span>, <span class="at">df=</span><span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## 
-##         t    I  pKin pKinatN   Ne  NGE
-## 1970 1970 5.48 0.004   0.005 58.1 5.08
-## 1971 1971 5.46 0.004   0.006 58.2 5.03
-## 1972 1972 5.44 0.005   0.007 58.0 4.96
-## 1973 1973 5.42 0.005   0.008 57.6 4.91
-## 1974 1974 5.40 0.006   0.010 57.0 4.83
-## 1975 1975 5.38 0.007   0.013 56.1 4.72
-## 1976 1976 5.36 0.007   0.014 54.9 4.67
-## 1977 1977 5.34 0.008   0.015 53.3 4.62
-## 1978 1978 5.32 0.009   0.016 51.2 4.59
-## 1979 1979 5.30 0.010   0.018 48.8 4.51
-## 1980 1980 5.28 0.011   0.020 46.3 4.45
-## 1981 1981 5.26 0.011   0.021 43.8 4.41
-## 1982 1982 5.24 0.012   0.022 41.5 4.36
-## 1983 1983 5.22 0.012   0.024 39.5 4.29
-## 1984 1984 5.21 0.013   0.027 38.0 4.20
-## 1985 1985 5.19 0.014   0.030 37.2 4.11
-## 1986 1986 5.18 0.016   0.034 37.0 4.00
-## 1987 1987 5.17 0.017   0.039 37.8 3.87
-## 1988 1988 5.16 0.018   0.042 39.4 3.79
-## 1989 1989 5.15 0.018   0.044 42.0 3.71
-## 1990 1990 5.15 0.018   0.047 45.6 3.65
-## 1991 1991 5.15 0.018   0.048 50.2 3.62
-## 1992 1992 5.15 0.018   0.049 55.9 3.60
-## 1993 1993 5.15 0.019   0.051 62.5 3.56
-## 1994 1994 5.16 0.020   0.052 69.5 3.54
-## 1995 1995 5.16 0.018   0.052 76.3 3.54
-## 1996 1996 5.18 0.017   0.051 81.9 3.55
-## 1997 1997 5.19 0.016   0.052 85.6 3.53
-## 1998 1998 5.20 0.015   0.054 87.6 3.49
-## 1999 1999 5.22 0.013   0.055 88.2 3.47
-## 2000 2000 5.24 0.012   0.056 87.9 3.44</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(sy, <span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>Ne)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">100</span>))
-<span class="kw">ggplot</span>(sy, <span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>NGE)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">7</span>))</code></pre></div>
-<p><img src="data:image/png;base64,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" /><img src="data:image/png;base64,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" /></p>
-<p>Not only the native genome equivalents (column <code>NGE</code>), but also the native effective size (column <code>Ne</code>), the mean kinship (column <code>pKin</code>), the mean kinship at native alleles <code>pKinatN</code>, and the generation interval (column <code>I</code>) have been estimated for all birth cohorts <code>t</code>.</p>
-<p>It is possible that the diversity at native alleles increases for a short period of time, in which case the estimate of the native effective size would be <code>NA</code>. Choose <code>df&lt;4</code> to get a smooth estimate for the native effective size.</p>
+##         t    I  pKin pKinatN    Ne  NGE
+## 1970 1970 5.46 0.004   0.005  55.4 5.06
+## 1971 1971 5.44 0.004   0.006  55.4 5.01
+## 1972 1972 5.42 0.005   0.007  55.4 4.95
+## 1973 1973 5.39 0.006   0.009  55.3 4.88
+## 1974 1974 5.37 0.006   0.011  55.1 4.79
+## 1975 1975 5.35 0.007   0.014  55.0 4.66
+## 1976 1976 5.33 0.008   0.015  54.7 4.61
+## 1977 1977 5.31 0.009   0.017  54.0 4.54
+## 1978 1978 5.29 0.010   0.018  52.7 4.52
+## 1979 1979 5.27 0.010   0.018  50.7 4.49
+## 1980 1980 5.25 0.011   0.020  48.2 4.44
+## 1981 1981 5.23 0.011   0.021  45.5 4.40
+## 1982 1982 5.22 0.012   0.023  42.9 4.33
+## 1983 1983 5.20 0.012   0.024  40.7 4.29
+## 1984 1984 5.18 0.013   0.028  38.9 4.18
+## 1985 1985 5.17 0.014   0.030  37.8 4.09
+## 1986 1986 5.16 0.015   0.033  37.5 4.01
+## 1987 1987 5.15 0.017   0.037  38.0 3.90
+## 1988 1988 5.14 0.018   0.042  39.5 3.78
+## 1989 1989 5.14 0.017   0.044  42.1 3.71
+## 1990 1990 5.14 0.018   0.048  46.2 3.62
+## 1991 1991 5.14 0.018   0.049  51.8 3.59
+## 1992 1992 5.14 0.017   0.049  59.2 3.58
+## 1993 1993 5.15 0.018   0.052  68.7 3.54
+## 1994 1994 5.16 0.019   0.052  80.3 3.53
+## 1995 1995 5.17 0.017   0.051  93.4 3.56
+## 1996 1996 5.18 0.017   0.051 106.6 3.56
+## 1997 1997 5.20 0.016   0.050 117.7 3.57
+## 1998 1998 5.22 0.014   0.051 124.8 3.55
+## 1999 1999 5.24 0.013   0.052 127.8 3.53
+## 2000 2000 5.26 0.012   0.054 127.3 3.49</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sy, <span class="fu">aes</span>(<span class="at">x=</span>t, <span class="at">y=</span>Ne)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>))</span></code></pre></div>
+<pre><code>## Warning: Removed 5 rows containing missing values (`geom_line()`).</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sy, <span class="fu">aes</span>(<span class="at">x=</span>t, <span class="at">y=</span>NGE)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">7</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><img src="data:image/png;base64,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" /></p>
+<p>Not only the native genome equivalents (column <code>NGE</code>), but
+also the native effective size (column <code>Ne</code>), the mean
+kinship (column <code>pKin</code>), the mean kinship at native alleles
+<code>pKinatN</code>, and the generation interval (column
+<code>I</code>) have been estimated for all birth cohorts
+<code>t</code>.</p>
+<p>It is possible that the diversity at native alleles increases for a
+short period of time, in which case the estimate of the native effective
+size would be <code>NA</code>. Choose <code>df&lt;4</code> to get a
+smooth estimate for the native effective size.</p>
 </div>
 <div id="change-of-breed-composition" class="section level4">
 <h4>Change of Breed Composition</h4>
-<p>For monitoring the introgression from other breeds, the contributions of foreign breeds to all birth cohorts can be estimated with function <a href="https://rdrr.io/cran/optiSel/man/conttac.html">conttac</a> and then plotted, e.g. with function ggplot.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">use  &lt;-<span class="st"> </span>Pedig<span class="op">$</span>Breed<span class="op">==</span><span class="st">&quot;Hinterwaelder&quot;</span> <span class="op">&amp;</span><span class="st"> </span>Pedig<span class="op">$</span>Born <span class="op">%in%</span><span class="st"> </span>(<span class="dv">1950</span><span class="op">:</span><span class="dv">1995</span>)
-cont &lt;-<span class="st"> </span><span class="kw">pedBreedComp</span>(Pedig, <span class="dt">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)
-contByYear &lt;-<span class="st"> </span><span class="kw">conttac</span>(cont, <span class="dt">cohort=</span>Pedig<span class="op">$</span>Born, <span class="dt">use=</span>use, <span class="dt">mincont =</span> <span class="fl">0.01</span>)
-<span class="kw">ggplot</span>(contByYear, <span class="kw">aes</span>(<span class="dt">x=</span>Year, <span class="dt">y=</span>Contribution, <span class="dt">fill=</span>Breed)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_area</span>(<span class="dt">color=</span><span class="st">&quot;black&quot;</span>)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>For monitoring the introgression from other breeds, the contributions
+of foreign breeds to all birth cohorts can be estimated with function <a href="https://rdrr.io/cran/optiSel/man/conttac.html">conttac</a> and
+then plotted, e.g. with function ggplot.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>use  <span class="ot">&lt;-</span> Pedig<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Hinterwaelder&quot;</span> <span class="sc">&amp;</span> Pedig<span class="sc">$</span>Born <span class="sc">%in%</span> (<span class="dv">1950</span><span class="sc">:</span><span class="dv">1995</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>cont <span class="ot">&lt;-</span> <span class="fu">pedBreedComp</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>contByYear <span class="ot">&lt;-</span> <span class="fu">conttac</span>(cont, <span class="at">cohort=</span>Pedig<span class="sc">$</span>Born, <span class="at">use=</span>use, <span class="at">mincont =</span> <span class="fl">0.01</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(contByYear, <span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Contribution, <span class="at">fill=</span>Breed)) <span class="sc">+</span> <span class="fu">geom_area</span>(<span class="at">color=</span><span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>
 <div id="references" class="section level3 unnumbered">
-<h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-Cervantes2011">
-<p>Cervantes, I., F. Goyache, A. Molina, M. Valera, and J. P. Guitérrez. 2011. “Estimation of Effective Population Size from the Rate of Coancestry in Pedigreed Populations.” <em>Animal Breeding and Genetics</em> 128.</p>
+<h3 class="unnumbered">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Cervantes2011" class="csl-entry">
+Cervantes, I., F. Goyache, A. Molina, M. Valera, and J. P. Guitérrez.
+2011. <span>“Estimation of Effective Population Size from the Rate of
+Coancestry in Pedigreed Populations.”</span> <em>Animal Breeding and
+Genetics</em> 128.
 </div>
-<div id="ref-Wellmann2011">
-<p>Wellmann, R., and J. Bennewitz. 2011. “Identification and Characterization of Hierarchical Structures in Dog Breeding Schemes, a Novel Method Applied to the Norfolk Terrier.” <em>Journal of Animal Science</em> 89: 3846–58.</p>
+<div id="ref-Wellmann2011" class="csl-entry">
+Wellmann, R., and J. Bennewitz. 2011. <span>“Identification and
+Characterization of Hierarchical Structures in Dog Breeding Schemes, a
+Novel Method Applied to the Norfolk Terrier.”</span> <em>Journal of
+Animal Science</em> 89: 3846–58.
 </div>
-<div id="ref-Wellmann2012">
-<p>Wellmann, R., S. Hartwig, and J. Bennewitz. 2012. “Optimum Contribution Selection for Conserved Populations with Historic Migration; with Application to Rare Cattle Breeds.” <em>Genetics Selection Evolution</em> 44 (34).</p>
+<div id="ref-Wellmann2012" class="csl-entry">
+Wellmann, R., S. Hartwig, and J. Bennewitz. 2012. <span>“Optimum
+Contribution Selection for Conserved Populations with Historic
+Migration; with Application to Rare Cattle Breeds.”</span> <em>Genetics
+Selection Evolution</em> 44 (34).
 </div>
 </div>
 </div>
