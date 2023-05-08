@@ -81,8 +81,8 @@ Rcpp::List rcpp_haplofreq(std::string pathThisBreed,std::string pathRefBreeds, s
   for(i=0; i<NC;    i++){indexC[i]=ArmaIndexC.at(i);}
   for(i=0; i<6*NC-1;i++){fLine[i]=' ';} 
   for(i=0; i<2*NC-1;i++){wLine[i]=' ';} 
-  wLine[2*NC-1]= '\0';
-  fLine[6*NC-1]= '\0';
+  if(NC>0){wLine[2*NC-1]= '\0';}
+  if(NC>0){fLine[6*NC-1]= '\0';}
   merge[1]     = '\0';
   smaxFreq[5]  = '\0';
   

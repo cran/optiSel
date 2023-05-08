@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2023-01-27" />
+<meta name="date" content="2023-05-08" />
 
 <title>3. Optimum Contribution Selection</title>
 
@@ -362,7 +362,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">3. Optimum Contribution Selection</h1>
 <h4 class="author">Robin Wellmann</h4>
-<h4 class="date">2023-01-27</h4>
+<h4 class="date">2023-05-08</h4>
 
 
 
@@ -637,8 +637,8 @@ These values are rounded up or down to whole numbers.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Candidate<span class="sc">$</span>n <span class="ot">&lt;-</span> <span class="fu">noffspring</span>(Candidate, <span class="at">N=</span><span class="dv">20</span>)<span class="sc">$</span>nOff</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Candidate[Candidate<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> Candidate<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.001</span>,])</span></code></pre></div>
 <pre><code>##               Indiv  Sex         oc herd  n
-## Angler147 Angler147 male 0.28747376 &lt;NA&gt; 11
-## Angler166 Angler166 male 0.13575008 &lt;NA&gt;  6
+## Angler147 Angler147 male 0.28747376 &lt;NA&gt; 12
+## Angler166 Angler166 male 0.13575008 &lt;NA&gt;  5
 ## Angler171 Angler171 male 0.07675416 &lt;NA&gt;  3</code></pre>
 <p>Males and females can be allocated for mating with function matings
 such that all breeding animals have the desired number of matings. In
@@ -648,16 +648,16 @@ offspring is minimized.</p>
 <pre><code>## Optimal branch and bound solution found</code></pre>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Mating)</span></code></pre></div>
 <pre><code>##         Sire       Dam n
-## 1  Angler147  Angler76 1
+## 2  Angler166  Angler66 1
 ## 4  Angler147  Angler80 1
-## 7  Angler147 Angler110 1
-## 11 Angler166 Angler118 1
-## 13 Angler147 Angler122 1
-## 16 Angler147 Angler131 1</code></pre>
+## 7  Angler147  Angler83 1
+## 10 Angler147 Angler111 1
+## 14 Angler166 Angler118 1
+## 17 Angler166 Angler137 1</code></pre>
 <p>The mean inbreeding in the offspring (which is equal to the mean
 kinship of the parents) is:</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(Mating)<span class="sc">$</span>objval</span></code></pre></div>
-<pre><code>## [1] 0.02739256</code></pre>
+<pre><code>## [1] 0.02740969</code></pre>
 </div>
 <div id="defining-the-objective-of-a-breeding-program" class="section level2">
 <h2>Defining the Objective of a Breeding Program</h2>

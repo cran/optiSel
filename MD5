@@ -1,4 +1,4 @@
-201c6f230d323f9aaf8ffe0194093d6f *DESCRIPTION
+1fda63c9789617d448b6a0d11896deb4 *DESCRIPTION
 47ccda4008e13ef83da9414ad7c478c4 *NAMESPACE
 5b5df8595955d1db4f4bbd5748531b2e *R/NPOdata.R
 1cee5df3e4b27403989cd45d626595d9 *R/NPOpopALT.R
@@ -63,7 +63,7 @@ c4a2a1d4f14ac74d774411bb6062cb69 *R/sim2dis.R
 5ae28ef66444a069538076b31c31250c *R/summary.Pedig.R
 211e9328e9d65ce455b2e12c59f3c728 *R/summary.candes.R
 6597864cc48c31b25f11d9eb81c2d020 *R/summary4opticont.R
-b3156ccebb5f41abdf41fc997c8b95f5 *build/partial.rdb
+b93ea37042297df3a6061365b28518e7 *build/partial.rdb
 0a2b6820464e0c39fde9781a2f851275 *build/vignette.rds
 36eea8fb2dce993af7b9aa21cbd6e49f *data/Cattle.rda
 8d4bf82db4c894f8eff5da79d385a7ab *data/ExamplePed.rda
@@ -72,13 +72,13 @@ b3156ccebb5f41abdf41fc997c8b95f5 *build/partial.rdb
 e3aaf6e919f5b4a8cc47190cc1c39cbb *data/map.rda
 f9f66372b5c587ae6d0ffd47d0305dec *inst/doc/ocs-vignette.R
 aa13715e913c849d5872d112a3354f24 *inst/doc/ocs-vignette.Rmd
-a69938f16860aae2fcffbdad12249163 *inst/doc/ocs-vignette.html
+840af31aa0e4bec28bb83a178c6adb48 *inst/doc/ocs-vignette.html
 f6e0219c7dc8c9f05ea4b912eba3d9df *inst/doc/ped-vignette.R
 c66d6b09fec254275a21b9b0f1e81c6e *inst/doc/ped-vignette.Rmd
-d094b7878c61526cfcb6165a0c4118b5 *inst/doc/ped-vignette.html
+299a14621a8c92b25971aa33639cd2ee *inst/doc/ped-vignette.html
 ac47752effcd5d8bbadb32d497ab2cd5 *inst/doc/seg-vignette.R
 d12c362bed4bc28cf69b63f5f4d58522 *inst/doc/seg-vignette.Rmd
-78a0d3fc5d010d3384e935967678e66d *inst/doc/seg-vignette.html
+75fcde645856f88b3abf98b3a1d04908 *inst/doc/seg-vignette.html
 a85bcc1df1a8433bca843017f95404c5 *inst/extdata/Chr1.phased
 1c37fbd6edde6eb544b932b372e65923 *inst/extdata/Chr2.phased
 8e83e08427b32de8eb5f817b70d027cc *man/Cattle.Rd
@@ -126,7 +126,7 @@ de7a1b63ef8dff833ab1530e592796a6 *src/Makevars.win
 0b163d7210048af9c52ea4e30c825ac7 *src/RcppExports.cpp
 5d9d1ff718f0d04691c87c5e67e94f66 *src/rcpp_completeness.cpp
 b3cd4320a58cee817b8866bf7ec4987c *src/rcpp_genecont.cpp
-d984bfc64b1d7521db1d3f80a6a8e700 *src/rcpp_haplofreq.cpp
+fb68a9715cc4888643a200be7e89697e *src/rcpp_haplofreq.cpp
 7b62398aff68403f95eb3a2ed3754017 *src/rcpp_makeA.cpp
 5f3355d8b1ba0d81d5111bafecc7d4f8 *src/rcpp_makeA_lowMem.cpp
 df999042d031f823c87277fa28f092ae *src/rcpp_segBreedComp.cpp

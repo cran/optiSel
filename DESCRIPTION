@@ -1,8 +1,8 @@
 Package: optiSel
 Type: Package
 Title: Optimum Contribution Selection and Population Genetics
-Version: 2.0.6
-Date: 2023-01-27
+Version: 2.0.7
+Date: 2023-05-08
 Author: Robin Wellmann
 Maintainer: Robin Wellmann <r.wellmann@uni-hohenheim.de>
 Depends: R (>= 3.5.0)
@@ -13,11 +13,11 @@ Imports: Matrix, plyr, kinship2, nadiv, pedigree, pspline, stringr,
         magic, parallel, doParallel, foreach, ECOSolveR, reshape2,
         optiSolve, Rcpp (>= 0.12.4)
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: knitr, ggplot2, rmarkdown
+Suggests: knitr, ggplot2, rmarkdown, alabama, cccp, nloptr
 Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 NeedsCompilation: yes
-Packaged: 2023-01-27 09:50:20 UTC; rowel
+Packaged: 2023-05-08 05:23:02 UTC; rowel
 Repository: CRAN
-Date/Publication: 2023-01-27 17:10:02 UTC
+Date/Publication: 2023-05-08 10:40:06 UTC
