@@ -20,7 +20,7 @@
   }
   
   if(min(c(ageM, ageF))==0){
-    cat("Individuals whose parents are born in the same year are removed.\n")
+    warning("Individuals whose parents are born in the same year are removed.\n")
     ageM <- ageM[ageM>0]
     ageF <- ageF[ageF>0]
   }

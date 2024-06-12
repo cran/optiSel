@@ -24,7 +24,7 @@
       phen$Class[use] <- paste(phen$Class[use], phen$Sex[use], sep=".")
     }else{
       phen$Class[use] <- paste(phen$Class[use], "cohort",      sep=".")
-      cat(paste0("Breed ", b, " has NA-sexes, so sexes are ignored for this breed.\n"))
+      message(paste0("Breed ", b, " has NA-sexes, so sexes are ignored for this breed.\n"))
     }
   }
   

@@ -61,7 +61,7 @@ Comp <- segBreedComp(Haplo$match, map)
 apply(Comp[, -1], 2, mean)
 
 ## Reading native segments from files:
-\dontrun{
+\donttest{
 wdir <- file.path(tempdir(), "HaplotypeEval")
 file <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minSNP=20, 
            minL=1.0, ubFreq=0.01, what="match", w.dir=wdir)

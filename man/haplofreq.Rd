@@ -9,7 +9,7 @@ For each haplotype from \code{thisBreed} and every SNP the occurence of the hapl
 \usage{
 haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0, 
   unitL="Mb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, 
-  what=c("freq", "match"), cores=1)
+  what=c("freq", "match"), cores=1, quiet=FALSE)
 }
 
 \arguments{
@@ -39,6 +39,7 @@ haplofreq(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0,
  \item{w.dir}{Output file directory. Writing results to files has the advantage that much less working memory is required. By default, no files are created. The function returns only the file names if files are created. }
  \item{what}{For \code{what="freq"}, the maximum frequency each haplotype segment has in the reference breeds will be computed. For \code{what="match"}, the name of the reference breed in which the segment has maximum frequency will be determined. By default, the frequencies and the breed names both are determined.}
  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
+ \item{quiet}{Should console output be suppressed?}
  }
 \value{
 If \code{w.dir=NA} then a list is returned. The list may have the following components:
@@ -69,7 +70,7 @@ Freq <- freqlist(
 plot(Freq, ID=1, hap=2, refBreed="Rotbunt")
 plot(Freq, ID=1, hap=2, refBreed="Holstein", Chr=1)
 
-\dontrun{
+\donttest{
 ## Test for using multiple cores:
 
 Freq1 <- haplofreq(files, Cattle, map, thisBreed="Angler", refBreeds="Rotbunt", 
@@ -79,7 +80,7 @@ range(Freq[[1]]-Freq1)
 }
 
 ## Creating output files with allele frequencies and allele origins:
-\dontrun{
+\donttest{
 rdir  <- system.file("extdata", package = "optiSel")
 wdir  <- file.path(tempdir(), "HaplotypeEval")
 chr   <- unique(map$Chr)

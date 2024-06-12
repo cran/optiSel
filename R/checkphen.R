@@ -60,7 +60,7 @@
   if("Sire" %in% columns){
     if(!("Sire" %in% colnames(phen))){
       phen$Sire <- NA
-      cat("Column 'Sire' was missing. It is set to NA.\n")
+      #message("Column 'Sire' was missing in 'phen'. It is set to NA.\n")
     }
     if(!is.character(phen$Sire)){
       phen$Sire <- as.character(phen$Sire)
@@ -70,7 +70,7 @@
   if("Dam" %in% columns){
     if(!("Dam" %in% colnames(phen))){
       phen$Dam <- NA
-      cat("Column 'Dam' was missing. It is set to NA.\n")
+      #message("Column 'Dam' was missing in 'phen'. It is set to NA.\n")
     }
     if(!is.character(phen$Dam)){
       phen$Dam <- as.character(phen$Dam)
@@ -88,7 +88,7 @@
       stop("Column 'Breed' of argument phen contains 'NA'.\n")
     }
     if("unknown" %in% phen$Breed){
-      cat("Individuals with breed name 'unknown' are removed.\n")
+      message("Individuals with breed name 'unknown' are removed.\n")
       phen <- phen[phen$Breed != "unknown", ]
     }
   }

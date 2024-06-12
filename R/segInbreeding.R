@@ -1,5 +1,5 @@
 
-"segInbreeding"<-function(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA){
+"segInbreeding"<-function(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -32,8 +32,8 @@
   }
   checkMap(map, unitL, unitP)
   rownames(map)<-map$Name
-  if(is.na(skip)){  skip <- getskip(files[[1]][1])}
-  if(is.na(cskip)){cskip <- getcskip(files[[1]][1], skip)}
+  if(is.na(skip)){  skip <- getskip(files[[1]][1], quiet=quiet)}
+  if(is.na(cskip)){cskip <- getcskip(files[[1]][1], skip, quiet=quiet)}
   
   IndivFile1 <- scan(files[[1]][1], nlines=1, skip=skip, what="character", quiet=TRUE)
   if(cskip>0){IndivFile1 <-IndivFile1[-(1:cskip)]}
@@ -84,11 +84,11 @@
   gesL  <- 0
   
   for(chr in names(files[[1]])){
-    cat(paste("Reading chromosome ", chr, "...  "))
+    if(!quiet){cat(paste("Reading chromosome ", chr, "...  "))}
     submap <- map[map$Chr==chr, ]
     M      <- nrow(submap)
-    if(unitL %in% colnames(map)){cM <- submap[, unitL]}else{cM <- 1:M; cat("Using: unitL=Marker number\n")}
-    if(unitP %in% colnames(map)){kb <- submap[, unitP]}else{kb <- 1:M; cat("Using: unitP=Marker number\n")}
+    if(unitL %in% colnames(map)){cM <- submap[, unitL]}else{cM <- 1:M; if(!quiet){cat("Using: unitL=Marker number\n")}}
+    if(unitP %in% colnames(map)){kb <- submap[, unitP]}else{kb <- 1:M; if(!quiet){cat("Using: unitP=Marker number\n")}}
     cM   <- (c(0,cM)+c(cM,cM[length(cM)]+cM[1]))/2
     kb   <- (c(0,kb)+c(kb,kb[length(kb)]+kb[1]))/2
     

@@ -1,5 +1,5 @@
 
-"pedIBDatN"<-function(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=NA){
+"pedIBDatN"<-function(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=NA, quiet=FALSE){
   getNe    <- !is.na(nGen)
   showInfo <- !is.null(keep.only)
   if("data.table" %in% class(Pedig)){
@@ -49,17 +49,17 @@
   nNat <- length(NatFounder)
   AMig <- matrix(2, nMig, nMig, dimnames=list(MigFounder, MigFounder))
   ANat <- matrix(2, nNat, nNat, dimnames=list(NatFounder, NatFounder))
-  cat(paste0("Number of Migrant Founders: ", nrow(AMig), "\n"))
-  cat(paste0("Number of Native  Founders: ", nrow(ANat), "\n"))
-  cat(paste0("Individuals in Pedigree   : ", nrow(Pedig), "\n"))
+  if(!quiet){cat(paste0("Number of Migrant Founders: ", nrow(AMig), "\n"))}
+  if(!quiet){cat(paste0("Number of Native  Founders: ", nrow(ANat), "\n"))}
+  if(!quiet){cat(paste0("Individuals in Pedigree   : ", nrow(Pedig), "\n"))}
   GB <- ((nrow(AMig)+nrow(ANat))^2 + length(Selection)^2 + nrow(Pedig)^2)*(7.45058066987776e-09)*1.1
-  if((GB>1)&(length(Selection)>0.5*nrow(Pedig))){cat(paste0("Ensure that you have more than ", round(GB, 1), " GB memory available.\n"))}
-  if(GB>1){cat("Computing fOI ...")}
+  if((GB>1)&(length(Selection)>0.5*nrow(Pedig))){message(paste0("Ensure that you have more than ", round(GB, 1), " GB memory available.\n"))}
+  if(GB>1 & !quiet){cat("Computing fOI ...")}
   fOI  <- 0.5*makeA(Pedig[,1:3], AFounder=AMig, keep.only=Selection)[Selection, Selection]
   gc()
-  if(GB>1){cat("finished\nComputing fII ...")}
+  if(GB>1 & !quiet){cat("finished\nComputing fII ...")}
   fII  <- 0.5*makeA(Pedig[,1:3], AFounder=adiag(AMig, ANat), keep.only=Selection)[Selection, Selection]
-  if(GB>1){cat("finished\nCombining results ...")}
+  if(GB>1 & !quiet){cat("finished\nCombining results ...")}
   rm(AMig)
   rm(ANat)
   gc()
@@ -74,7 +74,7 @@
   rm(fOI)
   pedN[pedN==0] <- 1e-14
   
-  if(GB>1){cat("finished\n")}
+  if(GB>1 & !quiet){cat("finished\n")}
   
   if(getNe){
     nativeNe   <- round(nativeNe(Pedig=Pedig, pedIBDandN=pedIBDandN, pedN=pedN, keep=keep.only, thisBreed=thisBreed, nGen=nGen),1)
@@ -89,7 +89,7 @@
   
   if(showInfo){
     if(getNe){
-      cat("Native effective size     : ", nativeNe, "\n", sep="")
+      if(!quiet){cat("Native effective size     : ", nativeNe, "\n", sep="")}
       attr(Res,"nativeNe") <- nativeNe
     }
     Res$mean <- mean(pedIBDandN)/mean(pedN)

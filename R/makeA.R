@@ -43,7 +43,8 @@ makeA <- function(Pedig, keep.only=NULL, keep=keep.only, AFounder=NULL){
     Pedig[names(x),"nOff"] <- x
     x <- table(Pedig$Dam)
     Pedig[names(x),"nOff"] <- x
-    pedKin  <- rcpp_makeA_lowMem(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(indKeep), as.integer(numKeep-1), as.integer(Pedig$Indiv %in% indKeep), as.integer(Pedig$nOff))
+    pedKin <- rcpp_makeA(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(Pedig$Indiv))
+  #  pedKin  <- rcpp_makeA_lowMem(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(indKeep), as.integer(numKeep-1), as.integer(Pedig$Indiv %in% indKeep), as.integer(Pedig$nOff))
   }else{
     pedKin <- rcpp_makeA(as.integer(Pedig$numSire), as.integer(Pedig$numDam), AFounder, as.integer(numFounder-1), as.character(Pedig$Indiv))
   }

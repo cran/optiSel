@@ -63,8 +63,7 @@ Mating
 attributes(Mating)$objval
 
 
-\dontrun{
-## This is faster but not available on all platforms:
+\donttest{
 library("Rsymphony")
 Mating <- matings(Candidate, sKin, alpha=0.30, solver=Rsymphony_solve_LP)
 Mating

@@ -9,7 +9,7 @@ Calculates the kinship at native alleles, which is the segment based probability
 \usage{
 segIBDatN(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20,
   unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, 
-  skip=NA, cskip=NA, cores=1)
+  skip=NA, cskip=NA, cores=1, quiet=FALSE)
 }
 
 \arguments{
@@ -43,6 +43,7 @@ File names must contain the chromosome name as specified in the \code{map} in th
      \item{skip}{Take line \code{skip+1} of the genotype files as the row with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the genotype files as the first column with genotypes. By default, the number is determined automatically.}
   \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
+ \item{quiet}{Should console output be suppressed?}
 }
 \value{
 A list of class \code{ratioFun} including components:

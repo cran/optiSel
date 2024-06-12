@@ -92,7 +92,7 @@
     if(sum(!is.na(Pedig$Sex))>0){
       sexes<-names(table(Pedig$Sex))
       if(length(sexes)>2){
-        cat("Warning: The sex has more than 2 levels. Please correct it.\n")
+        warning("Warning: The sex has more than 2 levels. Please correct it.\n")
       }
       if(!all(sexes %in% c("male","female", NA))){
         if(length(sexes)==1){sexes<-c(sexes, "dummysex")}
@@ -103,7 +103,7 @@
         if(!is.na(Mval)&!is.na(Fval)&(Mval!=Fval)){
           Pedig$Sex <- mapvalues(Pedig$Sex, from=c(Mval, Fval), to=c("male","female"))
         }else{
-        cat("Meaning of sex labels cannot be determined from pedigree structure.\n")
+        warning("Meaning of sex labels cannot be determined from pedigree structure.\n")
         }
       }
     }

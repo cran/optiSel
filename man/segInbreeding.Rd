@@ -8,7 +8,7 @@
 }
 \usage{
 segInbreeding(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", 
-   a=0.0, keep=NULL, skip=NA, cskip=NA)
+   a=0.0, keep=NULL, skip=NA, cskip=NA, quiet=FALSE)
 }
 \arguments{
   \item{files}{This parameter is either
@@ -32,6 +32,7 @@ File names must contain the chromosome name as specified in the \code{map} in th
   \item{keep}{If \code{keep} is a vector containing IDs of individuals then inbreeding will be computed only for these individuals. The default \code{keep=NULL} means that inbreeding will be computed for all individuals included in the files.}
    \item{skip}{Take line \code{skip+1} of the files as the row with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the files as the first column with genotypes. By default, the number is determined automatically.}
+  \item{quiet}{Should console output be suppressed?}
 }
 \value{
 A data frame with column \code{Indiv} containing the individual IDs and column \code{Inbr} containing the inbreeding coefficients.

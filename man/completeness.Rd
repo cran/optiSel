@@ -56,7 +56,7 @@ hist(Summary$maxGen,     xlim=c(0,20), main="Number of Maximum Generations Trace
 compl <- completeness(Pedig, keep=Pedig$Born \%in\% (2006:2007), maxd=50, by="Sex")
 head(compl)
 
-\dontrun{
+\donttest{
 library("ggplot2")
 ggplot(compl, aes(Generation, Completeness, col=Sex))+geom_line()
 }

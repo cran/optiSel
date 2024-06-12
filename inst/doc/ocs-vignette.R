@@ -67,7 +67,7 @@ head(Mating)
 ## -----------------------------------------------------------------------------
 attributes(Mating)$objval
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 wdir  <- file.path(tempdir(), "HaplotypeEval")
 wfile <- haplofreq(GTfiles, Cattle, map, thisBreed="Angler", minL=1.0, w.dir=wdir)
 Comp  <- segBreedComp(wfile$match, map)
@@ -76,7 +76,7 @@ Cattle[rownames(Comp), "NC"] <- Comp$native
 ## -----------------------------------------------------------------------------
 head(Cattle[,-1])
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 phen    <- Cattle[Cattle$Breed=="Angler",]
 phen$isCandidate <- phen$Born<=2013
 
@@ -95,7 +95,7 @@ con <- list(
   ub.sKin = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L)
   )
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Offspring   <- opticont("max.BV", cand, con, trace=FALSE)
 
 ## -----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ Offspring$info
 ## -----------------------------------------------------------------------------
 Offspring$mean
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    ="female",
   ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
@@ -120,13 +120,13 @@ rbind(Ref=cand$mean, maxBV=Offspring$mean, maxBV2=Offspring2$mean)
 ## -----------------------------------------------------------------------------
 con  <- list(uniform="female")
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Offspring   <- opticont("min.sKin", cand, con)
 
 ## -----------------------------------------------------------------------------
 rbind(cand$mean, Offspring$mean)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   lb.NC      = cand$mean$NC + 0.04,
@@ -137,7 +137,7 @@ Offspring2     <- opticont("min.sKin", cand, con)
 ## -----------------------------------------------------------------------------
 rbind(Ref=cand$mean, minKin=Offspring$mean, minKin2=Offspring2$mean)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
@@ -151,7 +151,7 @@ Offspring$info
 ## -----------------------------------------------------------------------------
 Offspring$mean
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   ub.sKin    = 1-(1-cand$mean$sKin)*(1-1/(2*Ne))^(1/L),
@@ -186,7 +186,7 @@ Offspring$mean
 ## -----------------------------------------------------------------------------
 head(Offspring$parent[Offspring$parent$oc>0.02,c("Breed","lb","oc","ub")])
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 data("PedigWithErrors")
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 
@@ -212,7 +212,7 @@ head(cont)
 L <- 1/(4*cont$male[1]) + 1/(4*cont$female[1])
 L
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 pKin    <- pedIBD(Pedig, keep.only=phen$Indiv)
 pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=phen$Indiv)
 
@@ -228,13 +228,13 @@ con <- list(
   ub.pKin = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L)
 )
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Offspring <- opticont("max.BV", cand, con)
 
 ## -----------------------------------------------------------------------------
 rbind(cand$mean, Offspring$mean)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
@@ -249,13 +249,13 @@ rbind(Ref=cand$mean, maxBV=Offspring$mean, maxBV2=Offspring2$mean)
 ## -----------------------------------------------------------------------------
 con  <- list(uniform="female")
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Offspring <- opticont("min.pKin", cand, con)
 
 ## -----------------------------------------------------------------------------
 rbind(cand$mean, Offspring$mean)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con  <- list(
   uniform = "female",
   lb.NC   = 1.02*cand$mean$NC,
@@ -267,7 +267,7 @@ Offspring2  <- opticont("min.pKinatN", cand, con)
 ## -----------------------------------------------------------------------------
 rbind(Ref=cand$mean, minKin=Offspring$mean, minKin2=Offspring2$mean)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),
@@ -278,7 +278,7 @@ Offspring <- opticont("max.NC", cand, con)
 ## -----------------------------------------------------------------------------
 Offspring$mean
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 con <- list(
   uniform    = "female",
   ub.pKin    = 1-(1-cand$mean$pKin)*(1-1/(2*Ne))^(1/L),

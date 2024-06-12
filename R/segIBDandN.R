@@ -1,6 +1,6 @@
 globalVariables('thisCore')
 
-"segIBDandN"<-function(files, Native, map, minSNP=20, unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1){
+"segIBDandN"<-function(files, Native, map, minSNP=20, unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -42,8 +42,8 @@ globalVariables('thisCore')
   }else{
     IndivFileN <- colnames(Native)
   }
-  if(is.na(skip)){  skip <- getskip(files[1])}
-  if(is.na(cskip)){cskip <- getcskip(files[1], skip)}
+  if(is.na(skip)){  skip <- getskip(files[1], quiet=quiet)}
+  if(is.na(cskip)){cskip <- getcskip(files[1], skip, quiet=quiet)}
   IndivFileC <- scan(files[1], nlines=1, what="character",quiet=TRUE, skip=skip)
   if(cskip>0){IndivFileC <-IndivFileC[-(1:cskip)]}
   if(length(IndivFileC)==1 || IndivFileC[1]!=IndivFileC[2]){
@@ -71,8 +71,8 @@ globalVariables('thisCore')
     submap <- map[map$Chr==chr, ]
     M <- nrow(submap)
     submap$SNP <- 1:M
-    if(unitL %in% colnames(submap)){cM <- submap[, unitL]}else{cM <- 1:M; cat("Using: unitL=Marker number\n")}
-    if(unitP %in% colnames(submap)){kb <- submap[, unitP]}else{kb <- 1:M; cat("Using: unitP=Marker number\n")}
+    if(unitL %in% colnames(submap)){cM <- submap[, unitL]}else{cM <- 1:M; if(!quiet){cat("Using: unitL=Marker number\n")}}
+    if(unitP %in% colnames(submap)){kb <- submap[, unitP]}else{kb <- 1:M; if(!quiet){cat("Using: unitP=Marker number\n")}}
     cM   <- (c(0,cM)+c(cM,cM[length(cM)]+cM[1]))/2
     kb   <- (c(0,kb)+c(kb,kb[length(kb)]+kb[1]))/2
     gesL <- gesL + kb[length(kb)] - kb[1]
@@ -99,7 +99,7 @@ globalVariables('thisCore')
   if(cores==1){
     fROHN <- matrix(0,NC,NC)
     for(chr in Chromosomes){
-      cat(paste0("Reading chromosome ", chr, "...  "))
+      if(!quiet){cat(paste0("Reading chromosome ", chr, "...  "))}
       if(is.vector(Native)){
         fROHN <- fROHN +  rcpp_segIBDandN(as.character(files[chr]), as.character(Native[chr]), as.integer(NFileC), as.integer(NFileN), as.integer(indexC-1), as.integer(indexN-1), as.integer(NC), as.integer(minSNP), as.double(minL), as.double(cMList[[chr]]), as.double(kbList[[chr]]), as.double(a), as.character(symB), as.integer(skip), as.integer(cskip))
       }else{
@@ -109,7 +109,7 @@ globalVariables('thisCore')
   }else{
     use_cor <- 1 + ((1:length(Chromosomes)) %% cores)
     Cores   <- unique(use_cor)
-    cat(paste0("Using ",cores," cores... "))
+    if(!quiet){cat(paste0("Using ",cores," cores... "))}
     cl <- makeCluster(cores)
     registerDoParallel(cl)
     fROHN <- foreach(thisCore=Cores, .combine='+', .inorder=FALSE) %dopar% {
@@ -126,7 +126,7 @@ globalVariables('thisCore')
     }
     gc()
     stopCluster(cl)
-    cat("finished.\n")
+    if(!quiet){cat("finished.\n")}
   }
 
   N     <- nrow(fROHN)/2

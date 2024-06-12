@@ -15,11 +15,11 @@ Pedig <- prePed(Pedigree)
 ## -----------------------------------------------------------------------------
 Pedig[,-1]
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 sPed <- subPed(Pedig, keep = c("Chantalle","Angelika"), prevGen = 2, succGen = 1)
 pedplot(sPed, label = c("Indiv", "Born", "Breed"), cex = 0.55)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 data("PedigWithErrors")
 data("Phen")
 Pedig <- prePed(PedigWithErrors)
@@ -28,7 +28,7 @@ Pedig <- prePed(PedigWithErrors)
 compl <- completeness(Pedig, keep=Phen$Indiv, by="Indiv")
 head(compl)
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 compl <- completeness(Pedig, keep=Phen$Indiv, by="Sex")
 library("ggplot2")
 ggplot(compl, aes(x=Generation, y=Completeness, col=Sex)) + geom_line()
@@ -47,7 +47,7 @@ isMale <- Pedig$Sex=="male" & (Pedig$Indiv %in% Phen$Indiv[Phen$BV>1.0])
 males  <- Pedig$Indiv[isMale & summary(Pedig)$equiGen>5]
 pKin[males, "276000812750188", drop=FALSE]
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 
 ## -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ cont  <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
 Pedig$NC <- cont$native
 head(cont[rev(Phen$Indiv), 2:6])
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 pKinatN <- pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=Phen$Indiv)
 
 ## -----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ deltaC <- 1 - (1-pKin[id,id])^(1/n)
 Ne     <- 1/(2*mean(deltaC))
 Ne
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 data("PedigWithErrors")
 Pedig <- prePed(PedigWithErrors, thisBreed="Hinterwaelder", lastNative=1970)
 set.seed(0)
@@ -109,12 +109,12 @@ cand <- candes(phen   = Pedig[keep,],
                pKinatN= pedIBDatN(Pedig, thisBreed="Hinterwaelder", keep.only=keep), 
                quiet=TRUE, reduce.data=FALSE)
 
-## ---- fig.show='hold'---------------------------------------------------------
+## ----fig.show='hold'----------------------------------------------------------
 sy <- summary(cand, tlim=c(1970, 2000), histNe=150, base=1800, df=4)
 ggplot(sy, aes(x=t, y=Ne)) + geom_line() + ylim(c(0,100))
 ggplot(sy, aes(x=t, y=NGE)) + geom_line() + ylim(c(0,7))
 
-## ---- fig.width = 5, fig.height = 3-------------------------------------------
+## ----fig.width = 5, fig.height = 3--------------------------------------------
 use  <- Pedig$Breed=="Hinterwaelder" & Pedig$Born %in% (1950:1995)
 cont <- pedBreedComp(Pedig, thisBreed="Hinterwaelder")
 contByYear <- conttac(cont, cohort=Pedig$Born, use=use, mincont = 0.01)

@@ -1,5 +1,5 @@
 
-"haplofreq"<-function(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0, unitL="Mb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, what=c("freq","match"), cores=1){
+"haplofreq"<-function(files, phen, map, thisBreed, refBreeds="others", minSNP=20, minL=1.0, unitL="Mb", ubFreq=0.01, keep=NULL, skip=NA, cskip=NA, w.dir=NA, what=c("freq","match"), cores=1, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -39,8 +39,7 @@
   if(!is.null(keep)){
     keep <- setdiff(as.character(keep),c(NA))
     if(!all(keep %in% phen$Indiv)){
-      cat("The following Individuals are removed because they do not appear in phen:")
-      cat(setdiff(keep, phen$Indiv),"\n")
+      message(paste(c("The following Individuals are removed because they do not appear in phen:", setdiff(keep, phen$Indiv)), collapse=" "))
       keep <- keep[keep %in% phen$Indiv]
     }
   }else{
@@ -92,8 +91,8 @@
   if(any(duplicated(names(files$hap.thisBreed)))){
     stop("For some chromosomes different files were provided.")
   }
-  if(is.na(skip)){  skip <- getskip(files$hap.thisBreed[1])}
-  if(is.na(cskip)){cskip <- getcskip(files$hap.thisBreed[1], skip)}
+  if(is.na(skip)){  skip <- getskip(files$hap.thisBreed[1], quiet=quiet)}
+  if(is.na(cskip)){cskip <- getcskip(files$hap.thisBreed[1], skip, quiet=quiet)}
   ##################################################
   #      Extract information for this breed        #
   ##################################################
@@ -109,7 +108,7 @@
   if(NC==0){stop("Individuals from this breed are not included in phen or keep.\n")}
 
   remainingIndiv <- setdiff(keep, Candidate)
-  if(any(phen$Indiv %in% remainingIndiv & phen$Breed==thisBreed)){
+  if(any(phen$Indiv %in% remainingIndiv & phen$Breed==thisBreed) & !quiet){
     cat("The following individuals are removed from the analysis because they are not genotyped:\n")
     print(phen[phen$Indiv %in% remainingIndiv & phen$Breed==thisBreed,])
   }
@@ -141,7 +140,7 @@
   storage.mode(IndexRef)<-'integer'
 
   remainingIndiv <-setdiff(keep, RefIndiv)
-  if(any(phen$Indiv %in% remainingIndiv & phen$Breed %in% refBreeds)){
+  if(any(phen$Indiv %in% remainingIndiv & phen$Breed %in% refBreeds) & !quiet){
     cat("The following reference individuals are removed from the analysis because they are not genotyped:\n")
     print(phen[phen$Indiv %in% remainingIndiv & phen$Breed %in% refBreeds,])
   }  
@@ -181,12 +180,12 @@
   if(cores==1){  
     Haplo <- list()
     for(chr in Chromosomes){
-      cat(paste("Reading chromosome ", chr, "...  "))
+      if(!quiet){cat(paste("Reading chromosome ", chr, "...  "))}
       Haplo[[chr]] <- rcpp_haplofreq(as.character(files$hap.thisBreed[chr]), as.character(files$hap.refBreeds[chr]), as.character(files$seg.frequency[chr]), as.character(files$seg.origin[chr]), as.character(MNamesList[[chr]]), as.character(BreedSymbol), as.integer(IndexCand-1), IndexRef, as.integer(NFileC), as.integer(NFileR), as.integer(NC), as.integer(NR), as.integer(minSNP), as.double(minL), as.double(ubFreq), as.double(cMList[[chr]]), as.character(symB), as.integer(skip), as.integer(cskip), as.integer("freq" %in% what), as.integer("match" %in% what))
-      cat(paste("M=", length(cMList[[chr]])-1, ", Reference breeds: ", paste(refBreeds, collapse=" "), "\n",sep=""))
+      if(!quiet){cat(paste("M=", length(cMList[[chr]])-1, ", Reference breeds: ", paste(refBreeds, collapse=" "), "\n",sep=""))}
       }
   }else{
-    cat(paste0("Using ",cores," cores... "))
+    if(!quiet){cat(paste0("Using ",cores," cores... "))}
     cl <- makeCluster(cores)
     registerDoParallel(cl)
     Haplo <- foreach(chr=Chromosomes, .inorder=TRUE) %dopar% {
@@ -194,7 +193,7 @@
       }
     names(Haplo) <- Chromosomes
     stopCluster(cl)
-    cat("finished.\n")
+    if(!quiet){cat("finished.\n")}
   }
   
 

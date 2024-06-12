@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robin Wellmann" />
 
-<meta name="date" content="2023-05-08" />
+<meta name="date" content="2024-06-12" />
 
 <title>3. Optimum Contribution Selection</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -150,6 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -362,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">3. Optimum Contribution Selection</h1>
 <h4 class="author">Robin Wellmann</h4>
-<h4 class="date">2023-05-08</h4>
+<h4 class="date">2024-06-12</h4>
 
 
 
@@ -411,9 +412,9 @@ information and has columns <code>Indiv</code> (individual IDs),
 <code>Born</code> (years of birth), <code>Breed</code> (breed names),
 <code>BV</code> (breeding values), <code>Sex</code> (sexes), and
 <code>herd</code> (herds).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;optiSel&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Cattle)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Cattle)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;optiSel&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(Cattle)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">head</span>(Cattle)</span></code></pre></div>
 <pre><code>##           Indiv Born  Breed         BV    Sex herd
 ## Angler1 Angler1 1991 Angler -1.0706066   male &lt;NA&gt;
 ## Angler2 Angler2 1994 Angler -0.3362574 female    2
@@ -434,10 +435,10 @@ each chromosome. Data frame <code>map</code> contains the marker map and
 has columns <code>Name</code> (marker name), <code>Chr</code>
 (chromosome number), <code>Position</code>, <code>Mb</code> (position in
 Mega base pairs), and <code>cM</code> (position in centiMorgan):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(map)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dir     <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package=</span><span class="st">&quot;optiSel&quot;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>GTfiles <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, <span class="fu">paste</span>(<span class="st">&quot;Chr&quot;</span>, <span class="fu">unique</span>(map<span class="sc">$</span>Chr), <span class="st">&quot;.phased&quot;</span>, <span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(map)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">data</span>(map)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>dir     <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package=</span><span class="st">&quot;optiSel&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>GTfiles <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, <span class="fu">paste</span>(<span class="st">&quot;Chr&quot;</span>, <span class="fu">unique</span>(map<span class="sc">$</span>Chr), <span class="st">&quot;.phased&quot;</span>, <span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">head</span>(map)</span></code></pre></div>
 <pre><code>##                                    Name Chr Position cM       Mb
 ## ARS-BFGL-NGS-16466   ARS-BFGL-NGS-16466   1   267940  0 0.267940
 ## ARS-BFGL-NGS-98142   ARS-BFGL-NGS-98142   1   471078  0 0.471078
@@ -461,29 +462,29 @@ Moreover, males and females (excluding newborn individuals) should be
 equally represented. These percentages can be estimated with function
 agecont from pedigree data. Since pedigree data is not available for
 this data set, the percentages are entered by hand:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cont  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">age   =</span> <span class="fu">c</span>(   <span class="dv">1</span>,    <span class="dv">2</span>,    <span class="dv">3</span>,    <span class="dv">4</span>,    <span class="dv">5</span>,    <span class="dv">6</span>,    <span class="dv">7</span>,   <span class="dv">8</span>,    <span class="dv">9</span>,    <span class="dv">10</span>), </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">male  =</span> <span class="fu">c</span>(<span class="fl">0.14</span>, <span class="fl">0.14</span>, <span class="fl">0.09</span>, <span class="fl">0.04</span>, <span class="fl">0.03</span>, <span class="fl">0.03</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>, <span class="fl">0.01</span>, <span class="fl">0.01</span>),</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">female=</span> <span class="fu">c</span>(<span class="fl">0.08</span>, <span class="fl">0.08</span>, <span class="fl">0.07</span>, <span class="fl">0.06</span>, <span class="fl">0.05</span>, <span class="fl">0.04</span>, <span class="fl">0.03</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>cont  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">age   =</span> <span class="fu">c</span>(   <span class="dv">1</span>,    <span class="dv">2</span>,    <span class="dv">3</span>,    <span class="dv">4</span>,    <span class="dv">5</span>,    <span class="dv">6</span>,    <span class="dv">7</span>,   <span class="dv">8</span>,    <span class="dv">9</span>,    <span class="dv">10</span>), </span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">male  =</span> <span class="fu">c</span>(<span class="fl">0.14</span>, <span class="fl">0.14</span>, <span class="fl">0.09</span>, <span class="fl">0.04</span>, <span class="fl">0.03</span>, <span class="fl">0.03</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>, <span class="fl">0.01</span>, <span class="fl">0.01</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">female=</span> <span class="fu">c</span>(<span class="fl">0.08</span>, <span class="fl">0.08</span>, <span class="fl">0.07</span>, <span class="fl">0.06</span>, <span class="fl">0.05</span>, <span class="fl">0.04</span>, <span class="fl">0.03</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>, <span class="fl">0.02</span>))</span></code></pre></div>
 <p>One age class spans one year and the individuals born in the current
 year are in age class 1. Note that in this example young male classes
 have higher percentages than young female classes because males were
 used for breeding at an earlier age. The generation interval in years is
 approximately</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>male[<span class="dv">1</span>]) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>female[<span class="dv">1</span>])</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>L</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>male[<span class="dv">1</span>]) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>female[<span class="dv">1</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>L</span></code></pre></div>
 <pre><code>## [1] 4.910714</code></pre>
 <p>Define a data frame containing the phenotypes of a sample from the
 population which includes the selection candidates. Make sure that there
 is one column for each trait that should be improved. Logical column
 <code>isCandidate</code> is appended indicating the individuals
 available as selection candidates.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>phen <span class="ot">&lt;-</span> Cattle[Cattle<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Angler&quot;</span>,]</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>phen <span class="ot">&lt;-</span> Cattle[Cattle<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Angler&quot;</span>,]</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span></code></pre></div>
 <p>Compute the kinships that are to be managed. Below, the kinship is
 named <code>sKin</code>, which is a shorthand for <em>segment based
 kinship</em>.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sKin <span class="ot">&lt;-</span> <span class="fu">segIBD</span>(GTfiles, map)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>sKin <span class="ot">&lt;-</span> <span class="fu">segIBD</span>(GTfiles, map)</span></code></pre></div>
 <pre><code>## Using  skip = 2 
 ## Using cskip = 2 
 ## Reading chromosome 1 ...M=400
@@ -494,10 +495,8 @@ candidates, which are the phenptypes and the kinships. The current
 values of the parameters in the population and the available objective
 functions and constraints for OCS are shown. Generations are defined to
 be non-overlapping if argument <code>cont</code> is omitted.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cand  <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">sKin=</span>sKin, <span class="at">cont=</span>cont)</span></code></pre></div>
-<pre><code>## Column &#39;Sire&#39; was missing. It is set to NA.
-## Column &#39;Dam&#39; was missing. It is set to NA.
-## The population is evaluated at time 2014
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>cand  <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">sKin=</span>sKin, <span class="at">cont=</span>cont)</span></code></pre></div>
+<pre><code>## The population is evaluated at time 2014
 ## 
 ##  Mean values of the parameters are:   Value 
 ##  for trait   &#39;BV&#39;   in Angler:       -0.0530
@@ -533,7 +532,7 @@ kinship in the offspring by defining constraint
 <p>The upper bound for the mean kinship in the offspring should depend
 on the current mean kinship in the population, which is included in
 component <code>mean</code> of <code>cand</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##           BV       sKin
 ## 1 -0.0529632 0.05515035</code></pre>
 <p>In general, if an upper bound for a kinship <span class="math inline">\(K\)</span> should be defined, it is recommended to
@@ -550,12 +549,12 @@ long-term viable effective size. To be on the safe side, an effective
 size of <span class="math inline">\(N_e=100\)</span> should be envisaged
 <span class="citation">(T. H. E. Meuwissen 2009)</span>.</p>
 <p>A list containing the constraints is defined below.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Ne <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>Ne <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">ub.sKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>)</span></code></pre></div>
 <p>The component named <code>ub.sKin</code> defines the upper bound for
 the mean kinship <code>sKin</code> in the population in the next year.
 Component <code>uniform = &quot;female&quot;</code> states that all females from a
@@ -566,7 +565,7 @@ defined with <code>lb</code> and <code>ub</code> (see the help page of
 function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a>).</p>
 <p>Now the optimum contributions of the selection candidates can be
 calculated:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## 
 ## Using solver &#39;cccp2&#39; with parameters: 
 ##          Value
@@ -595,16 +594,16 @@ calculated:</p>
 <p>The report above states that the solution is considered optimal by
 the solver and that all constraints are fulfilled since valid=TRUE. This
 information can also be obtained as</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
 <pre><code>##   valid solver  status
 ## 1  TRUE  cccp2 optimal</code></pre>
 <p>The value of the objective function can be accessed as</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>obj.fun</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>Offspring<span class="sc">$</span>obj.fun</span></code></pre></div>
 <pre><code>##        BV 
 ## 0.2599955</code></pre>
 <p>and the expected average values of the kinshps and traits in the
 offspring are</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##          BV       sKin
 ## 1 0.2599955 0.05611434</code></pre>
 <p>The results are OK. If they are not, then try to use another solver.
@@ -618,8 +617,8 @@ if the function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticon
 called (as shown above).</p>
 <p>The optimum contributions of the selection candidates are in
 component <code>parent</code>:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Candidate <span class="ot">&lt;-</span> Offspring<span class="sc">$</span>parent[,  <span class="fu">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;oc&quot;</span>, <span class="st">&quot;herd&quot;</span>)]</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Candidate[Candidate<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> Candidate<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.001</span>,])</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>Candidate <span class="ot">&lt;-</span> Offspring<span class="sc">$</span>parent[,  <span class="fu">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;oc&quot;</span>, <span class="st">&quot;herd&quot;</span>)]</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">head</span>(Candidate[Candidate<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> Candidate<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.001</span>,])</span></code></pre></div>
 <pre><code>##               Indiv  Sex         oc herd
 ## Angler147 Angler147 male 0.28747376 &lt;NA&gt;
 ## Angler166 Angler166 male 0.13575008 &lt;NA&gt;
@@ -634,30 +633,30 @@ imposing upper bounds for the optimum contributions.</p>
 contributions and the size <code>N</code> of the offspring population
 with function <a href="https://rdrr.io/cran/optiSel/man/noffspring.html">noffspring</a>.
 These values are rounded up or down to whole numbers.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Candidate<span class="sc">$</span>n <span class="ot">&lt;-</span> <span class="fu">noffspring</span>(Candidate, <span class="at">N=</span><span class="dv">20</span>)<span class="sc">$</span>nOff</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Candidate[Candidate<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> Candidate<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.001</span>,])</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>Candidate<span class="sc">$</span>n <span class="ot">&lt;-</span> <span class="fu">noffspring</span>(Candidate, <span class="at">N=</span><span class="dv">20</span>)<span class="sc">$</span>nOff</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">head</span>(Candidate[Candidate<span class="sc">$</span>Sex<span class="sc">==</span><span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> Candidate<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.001</span>,])</span></code></pre></div>
 <pre><code>##               Indiv  Sex         oc herd  n
-## Angler147 Angler147 male 0.28747376 &lt;NA&gt; 12
-## Angler166 Angler166 male 0.13575008 &lt;NA&gt;  5
+## Angler147 Angler147 male 0.28747376 &lt;NA&gt; 11
+## Angler166 Angler166 male 0.13575008 &lt;NA&gt;  6
 ## Angler171 Angler171 male 0.07675416 &lt;NA&gt;  3</code></pre>
 <p>Males and females can be allocated for mating with function matings
 such that all breeding animals have the desired number of matings. In
 the example below the mean marker-based inbreeding coefficient in the
 offspring is minimized.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>Mating <span class="ot">&lt;-</span> <span class="fu">matings</span>(Candidate, <span class="at">Kin=</span>sKin)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>Mating <span class="ot">&lt;-</span> <span class="fu">matings</span>(Candidate, <span class="at">Kin=</span>sKin)</span></code></pre></div>
 <pre><code>## Optimal branch and bound solution found</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Mating)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">head</span>(Mating)</span></code></pre></div>
 <pre><code>##         Sire       Dam n
 ## 2  Angler166  Angler66 1
-## 4  Angler147  Angler80 1
-## 7  Angler147  Angler83 1
-## 10 Angler147 Angler111 1
-## 14 Angler166 Angler118 1
-## 17 Angler166 Angler137 1</code></pre>
+## 4  Angler147  Angler76 1
+## 9  Angler171  Angler80 1
+## 10 Angler147  Angler81 1
+## 13 Angler147  Angler83 1
+## 16 Angler147 Angler110 1</code></pre>
 <p>The mean inbreeding in the offspring (which is equal to the mean
 kinship of the parents) is:</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(Mating)<span class="sc">$</span>objval</span></code></pre></div>
-<pre><code>## [1] 0.02740969</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">attributes</span>(Mating)<span class="sc">$</span>objval</span></code></pre></div>
+<pre><code>## [1] 0.02456574</code></pre>
 </div>
 <div id="defining-the-objective-of-a-breeding-program" class="section level2">
 <h2>Defining the Objective of a Breeding Program</h2>
@@ -726,11 +725,11 @@ function <a href="https://rdrr.io/cran/optiSel/man/segBreedComp.html">segBreedCo
 Since native contributions <code>NC</code> of the Angler cattle should
 be considered, they are computed and added as an additional column to
 data frame <code>Cattle</code>.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>wdir  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;HaplotypeEval&quot;</span>)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>wfile <span class="ot">&lt;-</span> <span class="fu">haplofreq</span>(GTfiles, Cattle, map, <span class="at">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="at">minL=</span><span class="fl">1.0</span>, <span class="at">w.dir=</span>wdir)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>Comp  <span class="ot">&lt;-</span> <span class="fu">segBreedComp</span>(wfile<span class="sc">$</span>match, map)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>Cattle[<span class="fu">rownames</span>(Comp), <span class="st">&quot;NC&quot;</span>] <span class="ot">&lt;-</span> Comp<span class="sc">$</span>native</span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Cattle[,<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>wdir  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;HaplotypeEval&quot;</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>wfile <span class="ot">&lt;-</span> <span class="fu">haplofreq</span>(GTfiles, Cattle, map, <span class="at">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="at">minL=</span><span class="fl">1.0</span>, <span class="at">w.dir=</span>wdir)</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>Comp  <span class="ot">&lt;-</span> <span class="fu">segBreedComp</span>(wfile<span class="sc">$</span>match, map)</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>Cattle[<span class="fu">rownames</span>(Comp), <span class="st">&quot;NC&quot;</span>] <span class="ot">&lt;-</span> Comp<span class="sc">$</span>native</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">head</span>(Cattle[,<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##         Born  Breed         BV    Sex herd        NC
 ## Angler1 1991 Angler -1.0706066   male &lt;NA&gt; 0.5805690
 ## Angler2 1994 Angler -0.3362574 female    2 0.5687157
@@ -748,15 +747,13 @@ function candes. This function computes also the current values of the
 parameters in the population and displays the available objective
 functions and constraints. Below, the <em>kinship at native haplotype
 segments</em> is named <code>sKinatN</code>:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>phen    <span class="ot">&lt;-</span> Cattle[Cattle<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Angler&quot;</span>,]</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>sKin    <span class="ot">&lt;-</span> <span class="fu">segIBD</span>(GTfiles, map, <span class="at">minL=</span><span class="fl">1.0</span>)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>sKinatN <span class="ot">&lt;-</span> <span class="fu">segIBDatN</span>(GTfiles, Cattle, map, <span class="at">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="at">minL=</span><span class="fl">1.0</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>cand  <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">sKin=</span>sKin, <span class="at">sKinatN=</span>sKinatN, <span class="at">cont=</span>cont)</span></code></pre></div>
-<pre><code>## Column &#39;Sire&#39; was missing. It is set to NA.
-## Column &#39;Dam&#39; was missing. It is set to NA.
-## The population is evaluated at time 2014
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>phen    <span class="ot">&lt;-</span> Cattle[Cattle<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Angler&quot;</span>,]</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>sKin    <span class="ot">&lt;-</span> <span class="fu">segIBD</span>(GTfiles, map, <span class="at">minL=</span><span class="fl">1.0</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>sKinatN <span class="ot">&lt;-</span> <span class="fu">segIBDatN</span>(GTfiles, Cattle, map, <span class="at">thisBreed=</span><span class="st">&quot;Angler&quot;</span>, <span class="at">minL=</span><span class="fl">1.0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>cand  <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">sKin=</span>sKin, <span class="at">sKinatN=</span>sKinatN, <span class="at">cont=</span>cont)</span></code></pre></div>
+<pre><code>## The population is evaluated at time 2014
 ## 
 ##  Mean values of the parameters are:   Value 
 ##  for trait     &#39;BV&#39;      in Angler:  -0.0530
@@ -778,7 +775,7 @@ Additionally, the possibility to minimize or to restrict the kinship at
 native segments <code>sKinatN</code> became available since this kinship
 was used as an argument to function candes. The current mean values in
 the population are</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##           BV        NC       sKin    sKinatN
 ## 1 -0.0529632 0.4090566 0.05515035 0.07701049</code></pre>
 <p>Function <a href="https://rdrr.io/cran/optiSel/man/opticont.html">opticont</a> can
@@ -799,21 +796,21 @@ Between Breeds</a></li>
 <h3><a name="maximize-genetic-gain-marker-based"></a>Maximize Genetic
 Gain</a></h3>
 <p>First we create a list of constraints:</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a>  <span class="at">ub.sKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>  )</span></code></pre></div>
 <p>Again, equal contributions are assumed for the females and only the
 contributions of males are to be optimized. The upper bound for the mean
 segment based kinship was derived from the effective population size as
 explained above. Now the optimum contributions of the selection
 candidates can be calculated:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>Offspring   <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>Offspring   <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
 <pre><code>##   valid solver  status
 ## 1  TRUE  cccp2 optimal</code></pre>
 <p>The expected values of the parameters in the next generation are</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##          BV        NC       sKin    sKinatN
 ## 1 0.2599955 0.4013489 0.05611434 0.08003351</code></pre>
 <p>The results are the same as in the introductory example (as
@@ -823,17 +820,17 @@ kinship at native alleles should be restricted as well in accordance
 with the desired effective size, and the native contributions should be
 restricted in order not to decrease. Otherwise the genetic originality
 of the breed may get lost in the long term.</p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span><span class="st">&quot;female&quot;</span>,</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>Offspring2 <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>  <span class="at">uniform    =</span><span class="st">&quot;female&quot;</span>,</span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC</span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a>  )</span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a>Offspring2 <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
 <p>For comparison, the summaries of both scenarios are combined into a
 single data frame:</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxBV=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxBV2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxBV=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxBV2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                BV        NC       sKin    sKinatN
 ## Ref    -0.0529632 0.4090566 0.05515035 0.07701049
 ## maxBV   0.2599955 0.4013489 0.05611434 0.08003351
@@ -853,12 +850,12 @@ breeding values. In the example below no breeding values are considered
 since accurate breeding values are not available for most of these
 breeds.</p>
 <p>First we create a list of constraints:</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">uniform=</span><span class="st">&quot;female&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">uniform=</span><span class="st">&quot;female&quot;</span>)</span></code></pre></div>
 <p>Again, equal contributions are assumed for the females and only the
 contributions of males are to be optimized. The segment based kinship is
 not constrained in this example because it should be minimized.</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>Offspring   <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con)</span></code></pre></div>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a>Offspring   <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##           BV        NC       sKin    sKinatN
 ## 1 -0.0529632 0.4090566 0.05515035 0.07701049
 ## 2 -0.1413072 0.4320944 0.04878925 0.06388093</code></pre>
@@ -888,15 +885,15 @@ individuals from other breeds but to restrict the admissible mean
 contribution from other breeds in the population. The mean kinship at
 native alleles should be restricted as well to require only a small
 amount of introgression:</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC <span class="sc">+</span> <span class="fl">0.04</span>,</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>Offspring2     <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC <span class="sc">+</span> <span class="fl">0.04</span>,</span>
+<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a>)</span>
+<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a>Offspring2     <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con)</span></code></pre></div>
 <p>For comparison, the estimates for both scenarios are combined into a
 single data frame:</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">minKin=</span>Offspring<span class="sc">$</span>mean, <span class="at">minKin2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">minKin=</span>Offspring<span class="sc">$</span>mean, <span class="at">minKin2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                 BV        NC       sKin    sKinatN
 ## Ref     -0.0529632 0.4090566 0.05515035 0.07701049
 ## minKin  -0.1413072 0.4320944 0.04878925 0.06388093
@@ -915,33 +912,33 @@ coefficients if the diversity at native alleles is not preserved. Hence,
 constraints are defined below not only for the segment based kinship but
 also for the kinship at native segments in accordance with the desired
 effective size:</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb58-3"><a href="#cb58-3" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb58-4"><a href="#cb58-4" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb58-5"><a href="#cb58-5" tabindex="-1"></a>)</span>
+<span id="cb58-6"><a href="#cb58-6" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
 <pre><code>##   valid solver  status
 ## 1  TRUE  cccp2 optimal</code></pre>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##          BV        NC      sKin    sKinatN
 ## 1 -0.148815 0.4508486 0.0524655 0.07796019</code></pre>
 <p>For this breed, maximizing native contributions results in negative
 genetic gain because native contributions and breeding values are
 negatively correlated. This can be avoided by adding an additional
 constraint for the breeding values:</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.BV      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>BV</span>
-<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>Offspring2  <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a>  <span class="at">ub.sKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a>  <span class="at">ub.sKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb63-5"><a href="#cb63-5" tabindex="-1"></a>  <span class="at">lb.BV      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>BV</span>
+<span id="cb63-6"><a href="#cb63-6" tabindex="-1"></a>)</span>
+<span id="cb63-7"><a href="#cb63-7" tabindex="-1"></a></span>
+<span id="cb63-8"><a href="#cb63-8" tabindex="-1"></a>Offspring2  <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
 <p>For comparison, the estimated parameters of both scenarios are
 combined into a single data frame:</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxNC=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxNC2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxNC=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxNC2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                 BV        NC       sKin    sKinatN
 ## Ref    -0.05296320 0.4090566 0.05515035 0.07701049
 ## maxNC  -0.14881503 0.4508486 0.05246550 0.07796019
@@ -971,11 +968,9 @@ managed, argument <code>phen</code> of function cand contains
 individuals from all genotyped breeds. This was not the case in the
 above examples, where argument <code>phen</code> contained only the
 selection candidates.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>Cattle<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> Cattle<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>Cattle, <span class="at">sKin=</span>sKin, <span class="at">sKinatN.Angler=</span>sKinatN, <span class="at">bc=</span><span class="st">&quot;sKin&quot;</span>, <span class="at">cont=</span>cont)</span></code></pre></div>
-<pre><code>## Column &#39;Sire&#39; was missing. It is set to NA.
-## Column &#39;Dam&#39; was missing. It is set to NA.
-## The population is evaluated at time 2014
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a>Cattle<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> Cattle<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">2013</span></span>
+<span id="cb66-2"><a href="#cb66-2" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>Cattle, <span class="at">sKin=</span>sKin, <span class="at">sKinatN.Angler=</span>sKinatN, <span class="at">bc=</span><span class="st">&quot;sKin&quot;</span>, <span class="at">cont=</span>cont)</span></code></pre></div>
+<pre><code>## The population is evaluated at time 2014
 ## 
 ##  Mean values of the parameters are:              Value 
 ##  for trait     &#39;NC&#39;             in Angler    :   0.4091
@@ -1006,15 +1001,15 @@ selection candidates.</p>
 ##  for kinship   &#39;sKin.Rotbunt&#39;   in Rotbunt   : min.sKin.Rotbunt, ub.sKin.Rotbunt                                                    
 ## 
 ##  ub  lb uniform</code></pre>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>mKin <span class="ot">&lt;-</span> cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN.Angler</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="fu">c</span>(<span class="st">&quot;Angler.female&quot;</span>, <span class="st">&quot;Fleckvieh&quot;</span>, <span class="st">&quot;Holstein&quot;</span>, <span class="st">&quot;Rotbunt&quot;</span>), </span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.sKinatN.Angler =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>mKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a>mKin <span class="ot">&lt;-</span> cand<span class="sc">$</span>mean<span class="sc">$</span>sKinatN.Angler</span>
+<span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb68-3"><a href="#cb68-3" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="fu">c</span>(<span class="st">&quot;Angler.female&quot;</span>, <span class="st">&quot;Fleckvieh&quot;</span>, <span class="st">&quot;Holstein&quot;</span>, <span class="st">&quot;Rotbunt&quot;</span>), </span>
+<span id="cb68-4"><a href="#cb68-4" tabindex="-1"></a>  <span class="at">ub.sKinatN.Angler =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>mKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb68-5"><a href="#cb68-5" tabindex="-1"></a>  )</span></code></pre></div>
 <p>The upper bound for the mean native kinship was derived from the
 effective population size as explained above. Now the optimum
 contributions of the selection candidates can be calculated:</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.sKin&quot;</span>, cand, con, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## 
 ## Using solver &#39;cccp&#39; with parameters: 
 ##          Value
@@ -1058,10 +1053,10 @@ contributions of the selection candidates can be calculated:</p>
 ##    sKin               Rotbunt       0.1079            :      
 ##    sKinatN            Angler        0.0639 &lt;=  0.078  : TRUE 
 ##    ---------------------------------------------------------</code></pre>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a>Offspring<span class="sc">$</span>info</span></code></pre></div>
 <pre><code>##   valid solver  status
 ## 1  TRUE   cccp optimal</code></pre>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##          NC         BV  BV.Angler BV.Holstein BV.Fleckvieh BV.Rotbunt      sKin
 ## 1 0.4333205 -0.1165914 -0.1453215  0.02899812    -0.124364 0.08612751 0.0331582
 ##   sKin.Angler sKin.Holstein sKin.Fleckvieh sKin.Rotbunt sKinatN.Angler
@@ -1073,7 +1068,7 @@ diversity within the breed or by increasing the genetic distance between
 the breed of interest and the other breeds. The optimum contributions
 are standardized so that their sum is equal to one within each
 breed:</p>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Offspring<span class="sc">$</span>parent[Offspring<span class="sc">$</span>parent<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.02</span>,<span class="fu">c</span>(<span class="st">&quot;Breed&quot;</span>,<span class="st">&quot;lb&quot;</span>,<span class="st">&quot;oc&quot;</span>,<span class="st">&quot;ub&quot;</span>)])</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="fu">head</span>(Offspring<span class="sc">$</span>parent[Offspring<span class="sc">$</span>parent<span class="sc">$</span>oc<span class="sc">&gt;</span><span class="fl">0.02</span>,<span class="fu">c</span>(<span class="st">&quot;Breed&quot;</span>,<span class="st">&quot;lb&quot;</span>,<span class="st">&quot;oc&quot;</span>,<span class="st">&quot;ub&quot;</span>)])</span></code></pre></div>
 <pre><code>##           Breed lb         oc ub
 ## Angler8  Angler  0 0.02384619 NA
 ## Angler14 Angler  0 0.13924780 NA
@@ -1114,9 +1109,9 @@ kinship.</p></li>
 <p>Of course, all 3 approaches can be followed simultaneously. First, we
 prepare the pedigree and classify the breed of founders born after 1970
 to be <code>unknown</code>:</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(PedigWithErrors, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">lastNative=</span><span class="dv">1970</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(Pedig[,<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;PedigWithErrors&quot;</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" tabindex="-1"></a>Pedig <span class="ot">&lt;-</span> <span class="fu">prePed</span>(PedigWithErrors, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">lastNative=</span><span class="dv">1970</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" tabindex="-1"></a><span class="fu">tail</span>(Pedig[,<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##                             Sire             Dam    Sex         Breed Born   I
 ## 276000813798399  276000813550094 276000813155754   male Hinterwaelder 2008 2.5
 ## 276000814047526  276000813550094 276000812922177 female Hinterwaelder 2009 3.5
@@ -1135,9 +1130,9 @@ to be <code>unknown</code>:</p>
 function <a href="https://rdrr.io/cran/optiSel/man/pedBreedComp.html">pedBreedComp</a>.
 Since the native contribution should be considered in some scenarios,
 they are added as additional column <code>NC</code> to the pedigree.</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>cont     <span class="ot">&lt;-</span> <span class="fu">pedBreedComp</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)</span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>Pedig<span class="sc">$</span>NC <span class="ot">&lt;-</span> cont<span class="sc">$</span>native</span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(cont[, <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a>cont     <span class="ot">&lt;-</span> <span class="fu">pedBreedComp</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>)</span>
+<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a>Pedig<span class="sc">$</span>NC <span class="ot">&lt;-</span> cont<span class="sc">$</span>native</span>
+<span id="cb80-3"><a href="#cb80-3" tabindex="-1"></a><span class="fu">tail</span>(cont[, <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
 <pre><code>##                     native   unknown      unbek0  Fleckvieh
 ## 276000813798399 0.54309845 0.1633301 0.042541504 0.10948944
 ## 276000814047526 0.54775238 0.1770020 0.036956787 0.10919952
@@ -1157,10 +1152,10 @@ IDs in Colmumn 1 (<code>Indiv</code>), sexes in Column 2
 contributions (<code>NC</code>) of the individuals. Finally, the logical
 column <code>isCandidate</code> indicating the selection candidates is
 appended.</p>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>use   <span class="ot">&lt;-</span> Pedig<span class="sc">$</span>Born <span class="sc">%in%</span> (<span class="dv">1980</span><span class="sc">:</span><span class="dv">1990</span>) <span class="sc">&amp;</span> Pedig<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Hinterwaelder&quot;</span></span>
-<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>use   <span class="ot">&lt;-</span> use <span class="sc">&amp;</span> <span class="fu">summary</span>(Pedig)<span class="sc">$</span>equiGen<span class="sc">&gt;=</span><span class="dv">4</span></span>
-<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>phen  <span class="ot">&lt;-</span> Pedig[use, <span class="fu">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Breed&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;BV&quot;</span>, <span class="st">&quot;NC&quot;</span>)]</span>
-<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">1991</span></span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a>use   <span class="ot">&lt;-</span> Pedig<span class="sc">$</span>Born <span class="sc">%in%</span> (<span class="dv">1980</span><span class="sc">:</span><span class="dv">1990</span>) <span class="sc">&amp;</span> Pedig<span class="sc">$</span>Breed<span class="sc">==</span><span class="st">&quot;Hinterwaelder&quot;</span></span>
+<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a>use   <span class="ot">&lt;-</span> use <span class="sc">&amp;</span> <span class="fu">summary</span>(Pedig)<span class="sc">$</span>equiGen<span class="sc">&gt;=</span><span class="dv">4</span></span>
+<span id="cb82-3"><a href="#cb82-3" tabindex="-1"></a>phen  <span class="ot">&lt;-</span> Pedig[use, <span class="fu">c</span>(<span class="st">&quot;Indiv&quot;</span>, <span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Breed&quot;</span>, <span class="st">&quot;Born&quot;</span>, <span class="st">&quot;BV&quot;</span>, <span class="st">&quot;NC&quot;</span>)]</span>
+<span id="cb82-4"><a href="#cb82-4" tabindex="-1"></a>phen<span class="sc">$</span>isCandidate <span class="ot">&lt;-</span> phen<span class="sc">$</span>Born<span class="sc">&lt;=</span><span class="dv">1991</span></span></code></pre></div>
 <p>Since cattle have overlapping generations, the percentage which each
 age class represents in the population must be defined. One possibility
 is to assume that the percentage represented by a class is proportional
@@ -1168,8 +1163,8 @@ to the percentage of offspring that is not yet born. Moreover, males and
 females (excluding newborn individuals) should be equally represented.
 Percentages fulfilling these assumptions can obtained with function
 agecont:</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>cont     <span class="ot">&lt;-</span> <span class="fu">agecont</span>(Pedig, phen<span class="sc">$</span>Indiv)</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cont)</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a>cont     <span class="ot">&lt;-</span> <span class="fu">agecont</span>(Pedig, phen<span class="sc">$</span>Indiv)</span>
+<span id="cb83-2"><a href="#cb83-2" tabindex="-1"></a><span class="fu">head</span>(cont)</span></code></pre></div>
 <pre><code>##   age       male     female
 ## 1   1 0.16547917 0.07255799
 ## 2   2 0.16500502 0.07255799
@@ -1178,8 +1173,8 @@ agecont:</p>
 ## 5   5 0.01849194 0.04740178
 ## 6   6 0.01090550 0.03804617</code></pre>
 <p>The generation interval is approximately</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>male[<span class="dv">1</span>]) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>female[<span class="dv">1</span>])</span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>L</span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>male[<span class="dv">1</span>]) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>cont<span class="sc">$</span>female[<span class="dv">1</span>])</span>
+<span id="cb85-2"><a href="#cb85-2" tabindex="-1"></a>L</span></code></pre></div>
 <pre><code>## [1] 4.956284</code></pre>
 <p>The breeding values were simulated such that breeding values and
 native contributions are negatively correlated. This mimics historic
@@ -1194,12 +1189,10 @@ estimates the current values of the parameters in the population and
 displays the available objective functions and constraints. Below, the
 <em>pedigree based kinship</em> is named <code>pKin</code>, and the
 <em>kinship at native alleles</em> is named <code>pKinatN</code>:</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>pKin    <span class="ot">&lt;-</span> <span class="fu">pedIBD</span>(Pedig, <span class="at">keep.only=</span>phen<span class="sc">$</span>Indiv)</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>pKinatN <span class="ot">&lt;-</span> <span class="fu">pedIBDatN</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">keep.only=</span>phen<span class="sc">$</span>Indiv)</span></code></pre></div>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">pKin=</span>pKin, <span class="at">pKinatN=</span>pKinatN, <span class="at">cont=</span>cont)</span></code></pre></div>
-<pre><code>## Column &#39;Sire&#39; was missing. It is set to NA.
-## Column &#39;Dam&#39; was missing. It is set to NA.
-## The population is evaluated at time 1990
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" tabindex="-1"></a>pKin    <span class="ot">&lt;-</span> <span class="fu">pedIBD</span>(Pedig, <span class="at">keep.only=</span>phen<span class="sc">$</span>Indiv)</span>
+<span id="cb87-2"><a href="#cb87-2" tabindex="-1"></a>pKinatN <span class="ot">&lt;-</span> <span class="fu">pedIBDatN</span>(Pedig, <span class="at">thisBreed=</span><span class="st">&quot;Hinterwaelder&quot;</span>, <span class="at">keep.only=</span>phen<span class="sc">$</span>Indiv)</span></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">candes</span>(<span class="at">phen=</span>phen, <span class="at">pKin=</span>pKin, <span class="at">pKinatN=</span>pKinatN, <span class="at">cont=</span>cont)</span></code></pre></div>
+<pre><code>## The population is evaluated at time 1990
 ## 
 ##  Mean values of the parameters are:          Value 
 ##  for trait     &#39;BV&#39;      in Hinterwaelder:  -0.6212
@@ -1224,7 +1217,7 @@ Additionally, there is the possibility to minimize or to restrict the
 current mean kinships, the mean native contribution, and the mean
 breeding value in the population need to be known. The values can be
 obtained as</p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" tabindex="-1"></a>cand<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
 ## 1 -0.6212472 0.6235631 0.02540349 0.04524766</code></pre>
 <p>Depending on what the objective of the breeding program is, you may
@@ -1242,17 +1235,17 @@ Native Genetic Background</a></li>
 Gain</a></h3>
 <p>This is the traditional approach proposed by <span class="citation">T. H. E. Meuwissen (1997)</span>. First we create a
 list of constraints:</p>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb92-2"><a href="#cb92-2" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb92-3"><a href="#cb92-3" tabindex="-1"></a>  <span class="at">ub.pKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb92-4"><a href="#cb92-4" tabindex="-1"></a>)</span></code></pre></div>
 <p>Here, equal numbers of offspring are assumed for the females and only
 the contributions of males are to be optimized. The upper bound for the
 mean pedigree based kinship was derived from the effective population
 size as explained above. Now the optimum contributions of the selection
 candidates can be calculated:</p>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
 ## 1 -0.6212472 0.6235631 0.02540349 0.04524766
 ## 2 -0.5374799 0.6152733 0.02638868 0.04724255</code></pre>
@@ -1262,16 +1255,16 @@ introgression, the kinship at native alleles should be restricted as
 well in accordance with the desired effective size, and the native
 contributions should be restricted in order not to decrease. Otherwise
 the genetic originality of the breed may get lost in the long term.</p>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC</span>
-<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>Offspring2     <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb96-2"><a href="#cb96-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb96-3"><a href="#cb96-3" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb96-4"><a href="#cb96-4" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb96-5"><a href="#cb96-5" tabindex="-1"></a>  <span class="at">lb.NC      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>NC</span>
+<span id="cb96-6"><a href="#cb96-6" tabindex="-1"></a>)</span>
+<span id="cb96-7"><a href="#cb96-7" tabindex="-1"></a>Offspring2     <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.BV&quot;</span>, cand, con)</span></code></pre></div>
 <p>For comparison, the parameters of both scenarios are combined into a
 single data frame with <code>rbind</code>:</p>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxBV=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxBV2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxBV=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxBV2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                BV        NC       pKin    pKinatN
 ## Ref    -0.6212472 0.6235631 0.02540349 0.04524766
 ## maxBV  -0.5374799 0.6152733 0.02638868 0.04724255
@@ -1291,13 +1284,13 @@ breeding values. In the example below no breeding values are considered
 since accurate breeding values are not available for most of these
 breeds.</p>
 <p>First we create a list of constraints:</p>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">uniform=</span><span class="st">&quot;female&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">uniform=</span><span class="st">&quot;female&quot;</span>)</span></code></pre></div>
 <p>Again, equal numbers of offspring are assumed for all females and
 only the contributions of males are to be optimized. The pedigree based
 kinship is not constrained in this example because it should be
 minimized.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.pKin&quot;</span>, cand, con)</span></code></pre></div>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.pKin&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" tabindex="-1"></a><span class="fu">rbind</span>(cand<span class="sc">$</span>mean, Offspring<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
 ## 1 -0.6212472 0.6235631 0.02540349 0.04524766
 ## 2 -0.6740305 0.6293595 0.02202135 0.03889580</code></pre>
@@ -1324,17 +1317,17 @@ breeds.</p>
 <p>In summary, the alternative approach is to minimize the kinship at
 native alleles and to restrict pedigree based kinship and native
 contributions:</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.NC   =</span> <span class="fl">1.02</span><span class="sc">*</span>cand<span class="sc">$</span>mean<span class="sc">$</span>NC,</span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a>Offspring2  <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.pKinatN&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" tabindex="-1"></a>con  <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb103-2"><a href="#cb103-2" tabindex="-1"></a>  <span class="at">uniform =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb103-3"><a href="#cb103-3" tabindex="-1"></a>  <span class="at">lb.NC   =</span> <span class="fl">1.02</span><span class="sc">*</span>cand<span class="sc">$</span>mean<span class="sc">$</span>NC,</span>
+<span id="cb103-4"><a href="#cb103-4" tabindex="-1"></a>  <span class="at">ub.pKin =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb103-5"><a href="#cb103-5" tabindex="-1"></a>)</span>
+<span id="cb103-6"><a href="#cb103-6" tabindex="-1"></a></span>
+<span id="cb103-7"><a href="#cb103-7" tabindex="-1"></a>Offspring2  <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;min.pKinatN&quot;</span>, cand, con)</span></code></pre></div>
 <pre><code>## For consistency with the rest of the package the inequality sign may be switched from &gt;= to &lt;= in a future nloptr version.</code></pre>
 <p>For comparison, the parameter estimates are combined into a single
 data frame:</p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">minKin=</span>Offspring<span class="sc">$</span>mean, <span class="at">minKin2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">minKin=</span>Offspring<span class="sc">$</span>mean, <span class="at">minKin2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                 BV        NC       pKin    pKinatN
 ## Ref     -0.6212472 0.6235631 0.02540349 0.04524766
 ## minKin  -0.6740305 0.6293595 0.02202135 0.03889580
@@ -1360,29 +1353,29 @@ coefficients if the diversity at native alleles is not preserved. Hence,
 constraints are defined below not only for the pedigree based kinship,
 but also for the kinship at native alleles in accordance with the
 desired effective size:</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb107-2"><a href="#cb107-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb107-3"><a href="#cb107-3" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb107-4"><a href="#cb107-4" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L)</span>
+<span id="cb107-5"><a href="#cb107-5" tabindex="-1"></a>)</span>
+<span id="cb107-6"><a href="#cb107-6" tabindex="-1"></a>Offspring <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" tabindex="-1"></a>Offspring<span class="sc">$</span>mean</span></code></pre></div>
 <pre><code>##           BV        NC       pKin    pKinatN
 ## 1 -0.6944268 0.6534981 0.02638974 0.04596307</code></pre>
 <p>For some breeds, native contributions and breeding values are
 negatively correlated, so maximizing native contributions results in
 negative genetic. This can be avoided by adding an additional constraint
 for the breeding values:</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
-<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
-<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb.BV      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>BV</span>
-<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb110-7"><a href="#cb110-7" aria-hidden="true" tabindex="-1"></a>Offspring2 <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb110-2"><a href="#cb110-2" tabindex="-1"></a>  <span class="at">uniform    =</span> <span class="st">&quot;female&quot;</span>,</span>
+<span id="cb110-3"><a href="#cb110-3" tabindex="-1"></a>  <span class="at">ub.pKin    =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKin)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb110-4"><a href="#cb110-4" tabindex="-1"></a>  <span class="at">ub.pKinatN =</span> <span class="dv">1</span><span class="sc">-</span>(<span class="dv">1</span><span class="sc">-</span>cand<span class="sc">$</span>mean<span class="sc">$</span>pKinatN)<span class="sc">*</span>(<span class="dv">1-1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>Ne))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>L),</span>
+<span id="cb110-5"><a href="#cb110-5" tabindex="-1"></a>  <span class="at">lb.BV      =</span> cand<span class="sc">$</span>mean<span class="sc">$</span>BV</span>
+<span id="cb110-6"><a href="#cb110-6" tabindex="-1"></a>)</span>
+<span id="cb110-7"><a href="#cb110-7" tabindex="-1"></a>Offspring2 <span class="ot">&lt;-</span> <span class="fu">opticont</span>(<span class="st">&quot;max.NC&quot;</span>, cand, con)</span></code></pre></div>
 <p>For comparison, the estimates for both scenarios are combined into a
 single data frame:</p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxNC=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxNC2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Ref=</span>cand<span class="sc">$</span>mean, <span class="at">maxNC=</span>Offspring<span class="sc">$</span>mean, <span class="at">maxNC2=</span>Offspring2<span class="sc">$</span>mean)</span></code></pre></div>
 <pre><code>##                BV        NC       pKin    pKinatN
 ## Ref    -0.6212472 0.6235631 0.02540349 0.04524766
 ## maxNC  -0.6944268 0.6534981 0.02638974 0.04596307
@@ -1391,7 +1384,7 @@ single data frame:</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Meuwissen2009" class="csl-entry">
 Meuwissen, T H E. 2009. <span>“Genetic Management of Small Populations:
 A Review.”</span> <em>Acta Agriculturae Scand Section A</em> 59: 71–79.

@@ -147,8 +147,8 @@ Wellmann, R., Hartwig, S., Bennewitz, J. (2012). Optimum contribution selection 
 
 Wellmann, R., Bennewitz, J., Meuwissen, T.H.E. (2014) A unified approach to characterize and conserve adaptive and neutral genetic diversity in subdivided populations. {Genet Res (Camb)}. 69: e16
 
-Wellmann, R. (2018). Optimum Contribution Selection and Mate
-Allocation for Breeding: The R Package optiSel. submitted
+Wellmann, R. (2019). Optimum Contribution Selection and Mate
+Allocation for Breeding: The R Package optiSel. {BMC Bioinformatics} 20:25
 }
 
 \keyword{ package }

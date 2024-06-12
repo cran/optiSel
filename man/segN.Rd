@@ -8,7 +8,7 @@
  For each pair of individuals the probability is computed that two SNPs taken at random position from randomly chosen haplotypes both belong to native segments.
 }
 \usage{
-segN(Native, map, unitP="Mb", keep=NULL, cores=1)
+segN(Native, map, unitP="Mb", keep=NULL, cores=1, quiet=FALSE)
 }
 
 \arguments{
@@ -28,6 +28,7 @@ Data frame providing the marker map with columns including marker name \code{'Na
   Possible units are the number of marker SNPs included in shared segments (\code{'SNP'}), the number of Mega base pairs (\code{'Mb'}), and the total length of the shared segments in centimorgan (\code{'cM'}). In the last two cases the map must include columns with the respective names.}
  \item{keep}{Vector with IDs of individuals (from this breed) for which the probabilities are to be computed. By default, they will be computed for all individuals included in \code{Native}.}
   \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
+ \item{quiet}{Should console output be suppressed?}
 }
 \value{
 \code{NxN} matrix with \code{N} being the number of genotyped individuals from this breed (which are also included in vector \code{keep}).
@@ -45,7 +46,7 @@ fN   <- segN(Freq<0.01, map)
 mean(fN)
 #[1] 0.15418
 
-\dontrun{
+\donttest{
 fN   <- segN(Freq<0.01, map, cores=NA)
 mean(fN)
 #[1] 0.15418
@@ -53,7 +54,7 @@ mean(fN)
 
 
 ## using files:
-\dontrun{
+\donttest{
 wdir   <- file.path(tempdir(),"HaplotypeEval")
 chr    <- unique(map$Chr)
 GTfile <- file.path( dir, paste("Chr", chr, ".phased",     sep=""))

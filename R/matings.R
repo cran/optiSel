@@ -151,6 +151,6 @@
     }
   attributes(Matings)$objval <- objval
   attributes(Matings)$info <- info
-  cat(paste(info,"\n"))
+  message(paste(info,"\n"))
   Matings
 }

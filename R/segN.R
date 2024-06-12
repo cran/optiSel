@@ -1,6 +1,6 @@
 
 
-"segN"<-function(Native, map, unitP="Mb", keep=NULL, cores=1){
+"segN"<-function(Native, map, unitP="Mb", keep=NULL, cores=1, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -76,7 +76,7 @@
     Res  <- matrix(0,nrow=NC, ncol=NC)
     for(chr in Chromosomes){
       if(is.vector(Native)){
-        cat(paste("Reading chromosome ", chr, "...  "))
+        if(!quiet){cat(paste("Reading chromosome ", chr, "...  "))}
         Res <- Res + rcpp_segN(as.character(Native[chr]), as.integer(NFileN), as.integer(NC), as.integer(indexN-1), as.double(map$nUnits[map$Chr==chr]))
       }else{
         Units      <- matrix(map$nUnits[map$Chr==chr],ncol=NC, nrow=sum(map$Chr==chr), byrow=FALSE)
@@ -85,7 +85,7 @@
       }
     }
   }else{
-    cat(paste0("Using ",cores," cores... "))
+    if(!quiet){cat(paste0("Using ",cores," cores... "))}
     use_cor <- 1 + ((1:length(Chromosomes)) %% cores)
     Cores   <- unique(use_cor)
     cl <- makeCluster(cores)
@@ -105,7 +105,7 @@
       x
     }
     stopCluster(cl)
-    cat("finished.\n")
+    if(!quiet){cat("finished.\n")}
   }
   
   N   <- ncol(Res)/2

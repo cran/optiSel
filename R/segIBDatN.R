@@ -1,5 +1,5 @@
 
-"segIBDatN" <- function(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20, unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, skip=NA, cskip=NA, cores=1){
+"segIBDatN" <- function(files, phen, map, thisBreed, refBreeds="others", ubFreq=0.01, minSNP=20, unitP="Mb", minL=1.0, unitL="Mb", a=0.0, keep=NULL, lowMem=TRUE, skip=NA, cskip=NA, cores=1, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -40,13 +40,13 @@
   if(is.character(files)){
     files <- list(hap.thisBreed=files)
   }
-  if(is.na(skip)){  skip <- getskip(files$hap.thisBreed[1])}
-  if(is.na(cskip)){cskip <- getcskip(files$hap.thisBreed[1], skip)}
+  if(is.na(skip)){  skip <- getskip(files$hap.thisBreed[1], quiet=quiet)}
+  if(is.na(cskip)){cskip <- getcskip(files$hap.thisBreed[1], skip, quiet=quiet)}
   
   ##################################################
   #       Main part                                #
   ##################################################
-  cat("Identifying native alleles...\n")
+  if(!quiet){cat("Identifying native alleles...\n")}
   if("match" %in% names(files)){
     Native <- files$match
   }else{
@@ -60,10 +60,10 @@
     }
   }
   
-  cat("Computing probabilities for segments to be shared and native...\n")
-  segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip, cores=cores)
-  cat("Computing probabilities for segments to be native...\n")
-  segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores)
+  if(!quiet){cat("Computing probabilities for segments to be shared and native...\n")}
+  segIBDandN <- segIBDandN(files=files$hap.thisBreed, Native=Native, map=map, minSNP=minSNP, unitP=unitP, minL=minL, unitL=unitL, a=a, keep=keep, skip=skip, cskip=cskip, cores=cores, quiet=quiet)
+  if(!quiet){cat("Computing probabilities for segments to be native...\n")}
+  segN       <- segN(Native=Native, map=map, unitP=unitP, keep=keep, cores=cores, quiet=quiet)
   segN[segN==0] <- 1e-14
   
   

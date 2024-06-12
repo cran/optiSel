@@ -1,5 +1,5 @@
 
-"segIBD"<-function(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1){
+"segIBD"<-function(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1, quiet=FALSE){
   ##################################################
   # Convert data tables to data frames             #
   ##################################################
@@ -32,8 +32,8 @@
   }
   checkMap(map, unitL, unitP)
   rownames(map)<-map$Name
-  if(is.na(skip)){  skip <- getskip(files[[1]][1])}
-  if(is.na(cskip)){cskip <- getcskip(files[[1]][1], skip)}
+  if(is.na(skip)){  skip <- getskip(files[[1]][1], quiet=quiet)}
+  if(is.na(cskip)){cskip <- getcskip(files[[1]][1], skip, quiet=quiet)}
   
   IndivFile1 <- scan(files[[1]][1], nlines=1, skip=skip, what="character", quiet=TRUE)
   if(cskip>0){IndivFile1 <-IndivFile1[-(1:cskip)]}
@@ -87,8 +87,8 @@
   for(chr in Chromosomes){
     submap <- map[map$Chr==chr, ]
     M      <- nrow(submap)
-    if(unitL %in% colnames(map)){cM <- submap[, unitL]}else{cM <- 1:M; cat("Using: unitL=Marker number\n")}
-    if(unitP %in% colnames(map)){kb <- submap[, unitP]}else{kb <- 1:M; cat("Using: unitP=Marker number\n")}
+    if(unitL %in% colnames(map)){cM <- submap[, unitL]}else{cM <- 1:M; if(!quiet){("Using: unitL=Marker number\n")}}
+    if(unitP %in% colnames(map)){kb <- submap[, unitP]}else{kb <- 1:M; if(!quiet){("Using: unitP=Marker number\n")}}
     cM   <- (c(0,cM)+c(cM,cM[length(cM)]+cM[1]))/2
     kb   <- (c(0,kb)+c(kb,kb[length(kb)]+kb[1]))/2
     gesL <- gesL + kb[length(kb)] - kb[1]
@@ -109,14 +109,14 @@
   if(cores==1){
     fROH  <- matrix(0, N, N)
     for(chr in Chromosomes){
-      cat(paste0("Reading chromosome ", chr, " ..."))
+      if(!quiet){cat(paste0("Reading chromosome ", chr, " ..."))}
 	  gc()
       fROH <- fROH + rcpp_segIBD(as.character(files[[1]][chr]), as.character(files[[2]][chr]), as.integer(NFile1), as.integer(NFile2), as.integer(index1-1), as.integer(index2-1), as.integer(N1), as.integer(N2), as.integer(minSNP), as.double(minL), as.double(cMList[[chr]]), as.double(kbList[[chr]]), as.double(a), as.character(symB), as.integer(skip), as.integer(cskip))
       }
   }else{
     use_cor <- 1 + ((1:length(Chromosomes)) %% cores)
     Cores   <- unique(use_cor)
-    cat(paste0("Using ",cores," cores... "))
+    if(!quiet){cat(paste0("Using ",cores," cores... "))}
     cl <- makeCluster(cores)
     registerDoParallel(cl)
     fROH <- foreach(thisCore=Cores, .combine='+', .inorder=FALSE) %dopar% {
@@ -129,7 +129,7 @@
       }
     gc()
     stopCluster(cl)
-    cat("finished.\n")
+    if(!quiet){cat("finished.\n")}
   }
 
   N    <- ncol(fROH)/2

@@ -18,13 +18,13 @@ tapply(map$Mb, map$Chr, max)
 dir     <- system.file("extdata", package="optiSel")
 GTfiles <- file.path(dir, paste("Chr", unique(map$Chr), ".phased", sep=""))
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Animal <- segInbreeding(GTfiles, map, minSNP=20, minL=1.0)
 
 ## -----------------------------------------------------------------------------
 head(Animal)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 sKin <- segIBD(GTfiles, map, minSNP=20, minL=1.0)
 
 ## -----------------------------------------------------------------------------
@@ -41,11 +41,11 @@ col   <- color[phen[rownames(D), "Breed"]]
 Res   <- cmdscale(D)
 plot(Res, pch=18, col=col, main="Multidimensional Scaling", cex=0.5, xlab="",ylab="", asp=1)
 
-## ---- fig.width = 5, results="hide"-------------------------------------------
+## ----fig.width = 5, results="hide"--------------------------------------------
 Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt", minL=1.0)
 plot(Haplo, ID="Angler1", hap=2)
 
-## ---- fig.width = 5, results="hide"-------------------------------------------
+## ----fig.width = 5, results="hide"--------------------------------------------
 Haplo <- freqlist(
   haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Rotbunt", minL=1.0),
   haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="Holstein", minL=1.0),
@@ -54,7 +54,7 @@ Haplo <- freqlist(
 
 plot(Haplo, ID=1, hap=2, refBreed="Rotbunt")
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 Haplo <- haplofreq(GTfiles, phen, map, thisBreed="Angler", refBreeds="others", minL=2.5)
 
 ## -----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ Haplo$freq[1:10,1:3]
 ## -----------------------------------------------------------------------------
 Haplo$match[1:10,1:3]
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 wdir  <- file.path(tempdir(), "HaplotypeEval")
 wfile <- haplofreq(GTfiles, phen, map, thisBreed="Angler", minL=1.0, w.dir=wdir)
 
@@ -75,7 +75,7 @@ head(Comp[,-1])
 Average <- apply(Comp[,-1],2,mean)
 round(Average, 3)
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 sKinatN <- segIBDatN(GTfiles, phen, map, thisBreed="Angler", minL=1.0)
 
 ## -----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ sKinatN$mean
 ## -----------------------------------------------------------------------------
 1 - sKinatN$mean
 
-## ---- results="hide"----------------------------------------------------------
+## ----results="hide"-----------------------------------------------------------
 sKin  <- segIBD(GTfiles, map, minSNP=20, minL=1.0)
 
 ## -----------------------------------------------------------------------------

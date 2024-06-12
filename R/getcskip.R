@@ -1,4 +1,4 @@
-"getcskip"<-function(file, skip){
+"getcskip"<-function(file, skip, quiet=FALSE){
   Line <- scan(file, nlines=1, what="character",quiet=TRUE, skip=skip+1)
   GT <- Line[length(Line)]
   cL   <- nchar(GT)
@@ -11,7 +11,7 @@
     sep <- str_sub(GT, 2, 2)
     cskip <- length(Line)-which.max(rev(!c(FALSE,nchar(Line)==3 & str_sub(Line,2,2)==sep)))+1
   }
-  cat(paste("Using cskip =",cskip,"\n"))
+  if(!quiet){cat(paste("Using cskip =",cskip,"\n"))}
   cskip
 }
 

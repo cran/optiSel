@@ -43,7 +43,7 @@ f     <- segIBD(files, map, minSNP=15, minL=1.0)
 D     <- sim2dis(f, 4)
 
 ## Multidimensional scaling of animals:
-\dontrun{
+\donttest{
 data(Cattle)
 library("smacof")
 color <- c(Angler="red", Rotbunt="green", Fleckvieh="blue", Holstein="black")

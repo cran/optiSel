@@ -9,7 +9,7 @@ Calculates the \bold{seg}ment based probability of alleles to be \bold{IBD} (ide
 }
 \usage{
 segIBDandN(files, Native, map, minSNP=20, unitP="Mb", minL=1.0, 
-   unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1)
+   unitL="Mb", a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1, quiet=FALSE)
 }
 
  
@@ -41,6 +41,7 @@ Data frame providing the marker map with columns including marker name \code{'Na
      \item{skip}{Take line \code{skip+1} of the genotype files as the line with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the genotype files as the first column with genotypes. By default, the number is determined automatically.}
   \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
+ \item{quiet}{Should console output be suppressed?}
 }
 \value{
 \code{NxN} matrix with \code{N} being the number of individuals from this breed included in all files (and in parameter \code{keep}).
@@ -61,14 +62,14 @@ fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20)
 mean(fIBDN)
 #[1] 0.01032261
 
-\dontrun{
+\donttest{
 fIBDN  <- segIBDandN(GTfile, Freq<0.01, map=map, minSNP=20, cores=NA)
 mean(fIBDN)
 #[1] 0.01032261
 }
 
 ## using files:
-\dontrun{
+\donttest{
 wdir   <- file.path(tempdir(),"HaplotypeEval")
 chr    <- unique(map$Chr)
 GTfile <- file.path( dir, paste("Chr", chr, ".phased",     sep=""))

@@ -159,7 +159,7 @@ Candidate[Candidate$oc>0.01, c("Indiv", "Sex", "BV", "NC", "lb", "oc", "ub")]
 #   - cause increase of native contribution (NC)     #
 ######################################################
 
-\dontrun{
+\donttest{
 ### Prepare genotype data
 
 data(map) 

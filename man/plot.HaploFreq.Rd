@@ -25,6 +25,7 @@ For a particular haplotype from \code{thisBreed} and each marker \code{m} the fr
 \details{
  For a particular haplotype from \code{thisBreed} and each marker \code{m} from chromosomes \code{Chr} the frequency of the segment containing marker \code{m} in reference breed \code{refBreed} is plotted (red line), as well as the maximum frequency the segment has in one of the evaluated breeds (black line), and the maximum frequency a segment from \code{thisBreed} has in one of the evaluated breeds (grey area, if \code{show.maxFreq=TRUE}).
 }
+\value{No return value, called for plotting.}
 \examples{
 data(map)
 data(Cattle)

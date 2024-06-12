@@ -8,7 +8,7 @@
 }
 \usage{
 segIBD(files, map, minSNP=20, minL=1.0, unitP="Mb", unitL="Mb", 
-   a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1)
+   a=0.0, keep=NULL, skip=NA, cskip=NA, cores=1, quiet=FALSE)
 }
 \arguments{
   \item{files}{This parameter is either
@@ -33,6 +33,7 @@ File names must contain the chromosome name as specified in the \code{map} in th
    \item{skip}{Take line \code{skip+1} of the files as the row with column names. By default, the number is determined automatically.}
  \item{cskip}{Take column \code{cskip+1} of the files as the first column with genotypes. By default, the number is determined automatically.}
  \item{cores}{Number of cores to be used for parallel processing of chromosomes. By default one core is used. For \code{cores=NA} the number of cores will be chosen automatically. Using more than one core increases execution time if the function is already fast.}
+ \item{quiet}{Should console output be suppressed?}
 }
 \value{
 \code{NxN} segment-based kinship matrix with \code{N} being the number of individuals.
@@ -53,7 +54,7 @@ f     <- segIBD(files, map, minSNP=15, minL=1.0)
 mean(f)
 #[1] 0.05677993
 
-\dontrun{
+\donttest{
 f     <- segIBD(files, map, minSNP=15, minL=1.0, cores=NA)
 mean(f)
 #[1] 0.05677993
@@ -62,7 +63,7 @@ mean(f)
 
 ## Multidimensional scaling of animals:
 ## (note that only few markers are used)
-\dontrun{
+\donttest{
 data(Cattle)
 library("smacof")
 D     <- sim2dis(f, 4)

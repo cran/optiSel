@@ -7,7 +7,7 @@
 Calculates the kinship at native alleles, which is the pedigree based probability of native alleles to be IBD.
 }
 \usage{
-pedIBDatN(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=NA)}
+pedIBDatN(Pedig, thisBreed=NA, keep.only=NULL, keep=keep.only, nGen=NA, quiet=FALSE)}
 
 \arguments{
 \item{Pedig}{
@@ -17,6 +17,7 @@ Data frame containing the pedigree with \code{Indiv} (Individual ID), \code{Sire
 \item{keep}{If \code{keep} is provided then kinships are computed only for these animals and their ancestors.}
 \item{keep.only}{If \code{keep.only} is provided then kinships are computed only for these animals.}
 \item{nGen}{Number of generations taken into account for estimating the native effective size. The default means that the native effective size is not estimated, which requires less memory.}
+\item{quiet}{Should console output be suppressed?}
 }
 
 \details{
