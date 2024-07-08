@@ -19,7 +19,12 @@ Rcpp::NumericMatrix rcpp_makeA_lowMem(const arma::ivec& numSire, const arma::ive
   int*  isAlloc  = (int*)calloc(N, sizeof(int));  
   
   iF = 0;
-  nextFounder =  numFounder.at(iF);
+  
+  if(NFounder>0){
+    nextFounder =  numFounder.at(iF);
+  }else{
+    nextFounder = -1;
+  }
   
   for(i=0;i<N;i++){
     nOff[i]    = anOff.at(i);
